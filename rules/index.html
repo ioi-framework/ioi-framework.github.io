@@ -1,0 +1,68 @@
+---
+layout: default
+title: "IoI Rules"
+description: "Community-contributed SPARQL signatures for detecting cross-artifact inconsistencies."
+---
+<div class="page-wrap">
+  <h1 class="page-title">IoI rules library</h1>
+  <p class="page-subtitle">
+    Reusable SPARQL signatures encoding invariant predicates over CASE/UCO knowledge graphs.
+    All rules are case-agnostic — substitute named graph IRIs to run against your own datasets.
+  </p>
+
+  <div style="display:flex;gap:2rem;flex-wrap:wrap;margin-bottom:1.75rem;font-size:0.82rem;color:var(--ink-light);">
+    <span><strong style="color:var(--ink);">{{ site.rules | size }}</strong> total rules</span>
+    <span><strong style="color:var(--green);">{{ site.rules | where: "status", "Validated" | size }}</strong> validated</span>
+    <span><strong style="color:var(--amber);">{{ site.rules | where: "status", "Community" | size }}</strong> community</span>
+  </div>
+
+  <div class="filter-bar">
+    <button class="filter-btn active-filter" data-filter="all"
+      style="background:var(--accent);color:#fff;border:1px solid var(--accent);">All</button>
+    <button class="filter-btn" data-filter="temporal"
+      style="border:1px solid #aac4e0;background:#eef4fb;color:#1a4a7a;">Temporal</button>
+    <button class="filter-btn" data-filter="structural"
+      style="border:1px solid #b8d4b8;background:#eef6ee;color:#1a5a1a;">Structural</button>
+    <button class="filter-btn" data-filter="semantic"
+      style="border:1px solid #e0c8a0;background:#fdf6e8;color:#7a5a00;">Semantic</button>
+    <button class="filter-btn" data-filter="validated"
+      style="border:1px solid #b8ddc8;background:#e8f5ee;color:#1a6640;">Validated only</button>
+  </div>
+
+  <div id="rules-grid" class="card-grid">
+    {% assign rules_sorted = site.rules | sort: "rule_id" %}
+    {% for rule in rules_sorted %}
+    <a class="card" href="{{ rule.url | relative_url }}"
+       data-category="{{ rule.category | downcase }}"
+       data-status="{{ rule.status | downcase }}">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.2rem;">
+        <div class="card-tag" style="margin:0;">{{ rule.rule_id }}</div>
+        {% include status_badge.html status=rule.status %}
+      </div>
+      <h3>{{ rule.title }}</h3>
+      <p>{{ rule.description }}</p>
+      <div class="card-footer">
+        <span class="tag tag-{{ rule.category | downcase }}">{{ rule.category }}</span>
+        {% for a in rule.artifacts %}<span class="tag">{{ a }}</span>{% endfor %}
+      </div>
+      {% if rule.sparql_file %}
+      <div style="margin-top:0.6rem;">
+        <span style="font-family:var(--mono);font-size:0.65rem;color:var(--accent-mid);">{{ rule.sparql_file }}</span>
+      </div>
+      {% endif %}
+      <div class="card-contrib">{{ rule.contributor }} · {{ rule.date_added }}</div>
+    </a>
+    {% endfor %}
+  </div>
+
+  <div style="margin-top:2.5rem;padding-top:1.5rem;border-top:1px solid var(--rule);">
+    <h2 style="font-family:var(--serif);font-weight:600;font-size:1rem;margin-bottom:0.6rem;">Contributing rules</h2>
+    <p style="font-size:0.88rem;color:var(--ink-mid);">
+      Submit new rules via Pull Request following the schema in
+      <a href="https://github.com/ioi-framework/ioi-framework/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">CONTRIBUTING.md ↗</a>.
+      Rules start with <span class="badge badge-amber" style="font-size:0.62rem;">Community</span> status
+      and can be promoted to <span class="badge badge-green" style="font-size:0.62rem;">✓ Validated</span>
+      after independent reproduction.
+    </p>
+  </div>
+</div>

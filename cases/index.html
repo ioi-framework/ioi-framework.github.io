@@ -1,0 +1,63 @@
+---
+layout: default
+title: "Cases"
+description: "Anti-forensic scenarios contributed by the IoI community."
+---
+<div class="page-wrap">
+  <h1 class="page-title">Cases</h1>
+  <p class="page-subtitle">
+    Anti-forensic scenarios with ground-truth specifications, dependent artifact lists, and linked IoI rules.
+    Contributions welcome — see the <a href="{{ '/community/' | relative_url }}">contribution guide</a>.
+  </p>
+
+  <!-- Stats row -->
+  <div style="display:flex;gap:2rem;flex-wrap:wrap;margin-bottom:1.75rem;font-size:0.82rem;color:var(--ink-light);">
+    <span><strong style="color:var(--ink);">{{ site.cases | size }}</strong> total cases</span>
+    <span><strong style="color:var(--green);">{{ site.cases | where: "status", "Validated" | size }}</strong> validated</span>
+    <span><strong style="color:var(--amber);">{{ site.cases | where: "status", "Community" | size }}</strong> community</span>
+  </div>
+
+  <!-- Filter bar -->
+  <div class="filter-bar">
+    <button class="filter-btn active-filter" data-filter="all"
+      style="background:var(--accent);color:#fff;border:1px solid var(--accent);">All</button>
+    <button class="filter-btn" data-filter="temporal"
+      style="border:1px solid #aac4e0;background:#eef4fb;color:#1a4a7a;">Temporal</button>
+    <button class="filter-btn" data-filter="structural"
+      style="border:1px solid #b8d4b8;background:#eef6ee;color:#1a5a1a;">Structural</button>
+    <button class="filter-btn" data-filter="semantic"
+      style="border:1px solid #e0c8a0;background:#fdf6e8;color:#7a5a00;">Semantic</button>
+    <button class="filter-btn" data-filter="validated"
+      style="border:1px solid #b8ddc8;background:#e8f5ee;color:#1a6640;">Validated only</button>
+  </div>
+
+  <!-- Case list -->
+  <div id="cases-grid" style="display:flex;flex-direction:column;gap:0.75rem;">
+    {% assign cases_sorted = site.cases | sort: "case_id" %}
+    {% for case in cases_sorted %}
+    <a class="card" href="{{ case.url | relative_url }}"
+       data-category="{{ case.category | downcase }}"
+       data-status="{{ case.status | downcase }}"
+       style="display:grid;grid-template-columns:100px 1fr;gap:1.25rem;align-items:start;">
+      <div>
+        <div style="font-family:var(--mono);font-size:0.62rem;color:var(--ink-light);margin-bottom:0.3rem;text-transform:uppercase;letter-spacing:0.06em;">Case ID</div>
+        <div style="font-family:var(--serif);font-weight:600;font-size:1.35rem;color:var(--accent);line-height:1;">{{ case.case_id }}</div>
+        <div style="margin-top:0.4rem;">
+          <span class="tag tag-{{ case.category | downcase }}">{{ case.category }}</span>
+        </div>
+      </div>
+      <div>
+        <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.25rem;">
+          <h3 style="margin:0;">{{ case.title }}</h3>
+          {% include status_badge.html status=case.status %}
+        </div>
+        <p style="margin-bottom:0.5rem;">{{ case.description }}</p>
+        <div class="card-footer">
+          {% for a in case.artifacts %}<span class="tag">{{ a }}</span>{% endfor %}
+        </div>
+        <div class="card-contrib">{{ case.contributor }} · {{ case.date_added }}</div>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+</div>
