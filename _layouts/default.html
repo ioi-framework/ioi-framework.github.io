@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% if page.title %}{{ page.title }} — {% endif %}{{ site.title }}</title>
+  <meta name="description" content="{% if page.description %}{{ page.description }}{% else %}{{ site.description }}{% endif %}">
+  <link rel="stylesheet" href="{{ '/assets/css/main.css' | relative_url }}">
+  <link rel="canonical" href="{{ site.url }}{{ page.url }}">
+</head>
+<body>
+
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <a class="nav-brand" href="{{ '/' | relative_url }}">IoI <span>Framework</span></a>
+      <ul class="nav-links" id="nav-links">
+        {% for item in site.nav %}
+          <li>
+            <a href="{{ item.url | relative_url }}"
+               {% if item.external %}class="external" target="_blank" rel="noopener"
+               {% elsif page.url == item.url %}class="active"
+               {% elsif page.url contains item.url and item.url != '/' %}class="active"
+               {% endif %}>{{ item.title }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu">&#9776;</button>
+    </div>
+  </nav>
+
+  <main>{{ content }}</main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <span>© {{ 'now' | date: "%Y" }} IoI Research Team · Forensic Science International: Digital Investigation</span>
+      <div class="footer-links">
+        <a href="{{ '/community/' | relative_url }}">Contribute</a>
+        <a href="{{ '/paper/' | relative_url }}">Paper</a>
+        <a href="https://github.com/ioi-framework/ioi-framework" target="_blank" rel="noopener">GitHub ↗</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="{{ '/assets/js/main.js' | relative_url }}"></script>
+</body>
+</html>
