@@ -1,0 +1,8 @@
+{% assign s = include.status | default: "Community" %}
+{% if s == "Validated" %}
+  <span class="badge badge-green" style="font-size:0.65rem;">✓ Validated</span>
+{% elsif s == "Deprecated" %}
+  <span class="badge" style="font-size:0.65rem;background:#f5f0f0;border:1px solid #e0c0c0;color:#a03030;">Deprecated</span>
+{% else %}
+  <span class="badge badge-amber" style="font-size:0.65rem;">Community</span>
+{% endif %}
