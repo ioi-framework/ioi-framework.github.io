@@ -36,7 +36,6 @@ defaults:
 # ── Navigation ─────────────────────────────────────────────
 nav:
   - { title: "Home",           url: "/" }
-  - { title: "Paper",          url: "/paper/" }
   - { title: "Quick Start",    url: "/quickstart/" }
   - { title: "Cases",          url: "/cases/" }
   - { title: "IoI Rules",      url: "/rules/" }
