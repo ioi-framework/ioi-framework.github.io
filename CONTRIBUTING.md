@@ -148,13 +148,29 @@ Use a placeholder ID (e.g. `AF-NEW`) if unsure — maintainers assign the canoni
 
 ### 3. Add your files
 
-Follow the schemas above. Run the local validation script before pushing:
+Follow the schemas above. The minimum required files are:
+
+```
+CASES/AF-NEW/
+  ground_truth.md          # describes the case
+  test/
+    <artifact>_test.jsonld # synthetic graph that makes the rule fire
+RULES/{category}/
+  IOI-NEW_your_rule.rq     # SPARQL signature
+```
+
+**Building the test graph** — the `test/` JSON-LD is a small synthetic knowledge graph (5–10 records) with fabricated values that trigger the contradiction. No real case data. To get the correct node/facet structure:
+
+- **If an existing case uses the same artifact** (e.g. `$MFT`, `$UsnJrnl`, `LNK`) — copy the structure from that case's `CASES/AF-NNN/snippets/` files, replace values with synthetic ones.
+- **If it is a new artifact type** — use `TEMPLATES/{artifact_type}/` as the structure reference.
+
+The test graph must use the prefixes `core:`, `observable:`, `ioi-ext:` with their real URIs, and load into named graphs matching the IRIs in your `.rq` file.
+
+Then run the local validation script before pushing:
 
 ```bash
 python scripts/validate_frontmatter.py
 ```
-
-This checks all required fields are present and that artifact names match the standard vocabulary.
 
 ### 4. Open the Pull Request
 

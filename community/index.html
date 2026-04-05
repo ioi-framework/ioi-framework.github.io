@@ -92,8 +92,13 @@ description: "How to contribute new cases, IoI rules, and Template Instantiators
         <p>Follow the schemas in <a href="https://github.com/ioi-framework/ioi-framework/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">CONTRIBUTING.md ↗</a>. Set <code>status: Community</code> and your GitHub handle as <code>contributor</code>. Use a placeholder ID if unsure — reviewers will finalize it.</p>
         <pre><code>CASES/AF-NEW/
   ground_truth.md
+  test/
+    &lt;artifact&gt;_test.jsonld   # synthetic graph that makes the rule fire
 RULES/temporal/
   IOI-NEW_your_rule.rq</code></pre>
+        <p style="font-size:0.82rem;color:var(--ink-light);margin-top:0.5rem;">
+          For the test graph structure: if an existing case uses the same artifact, copy from its <code>CASES/AF-NNN/snippets/</code>. If it is a new artifact type, use <code>TEMPLATES/{artifact_type}/</code> as reference. Use synthetic values — no real case data.
+        </p>
       </div>
     </div>
     <div class="step">
