@@ -2,6 +2,7 @@
 layout: default
 title: "Quick Start"
 description: "How to set up and run IoI signatures against your own CASE/UCO knowledge graphs."
+permalink: /quickstart/
 ---
 <div class="page-wrap">
   <h1 class="page-title">Quick start</h1>

@@ -2,6 +2,7 @@
 layout: default
 title: "Artifacts & Datasets"
 description: "Download knowledge graphs, ground-truth documents, JSON-LD templates, Template Instantiators, and SPARQL IoI rules."
+permalink: /artifacts/
 ---
 <div class="page-wrap">
   <h1 class="page-title">Artifacts &amp; datasets</h1>
