@@ -29,7 +29,7 @@ ontologies/           ioi-ext.ttl namespace definitions
 
 | Contribution type      | Files to add                                                              |
 |------------------------|---------------------------------------------------------------------------|
-| New anti-forensic case | `_cases/af-NNN.md` + `CASES/AF-NNN/` folder                              |
+| New anti-forensic case | `_cases/af-NNN.md` + `CASES/AF-NNN/ground_truth.md`                       |
 | New IoI rule           | `_rules/ioi-NNN.md` + `RULES/{category}/IOI-NNN_name.rq`                 |
 | New instantiator       | `_instantiators/inst-NNN.md` + `instantiators/NNN_instantiator.py`       |
 | New CASE/UCO template  | `TEMPLATES/{artifact_type}/` subfolder                                    |
@@ -156,28 +156,11 @@ python scripts/validate_frontmatter.py
 
 This checks all required fields are present and that artifact names match the standard vocabulary.
 
-### 4. If adding a dataset
-
-Place files under `CASES/AF-NNN/`:
-
-```
-CASES/AF-NNN/
-├── data/                   Raw artifact exports (CSV/JSON)
-│   ├── mft_post.csv
-│   └── usn_post.csv
-├── graphs/                 Instantiated JSON-LD knowledge graphs
-│   ├── mft_case.jsonld
-│   └── usn_case.jsonld
-└── ground_truth.md         Invariant + violation specification
-```
-
-Datasets over 50 MB should be hosted externally (Zenodo, OSF, institutional repository) and linked from the case page rather than committed to the repository.
-
-### 5. Open the Pull Request
+### 4. Open the Pull Request
 
 Use the PR template (auto-loaded when you open a PR). Fill out every checkbox. Assign at least one reviewer from the maintainer team.
 
-### 6. Review process
+### 5. Review process
 
 - Automated CI checks run first (schema validation, broken link check)
 - A maintainer or community peer reviewer will review within 14 days

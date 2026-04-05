@@ -92,7 +92,6 @@ description: "How to contribute new cases, IoI rules, and Template Instantiators
         <p>Follow the schemas in <a href="https://github.com/ioi-framework/ioi-framework/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">CONTRIBUTING.md ↗</a>. Set <code>status: Community</code> and your GitHub handle as <code>contributor</code>. Use a placeholder ID if unsure — reviewers will finalize it.</p>
         <pre><code>CASES/AF-NEW/
   ground_truth.md
-  data/              # optional — raw artifact exports
 RULES/temporal/
   IOI-NEW_your_rule.rq</code></pre>
       </div>
@@ -109,7 +108,7 @@ RULES/temporal/
       <div class="step-num">4</div>
       <div class="step-content">
         <h3>Open a Pull Request</h3>
-        <p>The PR template auto-loads with a checklist. Fill out every section: artifacts involved, ground truth summary, SPARQL query result on post-manipulation data, and whether a dataset is included or linked externally.</p>
+        <p>The PR template auto-loads with a checklist. Fill out every section: artifacts involved, ground truth summary, and SPARQL query result confirming the rule fires on post-manipulation data.</p>
       </div>
     </div>
     <div class="step">
