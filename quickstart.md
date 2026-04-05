@@ -7,14 +7,23 @@ description: "How to set up and run IoI signatures against your own CASE/UCO kno
   <h1 class="page-title">Quick start</h1>
   <p class="page-subtitle">Get the IoI framework running against your own forensic datasets in four steps.</p>
 
+  <div class="prose" style="margin-bottom:2rem;">
+    <p>The framework operates in three layers:</p>
+    <ul>
+      <li><strong>Instantiators</strong> — Python scripts that map artifact parser CSV output to CASE/UCO JSON-LD knowledge graphs.</li>
+      <li><strong>Knowledge Graph</strong> — named graphs loaded into a SPARQL 1.1 triplestore (Virtuoso), one per artifact source.</li>
+      <li><strong>IoI Rules</strong> — SPARQL signatures that query across graphs to surface cross-artifact contradictions.</li>
+    </ul>
+  </div>
+
   <div class="section-header" style="margin-bottom:1.25rem;">
     <h2>Prerequisites</h2>
   </div>
   <div class="prose" style="margin-bottom:2rem;">
-    <p>The framework requires Python 3.9+, <code>rdflib</code> for JSON-LD to N-Triples conversion, and a SPARQL 1.1 triplestore. The proof-of-concept validation used OpenLink Virtuoso Open-Source Edition running in Docker.</p>
-    <pre><code>pip install rdflib</code></pre>
+    <p>Python 3.9+, <code>rdflib</code> and <code>pandas</code> for instantiators and JSON-LD conversion, and a SPARQL 1.1 triplestore. Validation used OpenLink Virtuoso Open-Source Edition running in Docker.</p>
+    <pre><code>pip install rdflib pandas</code></pre>
     <p>Pull the Virtuoso Docker image:</p>
-    <pre><code>docker pull openlink/virtuoso-opensource-7</code></pre>
+    <pre><code>docker pull openlink/virtuoso-opensource-7:latest</code></pre>
   </div>
 
   <div class="section-header" style="margin-bottom:1.25rem;">
@@ -26,7 +35,7 @@ description: "How to set up and run IoI signatures against your own CASE/UCO kno
       <div class="step-num">1</div>
       <div class="step-content">
         <h3>Clone the repository</h3>
-        <p>The repository contains all templates, Template Instantiators, ground-truth documents, and IoI SPARQL rules.</p>
+        <p>The repository contains all instantiator scripts, JSON-LD templates, ground-truth documents, and IoI SPARQL rules.</p>
         <pre><code>git clone https://github.com/ioi-framework/ioi-framework.git
 cd ioi-framework</code></pre>
       </div>
@@ -36,7 +45,7 @@ cd ioi-framework</code></pre>
       <div class="step-num">2</div>
       <div class="step-content">
         <h3>Parse your artifacts</h3>
-        <p>Use the artifact-specific parsers to produce structured CSV or JSON output. The framework was validated with the following tools:</p>
+        <p>Use artifact-specific parsers to produce structured CSV output. The framework was validated with the following tools:</p>
         <pre><code># NTFS $MFT and $UsnJrnl:$J
 MFTECmd.exe -f "$MFT" --csv ./output --csvf mft.csv
 MFTECmd.exe -f "$J"   --csv ./output --csvf usn.csv
@@ -53,18 +62,20 @@ LECmd.exe -f target.lnk --csv ./output</code></pre>
       <div class="step-num">3</div>
       <div class="step-content">
         <h3>Instantiate CASE/UCO knowledge graphs</h3>
-        <p>Run the Template Instantiator for your scenario. Each instantiator maps parser CSV fields to the corresponding CASE/UCO ontology template and serializes the result as JSON-LD.</p>
-        <pre><code>python instantiators/mft_instantiator.py \
-  --input output/mft.csv \
-  --template templates/mft_template.jsonld \
-  --output graphs/mft_case.jsonld
+        <p>Run the instantiator for each artifact. Each script maps parser CSV fields to the CASE/UCO ontology and serializes the result as JSON-LD.</p>
+        <pre><code>mkdir -p outputs
 
-python instantiators/usn_instantiator.py \
-  --input output/usn.csv \
-  --output graphs/usn_case.jsonld</code></pre>
+python instantiators/mft_instantiator.py "&lt;MFT_CSV&gt;" outputs/mft_filled.jsonld
+python instantiators/usn_instantiator.py "&lt;USN_CSV&gt;" outputs/usn_filled.jsonld</code></pre>
         <p>Convert JSON-LD to N-Triples for bulk loading:</p>
-        <pre><code>python scripts/jsonld_to_ntriples.py \
-  --input graphs/ --output ntriples/</code></pre>
+        <pre><code>python scripts/convert_to_ntriples.py outputs/mft_filled.jsonld outputs/mft_case.nt
+python scripts/convert_to_ntriples.py outputs/usn_filled.jsonld outputs/usn_case.nt</code></pre>
+        <p><strong>Note:</strong> For large MFT/USN files, use <code>--chunk-size 5000</code> to split the output into multiple JSON-LD chunks. Each chunk is then converted to N-Triples separately.</p>
+        <pre><code>python instantiators/mft_instantiator.py "&lt;MFT_CSV&gt;" outputs/mft_filled.jsonld --chunk-size 5000
+# Converts each chunk: outputs/mft_filled_chunk0.jsonld, _chunk1.jsonld, ...
+for f in outputs/mft_filled_chunk*.jsonld; do
+  python scripts/convert_to_ntriples.py "$f" "${f%.jsonld}.nt"
+done</code></pre>
       </div>
     </div>
 
@@ -72,18 +83,27 @@ python instantiators/usn_instantiator.py \
       <div class="step-num">4</div>
       <div class="step-content">
         <h3>Load graphs and execute IoI rules</h3>
-        <p>Start Virtuoso, load the named graphs, then run the SPARQL signatures:</p>
-        <pre><code>docker-compose up -d virtuoso
+        <p>Start Virtuoso, load the named graphs, then run a SPARQL signature:</p>
+        <pre><code># Start Virtuoso
+docker run --name vos -d -e DBA_PASSWORD=dba \
+  -p 8890:8890 -p 1111:1111 \
+  openlink/virtuoso-opensource-7:latest
 
-# Load named graphs via isql
-isql 1111 dba dba \
-  "ld_dir('/data/ntriples', 'mft_case.nt', 'http://ioi/mft_case');
-   ld_dir('/data/ntriples', 'usn_case.nt', 'http://ioi/usn_case');
-   rdf_loader_run(); checkpoint;"
+# Copy N-Triples into the container
+docker cp outputs/mft_case.nt vos:/database/mft_case.nt
+docker cp outputs/usn_case.nt vos:/database/usn_case.nt
+
+# Load named graphs
+docker exec vos isql 1111 dba dba "exec=ld_dir('.', 'mft_case.nt', 'http://example.org/mft_case');"
+docker exec vos isql 1111 dba dba "exec=ld_dir('.', 'usn_case.nt', 'http://example.org/usn_case');"
+docker exec vos isql 1111 dba dba "exec=rdf_loader_run();"
+docker exec vos isql 1111 dba dba "exec=checkpoint;"
 
 # Execute an IoI rule
-isql 1111 dba dba < rules/sparql/ioi-002.rq</code></pre>
-        <p>A non-empty result set indicates a detected inconsistency. Zero results on baseline graphs confirm no false positives.</p>
+docker cp rules/temporal/IOI-007_usn_clear_before_event.rq vos:/database/rule.rq
+docker exec vos bash -lc "printf 'SPARQL\n'; cat /database/rule.rq; printf '\n;'" \
+  | docker exec -i vos isql 1111 dba dba</code></pre>
+        <p>A non-empty result set indicates a detected inconsistency.</p>
       </div>
     </div>
 
