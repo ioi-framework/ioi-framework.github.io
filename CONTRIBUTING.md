@@ -159,9 +159,11 @@ RULES/{category}/
   IOI-NEW_your_rule.rq     # SPARQL signature
 ```
 
-**Building the test graph** — the `test/` JSON-LD is a small synthetic knowledge graph (5–10 records) with fabricated values that trigger the contradiction. No real case data. To get the correct node/facet structure:
+**Building the test graph** — the `test/` JSON-LD is a small synthetic knowledge graph (5–10 records) with fabricated values that trigger the contradiction. No real case data. You only need to include the fields your SPARQL actually touches — if your rule only checks `observable:fileName` and `ioi-ext:parentPath`, those are the only two fields needed. Omit everything else.
 
-- **If an existing case uses the same artifact** (e.g. `$MFT`, `$UsnJrnl`, `LNK`) — copy the structure from that case's `CASES/AF-NNN/snippets/` files, replace values with synthetic ones.
+To get the correct node/facet structure for the fields you do need:
+
+- **If an existing case uses the same artifact** (e.g. `$MFT`, `$UsnJrnl`, `LNK`) — copy the relevant fields from that case's `CASES/AF-NNN/snippets/` files, replace values with synthetic ones.
 - **If it is a new artifact type** — use `TEMPLATES/{artifact_type}/` as the structure reference.
 
 The test graph must use the prefixes `core:`, `observable:`, `ioi-ext:` with their real URIs, and load into named graphs matching the IRIs in your `.rq` file.
