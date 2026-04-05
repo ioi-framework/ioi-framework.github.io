@@ -222,6 +222,58 @@ pre code { background: none; padding: 0; color: inherit; }
 .filter-btn { font-family: var(--mono); font-size: 0.72rem; padding: 0.3rem 0.75rem; border-radius: 3px; cursor: pointer; transition: all var(--transition); }
 .filter-btn.active-filter { background: var(--accent) !important; color: #fff !important; border-color: var(--accent) !important; }
 
+/* ── Instantiator list (index) ────────────────────────────── */
+.inst-list { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--rule); border-radius: var(--radius); overflow: hidden; }
+.inst-row {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 1.5rem;
+  padding: 1rem 1.25rem;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--rule);
+  text-decoration: none; color: inherit;
+  transition: background var(--transition);
+}
+.inst-row:last-child { border-bottom: none; }
+.inst-row:hover { background: var(--accent-light); text-decoration: none; }
+.inst-row-left { flex: 1; min-width: 0; }
+.inst-row-id { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent-mid); margin-bottom: 0.2rem; }
+.inst-row-title { font-family: var(--serif); font-weight: 600; font-size: 0.95rem; color: var(--ink); margin-bottom: 0.25rem; }
+.inst-row-note { font-size: 0.78rem; color: var(--ink-light); line-height: 1.5; }
+.inst-row-right { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; flex-shrink: 0; padding-top: 0.15rem; }
+
+/* ── Instantiator detail ──────────────────────────────────── */
+.inst-note-box {
+  background: var(--bg-tint); border: 1px solid var(--rule);
+  border-left: 3px solid var(--accent-mid);
+  border-radius: var(--radius); padding: 0.75rem 1rem; margin-bottom: 1.25rem;
+}
+.inst-note-label { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-light); margin-bottom: 0.2rem; }
+.inst-note-text { font-size: 0.84rem; color: var(--ink-mid); line-height: 1.6; }
+
+.inst-action-row { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
+.inst-dl-btn {
+  display: inline-flex; align-items: center; gap: 0.6rem;
+  padding: 0.55rem 1rem;
+  background: var(--bg-surface); border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  text-decoration: none; color: inherit;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+.inst-dl-btn:hover { border-color: var(--accent-mid); box-shadow: 0 1px 4px rgba(26,58,92,0.1); text-decoration: none; }
+.inst-dl-icon { font-size: 1rem; color: var(--accent-mid); line-height: 1; }
+.inst-dl-label { display: block; font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-light); }
+.inst-dl-name { display: block; font-family: var(--mono); font-size: 0.78rem; color: var(--accent-mid); font-weight: 500; }
+
+.inst-deps {
+  font-size: 0.8rem; color: var(--ink-light); margin-bottom: 1.5rem;
+  display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;
+}
+.inst-deps-label {
+  font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--ink-light);
+  margin-right: 0.25rem;
+}
+.inst-deps code { font-size: 0.78rem; }
+
 /* ── Footer ───────────────────────────────────────────────── */
 .site-footer { margin-top: 4rem; border-top: 1px solid var(--rule); background: var(--bg-surface); padding: 2rem 1.5rem; }
 .footer-inner { max-width: var(--max-w); margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; font-size: 0.78rem; color: var(--ink-light); }

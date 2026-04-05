@@ -5,7 +5,7 @@ artifact:       Security.evtx
 parser_tool:    EvtxECmd
 input_format:   CSV
 output:         JSON-LD
-template:       evtx_template.jsonld
+template:       evtx
 script:         evtx_instantiator.py
 contributor:    "@ioi-framework"
 date_added:     2025-01-01
@@ -34,7 +34,7 @@ Maps EvtxECmd CSV output to CASE/UCO-compliant JSON-LD using `observable:EventRe
 ## Usage
 
 ```bash
-python instantiators/code/evtx_instantiator.py \
+python instantiators/evtx_instantiator.py \
   --input   cases/data/AF-NNN/post-manipulation/security_post.csv \
   --channel Security \
   --output  cases/data/AF-NNN/graphs/security_case.jsonld \

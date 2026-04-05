@@ -5,7 +5,7 @@ artifact:       $MFT
 parser_tool:    MFTECmd
 input_format:   CSV
 output:         JSON-LD
-template:       mft_template.jsonld
+template:       mft
 script:         mft_instantiator.py
 contributor:    "@ioi-framework"
 date_added:     2025-01-01
@@ -37,11 +37,13 @@ Maps MFTECmd CSV output to CASE/UCO-compliant JSON-LD graphs using `ioi-ext:MftF
 ## Usage
 
 ```bash
-python instantiators/code/mft_instantiator.py \
+python instantiators/mft_instantiator.py \
   --input  cases/data/AF-NNN/post-manipulation/mft_post.csv \
   --output cases/data/AF-NNN/graphs/mft_case.jsonld \
   --graph-iri http://ioi/mft_caseN
 ```
+
+For large $MFT exports use `--chunk-size N` (e.g. `--chunk-size 5000`) to split output into multiple JSON-LD files.
 
 ## Output structure
 

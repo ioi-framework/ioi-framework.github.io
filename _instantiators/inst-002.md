@@ -5,7 +5,7 @@ artifact:       $UsnJrnl
 parser_tool:    MFTECmd
 input_format:   CSV
 output:         JSON-LD
-template:       usn_template.jsonld
+template:       usn
 script:         usn_instantiator.py
 contributor:    "@ioi-framework"
 date_added:     2025-01-01
@@ -34,7 +34,7 @@ Maps MFTECmd `$UsnJrnl:$J` CSV output to CASE/UCO-compliant JSON-LD using `ioi-e
 ## Usage
 
 ```bash
-python instantiators/code/usn_instantiator.py \
+python instantiators/usn_instantiator.py \
   --input  cases/data/AF-NNN/post-manipulation/usn_post.csv \
   --output cases/data/AF-NNN/graphs/usn_case.jsonld \
   --graph-iri http://ioi/usn_caseN
@@ -42,4 +42,4 @@ python instantiators/code/usn_instantiator.py \
 
 ## Output structure
 
-Produces one `observable:File` node per USN record with an `observable:FileFacet` and an `ioi-ext:UsnFacet`. Large $UsnJrnl exports (50M+ triples) should be processed in streaming mode using the `--stream` flag.
+Produces one `observable:File` node per USN record with an `observable:FileFacet` and an `ioi-ext:UsnFacet`. Large $UsnJrnl exports can be split into chunks using `--chunk-size N` (e.g. `--chunk-size 5000`).

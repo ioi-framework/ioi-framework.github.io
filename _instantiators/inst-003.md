@@ -5,7 +5,7 @@ artifact:       LNK
 parser_tool:    LECmd
 input_format:   CSV
 output:         JSON-LD
-template:       lnk_template.jsonld
+template:       lnk
 script:         lnk_instantiator.py
 contributor:    "@ioi-framework"
 date_added:     2025-01-01
@@ -34,7 +34,7 @@ Maps LECmd CSV output to CASE/UCO-compliant JSON-LD using `ioi-ext:WindowsLnkFac
 ## Usage
 
 ```bash
-python instantiators/code/lnk_instantiator.py \
+python instantiators/lnk_instantiator.py \
   --input  cases/data/AF-NNN/post-manipulation/lnk_post.csv \
   --output cases/data/AF-NNN/graphs/lnk_case.jsonld \
   --graph-iri http://ioi/lnk_caseN

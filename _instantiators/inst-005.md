@@ -2,54 +2,57 @@
 inst_id:        INST-005
 title:          "Office XML Metadata Instantiator"
 artifact:       Office core.xml
-parser_tool:    7-Zip
-input_format:   XML
+parser_tool:    Python zipfile
+input_format:   DOCX/XML
 output:         JSON-LD
-template:       office_xml_template.jsonld
-script:         office_instantiator.py
+template:       office_xml
+script:         office_xml_instantiator.py
 contributor:    "@ioi-framework"
 date_added:     2025-01-01
 status:         Validated
 python_version: "3.9+"
 dependencies:
   - rdflib>=6.0
-notes:          "Extracts docProps/core.xml from .docx/.xlsx/.pptx packages. Uses ioi-ext:OfficeXmlMetadataFacet for dcterms:created and dcterms:modified."
+notes:          "Accepts .docx/.xlsx/.pptx files directly (extracts core.xml via Python zipfile) or pre-extracted folders. Joins MFT timestamps with core.xml metadata by filename for IOI-012 timestomping detection."
 ---
 
 ## Overview
 
-Extracts `docProps/core.xml` from Office Open XML packages and maps `dcterms:created` and `dcterms:modified` to CASE/UCO-compliant JSON-LD using `ioi-ext:OfficeXmlMetadataFacet`. Used by IoI rule IOI-012.
+Combines MFT timestamps with embedded Office XML metadata (`docProps/core.xml`) into a single CASE/UCO JSON-LD graph. Accepts `.docx`/`.xlsx`/`.pptx` files directly — extracts `core.xml` internally via Python's `zipfile` module, no external tools needed. Matches each document to its MFT record by filename, enabling the cross-source timestamp comparison used by IoI rule IOI-012.
 
 ## Input
 
-The script accepts either a `.docx`/`.xlsx`/`.pptx` file directly (it extracts `docProps/core.xml` internally using Python's `zipfile` module — no dependency on 7-Zip at runtime) or a pre-extracted `core.xml` file.
+Requires an MFT CSV (from MFTECmd) and a folder containing the Office documents. The folder can hold raw `.docx`/`.xlsx`/`.pptx` files — the script extracts `core.xml` internally. Pre-extracted subdirectory layout is also supported as a fallback.
+
+```
+office_folder/
+  secret.docx        ← script reads core.xml directly from the zip
+  report.xlsx
+```
+
+The script matches each document to its MFT record by filename, then combines both into one JSON-LD graph.
 
 ## Input fields consumed
 
-| XML element | Mapped to | Notes |
+| Source | Field | Mapped to |
 |---|---|---|
-| `dcterms:created` | `ioi-ext:dctermsCreated` | ISO-8601 |
-| `dcterms:modified` | `ioi-ext:dctermsModified` | ISO-8601 |
-| `dc:creator` | `observable:creator` | |
-| `cp:lastModifiedBy` | `ioi-ext:lastModifiedBy` | Optional |
+| MFT CSV | `Created0x10` / `LastModified0x10` | `ioi-ext:created0x10` / `ioi-ext:lastModified0x10` |
+| MFT CSV | `Created0x30` / `LastModified0x30` | `ioi-ext:created0x30` / `ioi-ext:lastModified0x30` |
+| core.xml | `dcterms:created` | `ioi-ext:dctermsCreated` |
+| core.xml | `dcterms:modified` | `ioi-ext:dctermsModified` |
+| core.xml | `dc:creator` | `observable:creator` |
 
 ## Usage
 
 ```bash
-# From a .docx file directly
-python instantiators/code/office_instantiator.py \
-  --input  path/to/document.docx \
-  --output cases/data/AF-NNN/graphs/office_case.jsonld \
-  --graph-iri http://ioi/office_caseN
-
-# From a pre-extracted core.xml
-python instantiators/code/office_instantiator.py \
-  --input  path/to/core.xml \
-  --xml-only \
-  --output cases/data/AF-NNN/graphs/office_case.jsonld \
-  --graph-iri http://ioi/office_caseN
+python instantiators/office_xml_instantiator.py \
+  cases/data/AF-012/mft_post.csv \
+  cases/data/AF-012/office_docs/ \
+  cases/data/AF-012/graphs/office_case.jsonld
 ```
+
+Place the `.docx`/`.xlsx`/`.pptx` files in `office_docs/` — no extraction step needed.
 
 ## Implementation note
 
-AF-012 was evaluated with the Office XML and MFT graphs loaded into separate named graphs and joined at query time. An alternative is to materialize MFT properties into the Office graph during instantiation — this trades query complexity for instantiation complexity and is supported by passing `--mft-csv` to the script.
+AF-012 was evaluated with the Office XML and MFT graphs loaded into separate named graphs and joined at query time via a SPARQL cross-graph join on `observable:filePath`.
