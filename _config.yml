@@ -1,0 +1,52 @@
+title: "IoI Framework"
+description: "Indicator of Inconsistency — A community-driven SPARQL framework for detecting cross-artifact contradictions in digital forensic investigations."
+baseurl: ""
+url: "https://ioi-framework.github.io"
+
+author:
+  name: "IoI Research Team"
+
+markdown: kramdown
+highlighter: rouge
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+
+# ── Collections ────────────────────────────────────────────
+collections:
+  cases:
+    output: true
+    permalink: /cases/:name/
+  rules:
+    output: true
+    permalink: /rules/:name/
+  instantiators:
+    output: true
+    permalink: /instantiators/:name/
+
+# ── Defaults ───────────────────────────────────────────────
+defaults:
+  - scope: { path: "", type: "cases" }
+    values: { layout: "case" }
+  - scope: { path: "", type: "rules" }
+    values: { layout: "rule" }
+  - scope: { path: "", type: "instantiators" }
+    values: { layout: "instantiator" }
+
+# ── Navigation ─────────────────────────────────────────────
+nav:
+  - { title: "Home",           url: "/" }
+  - { title: "Quick Start",    url: "/quickstart/" }
+  - { title: "Cases",          url: "/cases/" }
+  - { title: "IoI Rules",      url: "/rules/" }
+  - { title: "Instantiators",  url: "/instantiators/" }
+  - { title: "Artifacts",      url: "/artifacts/" }
+  - { title: "Contribute",     url: "/community/" }
+  - { title: "GitHub", url: "https://github.com/ioi-framework/ioi-framework", external: true }
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - scripts/
+  - "*.py"
+  - README.md

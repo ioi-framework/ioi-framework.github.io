@@ -1,0 +1,61 @@
+---
+layout: default
+---
+<div class="page-wrap">
+  <a href="{{ '/instantiators/' | relative_url }}" class="back-link">← All instantiators</a>
+
+  <div class="detail-header">
+    <div class="detail-id">{{ page.inst_id }} · Instantiator · {{ page.artifact }}</div>
+    <div class="detail-title">{{ page.title }}</div>
+    <div class="detail-meta">
+      {% include status_badge.html status=page.status %}
+      <span class="tag">{{ page.parser_tool }}</span>
+      <span class="tag">{{ page.input_format }} → {{ page.output }}</span>
+      {% if page.python_version %}<span class="tag">Python {{ page.python_version }}</span>{% endif %}
+    </div>
+    <div class="contrib-line">
+      Contributed by <strong>{{ page.contributor }}</strong> · {{ page.date_added }}
+    </div>
+  </div>
+
+  {% if page.notes %}
+  <div class="inst-note-box">
+    <div class="inst-note-label">Note</div>
+    <div class="inst-note-text">{{ page.notes }}</div>
+  </div>
+  {% endif %}
+
+  <div class="inst-action-row">
+    {% if page.script %}
+    <a class="inst-dl-btn"
+       href="https://github.com/ioi-framework/ioi-framework/blob/main/instantiators/{{ page.script }}"
+       target="_blank" rel="noopener">
+      <span class="inst-dl-icon">↓</span>
+      <span>
+        <span class="inst-dl-label">Script</span>
+        <span class="inst-dl-name">{{ page.script }}</span>
+      </span>
+    </a>
+    {% endif %}
+    {% if page.template %}
+    <a class="inst-dl-btn"
+       href="https://github.com/ioi-framework/ioi-framework/tree/main/instantiators/templates/{{ page.template }}"
+       target="_blank" rel="noopener">
+      <span class="inst-dl-icon">↗</span>
+      <span>
+        <span class="inst-dl-label">Templates</span>
+        <span class="inst-dl-name">{{ page.template }}/</span>
+      </span>
+    </a>
+    {% endif %}
+  </div>
+
+  {% if page.dependencies %}
+  <div class="inst-deps">
+    <span class="inst-deps-label">Dependencies</span>
+    {% for d in page.dependencies %}<code>{{ d }}</code>{% unless forloop.last %}<span style="color:var(--rule);margin:0 0.2rem;">·</span>{% endunless %}{% endfor %}
+  </div>
+  {% endif %}
+
+  <div class="prose">{{ content }}</div>
+</div>

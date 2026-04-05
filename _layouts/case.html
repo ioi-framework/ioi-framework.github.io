@@ -1,0 +1,37 @@
+---
+layout: default
+---
+<div class="page-wrap">
+  <a href="{{ '/cases/' | relative_url }}" class="back-link">← All cases</a>
+
+  <div class="detail-header">
+    <div class="detail-id">{{ page.case_id }} · {{ page.category }}</div>
+    <div class="detail-title">{{ page.title }}</div>
+    <div class="detail-meta">
+      {% include status_badge.html status=page.status %}
+      {% for tag in page.tags %}
+        <span class="tag">{{ tag }}</span>
+      {% endfor %}
+      {% if page.os %}
+        <span class="tag">{{ page.os }}</span>
+      {% endif %}
+    </div>
+    <div class="contrib-line">
+      Contributed by <strong>{{ page.contributor }}</strong> · {{ page.date_added }}
+      {% if page.rule_link %}
+        · <a href="{{ page.rule_link | relative_url }}">View IoI rule →</a>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if page.artifacts %}
+  <div class="artifact-strip">
+    <span class="artifact-strip-label">Dependent artifacts</span>
+    {% for a in page.artifacts %}
+      <span class="tag">{{ a }}</span>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <div class="prose">{{ content }}</div>
+</div>

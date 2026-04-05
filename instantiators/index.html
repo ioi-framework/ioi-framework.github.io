@@ -1,0 +1,49 @@
+---
+layout: default
+title: "Template Instantiators"
+description: "Python scripts that map forensic artifact parser output to CASE/UCO JSON-LD knowledge graphs."
+---
+<div class="page-wrap">
+  <h1 class="page-title">Template Instantiators</h1>
+  <p class="page-subtitle">
+    Python scripts that map artifact-specific parser CSV/XML output to CASE/UCO-compliant JSON-LD graphs,
+    ready for IoI rule evaluation. Each instantiator targets one artifact type and one upstream parser.
+  </p>
+
+  <div style="display:flex;gap:2rem;flex-wrap:wrap;margin-bottom:1.75rem;font-size:0.82rem;color:var(--ink-light);">
+    <span><strong style="color:var(--ink);">{{ site.instantiators | size }}</strong> instantiators</span>
+    <span><strong style="color:var(--green);">{{ site.instantiators | where: "status", "Validated" | size }}</strong> validated</span>
+  </div>
+
+  <div id="inst-grid" class="inst-list">
+    {% assign inst_sorted = site.instantiators | sort: "inst_id" %}
+    {% for inst in inst_sorted %}
+    <a class="inst-row" href="{{ inst.url | relative_url }}" data-status="{{ inst.status | downcase }}">
+      <div class="inst-row-left">
+        <div class="inst-row-id">{{ inst.inst_id }}</div>
+        <div class="inst-row-title">{{ inst.title }}</div>
+        {% if inst.notes %}
+        <div class="inst-row-note">{{ inst.notes }}</div>
+        {% endif %}
+      </div>
+      <div class="inst-row-right">
+        {% include status_badge.html status=inst.status %}
+        <span class="tag">{{ inst.artifact }}</span>
+        <span class="tag">{{ inst.parser_tool }}</span>
+        {% if inst.script %}
+        <span style="font-family:var(--mono);font-size:0.62rem;color:var(--accent-mid);background:var(--accent-light);padding:0.1rem 0.4rem;border-radius:2px;">{{ inst.script }}</span>
+        {% endif %}
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+
+  <div style="margin-top:2.5rem;padding-top:1.5rem;border-top:1px solid var(--rule);">
+    <h2 style="font-family:var(--serif);font-weight:600;font-size:1rem;margin-bottom:0.6rem;">Contributing instantiators</h2>
+    <p style="font-size:0.88rem;color:var(--ink-mid);">
+      Instantiators for new artifact types or parsers can be submitted as PRs. See
+      <a href="https://github.com/ioi-framework/ioi-framework/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">CONTRIBUTING.md ↗</a>
+      for the front-matter schema and the <code>instantiators/</code> script requirements.
+    </p>
+  </div>
+</div>
