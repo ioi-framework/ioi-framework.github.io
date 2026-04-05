@@ -1,0 +1,92 @@
+---
+layout: default
+title: "IoI Extension Vocabulary"
+description: "ioi-ext: Custom RDF properties extending CASE/UCO for IoI Framework artifact representation."
+---
+<div class="page-wrap">
+  <h1 class="page-title">IoI Extension Vocabulary</h1>
+  <p class="page-subtitle">
+    Namespace: <code>https://ioi-framework.github.io/ns/ioi-ext/</code>
+  </p>
+
+  <div class="prose" style="margin-bottom:2rem;">
+    <p>
+      The <strong>ioi-ext</strong> vocabulary defines custom RDF properties that extend
+      <a href="https://caseontology.org" target="_blank" rel="noopener">CASE/UCO</a>
+      for artifact-specific fields not covered by core ontology predicates.
+      It is used across all IoI Framework templates, instantiators, and SPARQL rules.
+    </p>
+    <p>
+      Download: <a href="index.ttl">ioi-ext.ttl</a> (Turtle/RDF)
+    </p>
+  </div>
+
+  <div class="section-header" style="margin-bottom:1rem;"><h2>MFT Properties</h2></div>
+  <div class="prose" style="margin-bottom:2rem;">
+    <table>
+      <thead><tr><th>Property</th><th>Range</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>ioi-ext:entryNumber</code></td><td>xsd:integer</td><td>MFT record entry number</td></tr>
+        <tr><td><code>ioi-ext:sequenceNumber</code></td><td>xsd:integer</td><td>MFT record sequence number</td></tr>
+        <tr><td><code>ioi-ext:parentEntryNumber</code></td><td>xsd:integer</td><td>Entry number of the parent directory record</td></tr>
+        <tr><td><code>ioi-ext:parentPath</code></td><td>xsd:string</td><td>Parent directory path for the file entry</td></tr>
+        <tr><td><code>ioi-ext:created0x10</code></td><td>xsd:dateTime</td><td>$STANDARD_INFORMATION created time</td></tr>
+        <tr><td><code>ioi-ext:created0x30</code></td><td>xsd:dateTime</td><td>$FILE_NAME created time</td></tr>
+        <tr><td><code>ioi-ext:lastModified0x10</code></td><td>xsd:dateTime</td><td>$STANDARD_INFORMATION modified time</td></tr>
+        <tr><td><code>ioi-ext:lastModified0x30</code></td><td>xsd:dateTime</td><td>$FILE_NAME modified time</td></tr>
+        <tr><td><code>ioi-ext:lastRecordChange0x10</code></td><td>xsd:dateTime</td><td>$STANDARD_INFORMATION record change time</td></tr>
+        <tr><td><code>ioi-ext:lastRecordChange0x30</code></td><td>xsd:dateTime</td><td>$FILE_NAME record change time</td></tr>
+        <tr><td><code>ioi-ext:lastAccess0x10</code></td><td>xsd:dateTime</td><td>$STANDARD_INFORMATION last access time</td></tr>
+        <tr><td><code>ioi-ext:lastAccess0x30</code></td><td>xsd:dateTime</td><td>$FILE_NAME last access time</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-header" style="margin-bottom:1rem;"><h2>USN Properties</h2></div>
+  <div class="prose" style="margin-bottom:2rem;">
+    <table>
+      <thead><tr><th>Property</th><th>Range</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>ioi-ext:updateReasons</code></td><td>xsd:string</td><td>Reason flags recorded in the USN journal for a file update</td></tr>
+        <tr><td><code>ioi-ext:updateTimestamp</code></td><td>xsd:dateTime</td><td>Timestamp recorded for a USN update event</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-header" style="margin-bottom:1rem;"><h2>LNK Properties</h2></div>
+  <div class="prose" style="margin-bottom:2rem;">
+    <table>
+      <thead><tr><th>Property</th><th>Range</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>ioi-ext:targetFilePath</code></td><td>xsd:string</td><td>Resolved target file path referenced by a Windows LNK</td></tr>
+        <tr><td><code>ioi-ext:targetCreatedTime</code></td><td>xsd:dateTime</td><td>Target file created time recorded in LNK metadata</td></tr>
+        <tr><td><code>ioi-ext:targetMftEntryNumber</code></td><td>xsd:integer</td><td>Target file MFT entry number referenced by the LNK</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-header" style="margin-bottom:1rem;"><h2>Event Log Properties</h2></div>
+  <div class="prose" style="margin-bottom:2rem;">
+    <table>
+      <thead><tr><th>Property</th><th>Range</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>ioi-ext:channel</code></td><td>xsd:string</td><td>Windows Event Log channel (e.g., Security, System)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-header" style="margin-bottom:1rem;"><h2>Office XML Properties</h2></div>
+  <div class="prose" style="margin-bottom:2rem;">
+    <table>
+      <thead><tr><th>Property</th><th>Range</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>ioi-ext:xmlCreatedTime</code></td><td>xsd:dateTime</td><td>Created time extracted from Office XML metadata</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div style="padding:1rem;background:var(--bg-tint);border:1px solid var(--rule);border-radius:4px;font-size:0.88rem;">
+    <strong>Prefix declaration:</strong>
+    <pre style="margin:0.5rem 0 0 0;"><code>@prefix ioi-ext: &lt;https://ioi-framework.github.io/ns/ioi-ext/&gt; .</code></pre>
+  </div>
+</div>
