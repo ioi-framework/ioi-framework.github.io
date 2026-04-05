@@ -274,6 +274,24 @@ pre code { background: none; padding: 0; color: inherit; }
 }
 .inst-deps code { font-size: 0.78rem; }
 
+/* ── Contribution level cards ─────────────────────────────── */
+.contrib-levels { display:flex; flex-direction:column; gap:0; border:1px solid var(--rule); border-radius:var(--radius); overflow:hidden; margin-bottom:0; }
+.contrib-level { display:flex; gap:1.25rem; padding:1.25rem 1.5rem; background:var(--bg-surface); border-bottom:1px solid var(--rule); align-items:flex-start; }
+.contrib-level:last-child { border-bottom:none; }
+.contrib-level-badge {
+  flex-shrink:0; width:4.5rem; text-align:center;
+  font-family:var(--mono); font-size:0.62rem; font-weight:500;
+  letter-spacing:0.06em; text-transform:uppercase;
+  padding:0.3rem 0.5rem; border-radius:var(--radius);
+  border:1px solid var(--rule); color:var(--ink-light);
+  background:var(--bg-tint); margin-top:0.1rem;
+}
+.contrib-level-badge.level-2 { background:#eef4fb; border-color:#aac4e0; color:#1a4a7a; }
+.contrib-level-badge.level-3 { background:#eef6ee; border-color:#b8d4b8; color:#1a5a1a; }
+.contrib-level-body { flex:1; min-width:0; }
+.contrib-level-title { font-family:var(--serif); font-weight:600; font-size:0.98rem; color:var(--ink); margin-bottom:0.4rem; }
+.contrib-level-desc { font-size:0.86rem; color:var(--ink-mid); line-height:1.7; margin-bottom:0; }
+
 /* ── Footer ───────────────────────────────────────────────── */
 .site-footer { margin-top: 4rem; border-top: 1px solid var(--rule); background: var(--bg-surface); padding: 2rem 1.5rem; }
 .footer-inner { max-width: var(--max-w); margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; font-size: 0.78rem; color: var(--ink-light); }

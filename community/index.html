@@ -1,94 +1,122 @@
 ---
 layout: default
 title: "Contribute"
-description: "How to contribute new cases, IoI rules, and Template Instantiators to the IoI Framework."
+description: "How to contribute new cases, IoI rules, and Template Instantiators to the IoI Framework — three levels from plain English to full SPARQL."
 ---
 <div class="page-wrap">
   <h1 class="page-title">Contribute</h1>
   <p class="page-subtitle">
-    The IoI Framework is community-driven. Contributions of new anti-forensic cases,
-    IoI rules, and Template Instantiators are welcomed via Pull Request.
+    The IoI Framework is community-driven. You do not need to know SPARQL or JSON-LD to contribute —
+    there is a path for every technical level. Pick the level that fits you.
   </p>
 
-  <!-- What you can contribute -->
+  <!-- Three levels -->
   <div class="section-header" style="margin-bottom:1.25rem;">
-    <h2>What you can contribute</h2>
-  </div>
-  <div class="card-grid" style="margin-bottom:2.5rem;">
-    <div class="card">
-      <div class="card-tag">_cases/</div>
-      <h3>Anti-forensic case</h3>
-      <p>A new scenario with ground-truth specification, dependent artifacts, and optionally a paired dataset.</p>
-      <div class="card-footer"><span class="tag">af-NNN.md</span><span class="tag">cases/data/AF-NNN/</span></div>
-    </div>
-    <div class="card">
-      <div class="card-tag">_rules/ + rules/sparql/</div>
-      <h3>IoI rule</h3>
-      <p>A reusable SPARQL signature encoding an invariant predicate and its violation condition.</p>
-      <div class="card-footer"><span class="tag">ioi-NNN.md</span><span class="tag">ioi-NNN.rq</span></div>
-    </div>
-    <div class="card">
-      <div class="card-tag">_instantiators/ + instantiators/code/</div>
-      <h3>Template Instantiator</h3>
-      <p>A Python script that maps a specific artifact parser's output to CASE/UCO JSON-LD graphs.</p>
-      <div class="card-footer"><span class="tag">inst-NNN.md</span><span class="tag">NNN_instantiator.py</span></div>
-    </div>
-    <div class="card">
-      <div class="card-tag">templates/</div>
-      <h3>CASE/UCO template</h3>
-      <p>A case-agnostic JSON-LD template defining the facet structure for a new artifact type.</p>
-      <div class="card-footer"><span class="tag">NNN_template.jsonld</span></div>
-    </div>
+    <h2>Three levels of contribution</h2>
   </div>
 
-  <!-- Process -->
+  <div class="contrib-levels" style="margin-bottom:2.5rem;">
+
+    <div class="contrib-level">
+      <div class="contrib-level-badge">Level 1</div>
+      <div class="contrib-level-body">
+        <div class="contrib-level-title">Forensic investigator — no code required</div>
+        <p class="contrib-level-desc">
+          You have encountered an anti-forensic technique and can describe it in plain language.
+          Open a GitHub issue using the <strong>Ground Truth template</strong>: describe the artifacts involved,
+          the expected invariant, what was missing or inconsistent, and how you detected it.
+          No fork, no SPARQL, no JSON needed — maintainers or Level 2 contributors formalize it into a rule.
+        </p>
+        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-top:0.85rem;">
+          <a class="badge badge-primary" href="https://github.com/ioi-framework/ioi-framework/issues/new?template=ground_truth.md" target="_blank" rel="noopener">Submit ground truth issue ↗</a>
+          <a class="badge badge-outline" href="https://github.com/ioi-framework/ioi-framework/blob/main/CASES/AF-002/ground_truth.md" target="_blank" rel="noopener">See example ground_truth.md ↗</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="contrib-level">
+      <div class="contrib-level-badge level-2">Level 2</div>
+      <div class="contrib-level-body">
+        <div class="contrib-level-title">SPARQL / JSON-LD contributor — rules and templates</div>
+        <p class="contrib-level-desc">
+          You are comfortable with SPARQL and JSON-LD. Take a validated ground truth document
+          (from a Level 1 issue or your own case) and write the corresponding
+          CASE/UCO JSON-LD template and IoI SPARQL signature.
+          The core community contribution focus is <strong>templates and SPARQL rules</strong> —
+          instantiators are mostly maintained by the core team.
+        </p>
+        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-top:0.85rem;">
+          <a class="badge badge-primary" href="https://github.com/ioi-framework/ioi-framework/compare" target="_blank" rel="noopener">Open a PR ↗</a>
+          <a class="badge badge-outline" href="https://github.com/ioi-framework/ioi-framework/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">Schema reference ↗</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="contrib-level">
+      <div class="contrib-level-badge level-3">Level 3</div>
+      <div class="contrib-level-body">
+        <div class="contrib-level-title">Instantiator author — new parsers and tool integrations</div>
+        <p class="contrib-level-desc">
+          You want to add support for a new artifact type or parser — writing a Template Instantiator
+          that maps its CSV/JSON output to CASE/UCO JSON-LD graphs.
+          You can also contribute Autopsy plugins or other tool-specific integrations
+          that execute IoI rules directly within your forensic workflow.
+        </p>
+        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-top:0.85rem;">
+          <a class="badge badge-primary" href="{{ '/instantiators/' | relative_url }}">Browse existing instantiators</a>
+          <a class="badge badge-outline" href="https://github.com/ioi-framework/ioi-framework/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">Instantiator schema ↗</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- PR workflow -->
   <div class="section-header" style="margin-bottom:1.25rem;">
-    <h2>Submission process</h2>
+    <h2>PR workflow <span style="font-family:var(--mono);font-size:0.72rem;color:var(--ink-light);font-weight:400;margin-left:0.5rem;">Level 2 &amp; 3</span></h2>
   </div>
   <div class="steps" style="margin-bottom:2.5rem;">
     <div class="step">
       <div class="step-num">1</div>
       <div class="step-content">
-        <h3>Fork the repository</h3>
-        <p>Fork <a href="https://github.com/ioi-framework/ioi-framework" target="_blank" rel="noopener">ioi-framework/ioi-framework ↗</a> and create a branch named <code>add/af-NNN-short-name</code> or <code>add/ioi-NNN-short-name</code>.</p>
+        <h3>Fork and branch</h3>
+        <p>Fork <a href="https://github.com/ioi-framework/ioi-framework" target="_blank" rel="noopener">ioi-framework/ioi-framework ↗</a> and create a descriptive branch.</p>
+        <pre><code>git checkout -b add/your-scenario-name</code></pre>
+        <p>Use <code>add/</code>, <code>fix/</code>, or <code>docs/</code> prefixes. You do not need a final ID — maintainers assign the canonical ID during review.</p>
       </div>
     </div>
     <div class="step">
       <div class="step-num">2</div>
       <div class="step-content">
-        <h3>Pick the next ID</h3>
-        <p>Check <code>_cases/</code>, <code>_rules/</code>, and <code>_instantiators/</code> for the highest existing ID and increment. IDs are sequential and never reused.</p>
-        <pre><code>ls _cases/     # → use AF-013
-ls _rules/     # → use IOI-013</code></pre>
+        <h3>Add your files</h3>
+        <p>Follow the schemas in <a href="https://github.com/ioi-framework/ioi-framework/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">CONTRIBUTING.md ↗</a>. Set <code>status: Community</code> and your GitHub handle as <code>contributor</code>. Use a placeholder ID if unsure — reviewers will finalize it.</p>
+        <pre><code>CASES/AF-NEW/
+  ground_truth.md
+  data/              # optional — raw artifact exports
+RULES/temporal/
+  IOI-NEW_your_rule.rq</code></pre>
       </div>
     </div>
     <div class="step">
       <div class="step-num">3</div>
       <div class="step-content">
-        <h3>Add files following the schema</h3>
-        <p>All required front-matter fields must be present. Use standard artifact names. Set <code>status: Community</code> and your GitHub handle as <code>contributor</code>. See <a href="https://github.com/ioi-framework/ioi-framework/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">CONTRIBUTING.md ↗</a> for the full schema.</p>
+        <h3>Validate locally</h3>
+        <p>Run the front-matter validator before pushing. CI runs it again on every PR — catch errors locally first.</p>
+        <pre><code>python scripts/validate_frontmatter.py</code></pre>
       </div>
     </div>
     <div class="step">
       <div class="step-num">4</div>
       <div class="step-content">
-        <h3>Run the local validator</h3>
-        <p>The validator checks required fields, ID format, artifact name vocabulary, and linked file existence. CI also runs this check on every PR — catch errors locally first.</p>
-        <pre><code>python scripts/validate_frontmatter.py</code></pre>
+        <h3>Open a Pull Request</h3>
+        <p>The PR template auto-loads with a checklist. Fill out every section: artifacts involved, ground truth summary, SPARQL query result on post-manipulation data, and whether a dataset is included or linked externally.</p>
       </div>
     </div>
     <div class="step">
       <div class="step-num">5</div>
       <div class="step-content">
-        <h3>Open a Pull Request</h3>
-        <p>The PR template auto-loads with a checklist. Fill out every section including test results (triplestore, triple count, query time, result confirmation on both baseline and post-manipulation graphs). Assign a reviewer from the maintainer team.</p>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-num">6</div>
-      <div class="step-content">
         <h3>Review and merge</h3>
-        <p>CI validates your front matter and checks that all linked files exist. A maintainer or community peer reviewer will review within 14 days. Once approved and merged, the site deploys automatically and your contribution appears on the index pages.</p>
+        <p>CI validates front matter and linked files. A maintainer reviews within 14 days. Once merged the site deploys automatically — your case and rule appear on the index pages under <code>Community</code> status.</p>
       </div>
     </div>
   </div>
@@ -109,7 +137,7 @@ ls _rules/     # → use IOI-013</code></pre>
         <tr>
           <td><span class="badge badge-green" style="font-size:0.65rem;">✓ Validated</span></td>
           <td>Independently reproduced or reviewed by the core maintainer team</td>
-          <td>Open a PR adding a <code>validation_note</code> field and tagging a maintainer</td>
+          <td>Open a PR adding a <code>validation_note</code> and tagging a maintainer</td>
         </tr>
         <tr>
           <td><span class="badge" style="font-size:0.65rem;background:#f5f0f0;border:1px solid #e0c0c0;color:#a03030;">Deprecated</span></td>
@@ -122,8 +150,9 @@ ls _rules/     # → use IOI-013</code></pre>
 
   <!-- Quick links -->
   <div style="display:flex;flex-wrap:wrap;gap:0.75rem;padding-top:1.5rem;border-top:1px solid var(--rule);">
-    <a class="badge badge-primary" href="https://github.com/ioi-framework/ioi-framework/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">Full CONTRIBUTING.md ↗</a>
+    <a class="badge badge-primary" href="https://github.com/ioi-framework/ioi-framework/issues/new?template=ground_truth.md" target="_blank" rel="noopener">Submit a case (Level 1) ↗</a>
+    <a class="badge badge-outline" href="https://github.com/ioi-framework/ioi-framework/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">Full CONTRIBUTING.md ↗</a>
     <a class="badge badge-outline" href="https://github.com/ioi-framework/ioi-framework/compare" target="_blank" rel="noopener">Open a PR ↗</a>
-    <a class="badge badge-outline" href="https://github.com/ioi-framework/ioi-framework/issues" target="_blank" rel="noopener">Open an issue ↗</a>
+    <a class="badge badge-outline" href="https://github.com/ioi-framework/ioi-framework/issues" target="_blank" rel="noopener">Browse issues ↗</a>
   </div>
 </div>

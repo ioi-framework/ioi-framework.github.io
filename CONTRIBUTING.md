@@ -1,6 +1,12 @@
 # Contributing to the IoI Framework
 
-Thank you for contributing. This document explains how to add new cases, IoI rules, and Template Instantiators to the repository. All contributions go through a Pull Request and are peer-reviewed before being merged.
+Thank you for contributing. There are three levels of contribution depending on your technical background:
+
+- **Level 1 (no code)** — Open a GitHub issue describing an anti-forensic case in plain language using the ground truth template. No SPARQL or JSON-LD required.
+- **Level 2 (SPARQL / JSON-LD)** — Write a CASE/UCO template and IoI SPARQL rule from a validated ground truth document. This is the core community contribution focus.
+- **Level 3 (instantiators)** — Write a Template Instantiator for a new artifact type or parser, or contribute a tool integration such as an Autopsy plugin.
+
+All Level 2 and 3 contributions go through a Pull Request and are peer-reviewed before merging.
 
 ---
 
@@ -10,28 +16,27 @@ Thank you for contributing. This document explains how to add new cases, IoI rul
 _cases/               Case pages (one .md per scenario)
 _rules/               IoI rule pages (one .md per rule)
 _instantiators/       Template Instantiator pages (one .md per parser)
-cases/data/           Artifact datasets (CSV/JSON/JSONLD per case)
-rules/sparql/         SPARQL .rq files (one per rule)
-instantiators/code/   Python instantiator scripts
-templates/            Case-agnostic CASE/UCO JSON-LD templates
-ontology/             ioi-ext.ttl namespace definitions
-docs/                 Extended documentation
+CASES/AF-NNN/         Artifact datasets (CSV/JSON/JSONLD per case)
+RULES/{category}/     SPARQL .rq files organised by category
+instantiators/        Python instantiator scripts
+TEMPLATES/{subdir}/   Case-agnostic CASE/UCO JSON-LD templates
+ontologies/           ioi-ext.ttl namespace definitions
 ```
 
 ---
 
 ## What can I contribute?
 
-| Contribution type   | Files to add                                                                 |
-|---------------------|------------------------------------------------------------------------------|
-| New anti-forensic case | `_cases/af-NNN.md` + `cases/data/AF-NNN/` folder                         |
-| New IoI rule        | `_rules/ioi-NNN.md` + `rules/sparql/ioi-NNN.rq`                             |
-| New instantiator    | `_instantiators/inst-NNN.md` + `instantiators/code/NNN_instantiator.py`     |
-| New CASE/UCO template | `templates/NNN_template.jsonld`                                            |
-| ioi-ext property    | Edit `ontology/ioi-ext.ttl` + update documentation                          |
-| Documentation fix   | Edit files under `docs/`                                                     |
+| Contribution type      | Files to add                                                              |
+|------------------------|---------------------------------------------------------------------------|
+| New anti-forensic case | `_cases/af-NNN.md` + `CASES/AF-NNN/` folder                              |
+| New IoI rule           | `_rules/ioi-NNN.md` + `RULES/{category}/IOI-NNN_name.rq`                 |
+| New instantiator       | `_instantiators/inst-NNN.md` + `instantiators/NNN_instantiator.py`       |
+| New CASE/UCO template  | `TEMPLATES/{artifact_type}/` subfolder                                    |
+| ioi-ext property       | Edit `ontologies/ioi-ext.ttl` + update documentation                     |
+| Documentation fix      | Edit site pages directly                                                  |
 
-You can contribute one type in a single PR, or bundle a case + its rule + its instantiator together — that is encouraged.
+You can contribute one type in a single PR, or bundle a case + its rule together — that is encouraged.
 
 ---
 
@@ -109,8 +114,8 @@ artifact:     $MFT              # Single artifact type this parser handles
 parser_tool:  MFTECmd           # Upstream parser tool
 input_format: CSV               # CSV | JSON | JSONL | SQLite | XML
 output:       JSON-LD           # Always JSON-LD
-template:     mft_template.jsonld  # Template file under templates/
-script:       mft_instantiator.py  # Script under instantiators/code/
+template:     mft               # Subdirectory under TEMPLATES/
+script:       mft_instantiator.py  # Script under instantiators/
 contributor:  "@github-handle"
 date_added:   YYYY-MM-DD
 
@@ -132,18 +137,14 @@ notes: ""
 ```bash
 git clone https://github.com/ioi-framework/ioi-framework.git
 cd ioi-framework
-git checkout -b add/af-NNN-your-scenario-name
+git checkout -b add/your-scenario-name
 ```
 
-Use branch naming convention: `add/af-NNN-short-name`, `add/ioi-NNN-short-name`, `fix/...`, `docs/...`
+Use branch naming convention: `add/short-name`, `fix/...`, `docs/...`
 
-### 2. Pick the next ID
+### 2. Pick an ID
 
-Check the existing files:
-```bash
-ls _cases/    # → highest existing is af-012, so use af-013
-ls _rules/    # → highest existing is ioi-012, so use ioi-013
-```
+Use a placeholder ID (e.g. `AF-NEW`) if unsure — maintainers assign the canonical sequential ID during review. Numbering is flexible and finalized at merge time.
 
 ### 3. Add your files
 
@@ -157,20 +158,17 @@ This checks all required fields are present and that artifact names match the st
 
 ### 4. If adding a dataset
 
-Place paired files under `cases/data/AF-NNN/`:
+Place files under `CASES/AF-NNN/`:
 
 ```
-cases/data/AF-NNN/
-├── baseline/               Raw parser output before manipulation
-│   ├── mft_baseline.csv
-│   └── usn_baseline.csv
-├── post-manipulation/      Raw parser output after manipulation
+CASES/AF-NNN/
+├── data/                   Raw artifact exports (CSV/JSON)
 │   ├── mft_post.csv
 │   └── usn_post.csv
 ├── graphs/                 Instantiated JSON-LD knowledge graphs
 │   ├── mft_case.jsonld
 │   └── usn_case.jsonld
-└── ground-truth.md         Invariant + violation specification
+└── ground_truth.md         Invariant + violation specification
 ```
 
 Datasets over 50 MB should be hosted externally (Zenodo, OSF, institutional repository) and linked from the case page rather than committed to the repository.
