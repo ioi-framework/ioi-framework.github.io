@@ -171,9 +171,9 @@ permalink: /artifacts/
   </div>
 
   <div style="margin-top:2rem;padding:1.1rem 1.25rem;background:var(--bg-tint);border:1px solid var(--rule);border-radius:4px;font-size:0.85rem;color:var(--ink-mid);">
-    <strong style="color:var(--ink);">Dataset availability.</strong>
-    All datasets, templates, instantiators, and IoI rules will be released in the public GitHub repository
-    at <a href="https://github.com/ioi-framework/ioi-framework" target="_blank" rel="noopener">github.com/ioi-framework/ioi-framework</a>
-    following paper acceptance. During double-blind review, this page reflects the planned release structure.
+    <strong style="color:var(--ink);">Repository.</strong>
+    Ground truth documents, IoI rules, instantiators, and templates are publicly available at
+    <a href="https://github.com/ioi-framework/ioi-framework" target="_blank" rel="noopener">github.com/ioi-framework/ioi-framework</a>.
+    See the <a href="/quickstart/">quick start</a> for setup and execution instructions.
   </div>
 </div>
