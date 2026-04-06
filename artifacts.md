@@ -7,9 +7,8 @@ permalink: /artifacts/
 <div class="page-wrap">
   <h1 class="page-title">Artifacts &amp; datasets</h1>
   <p class="page-subtitle">
-    All datasets, templates, and code will be released publicly following paper acceptance,
-    in accordance with double-blind review requirements. The structure below reflects what
-    will be available in the repository.
+    Ground truth documents, IoI rules, instantiators, and templates available at
+    <a href="https://github.com/ioi-framework/ioi-framework" target="_blank" rel="noopener">github.com/ioi-framework/ioi-framework</a>.
   </p>
 
   <!-- Repository structure -->
