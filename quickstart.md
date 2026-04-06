@@ -83,28 +83,54 @@ done</code></pre>
     <div class="step">
       <div class="step-num">4</div>
       <div class="step-content">
-        <h3>Load graphs and execute IoI rules</h3>
-        <p>Start Virtuoso, load the named graphs, then run a SPARQL signature:</p>
-        <pre><code># Start Virtuoso
-docker run --name vos -d -e DBA_PASSWORD=dba \
+        <h3>Start Virtuoso and verify your setup</h3>
+        <p>Start Virtuoso and wait for it to be ready before loading data:</p>
+        <pre><code>docker run --name vos -d -e DBA_PASSWORD=dba \
   -p 8890:8890 -p 1111:1111 \
   openlink/virtuoso-opensource-7:latest
 
-# Copy N-Triples into the container
+# Wait ~10 seconds, then confirm it is ready
+docker exec vos isql 1111 dba dba "exec=select 1;"</code></pre>
+        <p>You should see <code>1</code> returned. If the command fails, wait a few more seconds and retry.</p>
+        <p><strong>Verify your environment using the AF-004 test graphs</strong> (no real data needed). These synthetic graphs are included in the repository and produce a known result:</p>
+        <pre><code># Copy test graphs into the container
+docker cp CASES/AF-004/test/mft_test.nt vos:/database/mft_test.nt
+docker cp CASES/AF-004/test/usn_test.nt vos:/database/usn_test.nt
+
+# Load named graphs
+docker exec vos isql 1111 dba dba "exec=ld_dir('/database', 'mft_test.nt', 'http://example.org/mft_case4');"
+docker exec vos isql 1111 dba dba "exec=ld_dir('/database', 'usn_test.nt', 'http://example.org/usn_case4');"
+docker exec vos isql 1111 dba dba "exec=rdf_loader_run();"
+docker exec vos isql 1111 dba dba "exec=checkpoint;"
+
+# Run IOI-004 — expect 2 rows
+docker cp RULES/structural/IOI-004_vss_traces_missing.rq vos:/database/rule.rq
+docker exec vos bash -lc "printf 'SPARQL\n'; cat /database/rule.rq; printf '\n;'" \
+  | docker exec -i vos isql 1111 dba dba</code></pre>
+        <p>A result with <strong>2 rows</strong> confirms Virtuoso is correctly loaded and rules execute as expected. See <code>CASES/AF-004/ground_truth.md</code> for what this result means forensically.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <h3>Load your own graphs and execute IoI rules</h3>
+        <p>Copy your N-Triples into the container, load them as named graphs, then run any rule from <code>RULES/</code>:</p>
+        <pre><code># Copy N-Triples into the container
 docker cp outputs/mft_case.nt vos:/database/mft_case.nt
 docker cp outputs/usn_case.nt vos:/database/usn_case.nt
 
 # Load named graphs
-docker exec vos isql 1111 dba dba "exec=ld_dir('.', 'mft_case.nt', 'http://example.org/mft_case');"
-docker exec vos isql 1111 dba dba "exec=ld_dir('.', 'usn_case.nt', 'http://example.org/usn_case');"
+docker exec vos isql 1111 dba dba "exec=ld_dir('/database', 'mft_case.nt', 'http://example.org/mft_case');"
+docker exec vos isql 1111 dba dba "exec=ld_dir('/database', 'usn_case.nt', 'http://example.org/usn_case');"
 docker exec vos isql 1111 dba dba "exec=rdf_loader_run();"
 docker exec vos isql 1111 dba dba "exec=checkpoint;"
 
 # Execute an IoI rule
-docker cp rules/temporal/IOI-007_usn_clear_before_event.rq vos:/database/rule.rq
+docker cp RULES/temporal/IOI-007_usn_clear_before_event.rq vos:/database/rule.rq
 docker exec vos bash -lc "printf 'SPARQL\n'; cat /database/rule.rq; printf '\n;'" \
   | docker exec -i vos isql 1111 dba dba</code></pre>
-        <p>A non-empty result set indicates a detected inconsistency.</p>
+        <p>A non-empty result set indicates a detected inconsistency. Read the corresponding <code>CASES/AF-NNN/ground_truth.md</code> to interpret the result.</p>
       </div>
     </div>
 
