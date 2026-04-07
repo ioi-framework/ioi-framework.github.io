@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Event 1102 + USN DataTruncation Timeline — IoI Framework</title>
+  <meta name="description" content="Surfaces the temporal ordering of a Security log-clear event (Event 1102) against a USN DataTruncation record for Security.evtx, returning both signals sorted chronologically.">
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="canonical" href="http://localhost:4000/rules/ioi-007/">
+</head>
+<body>
+
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <a class="nav-brand" href="/">IoI <span>Framework</span></a>
+      <ul class="nav-links" id="nav-links">
+        
+          <li>
+            <a href="/"
+               >Home</a>
+          </li>
+        
+          <li>
+            <a href="/quickstart/"
+               >Quick Start</a>
+          </li>
+        
+          <li>
+            <a href="/cases/"
+               >Cases</a>
+          </li>
+        
+          <li>
+            <a href="/rules/"
+               class="active"
+               >IoI Rules</a>
+          </li>
+        
+          <li>
+            <a href="/instantiators/"
+               >Instantiators</a>
+          </li>
+        
+          <li>
+            <a href="/artifacts/"
+               >Artifacts</a>
+          </li>
+        
+          <li>
+            <a href="/community/"
+               >Contribute</a>
+          </li>
+        
+          <li>
+            <a href="https://github.com/ioi-framework/ioi-framework"
+               class="external" target="_blank" rel="noopener"
+               >GitHub</a>
+          </li>
+        
+      </ul>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu">&#9776;</button>
+    </div>
+  </nav>
+
+  <main><div class="page-wrap">
+  <a href="/rules/" class="back-link">← All rules</a>
+
+  <div class="detail-header">
+    <div class="detail-id">IOI-007 · IoI Rule · Temporal</div>
+    <div class="detail-title">Event 1102 + USN DataTruncation Timeline</div>
+    <div class="detail-meta">
+      
+
+  <span class="badge badge-green" style="font-size:0.65rem;">✓ Validated</span>
+
+
+      <span class="tag tag-temporal">Temporal</span>
+      
+        <span class="tag">Security.evtx</span>
+      
+        <span class="tag">$UsnJrnl</span>
+      
+    </div>
+    <div class="contrib-line">
+      Contributed by <strong>@ioi-framework</strong> · 2025-01-01
+       · v1.0
+      
+        · <a href="/cases/af-007/">View scenario →</a>
+      
+    </div>
+  </div>
+
+  
+  <div class="invariant-box">
+    <div class="invariant-label">Invariant predicate φ</div>
+    <div class="invariant-value">Event 1102 and USN DataTruncation for Security.evtx must both be absent under normal operation</div>
+  </div>
+  
+
+  
+  <div style="margin-bottom:1.25rem;">
+    <a class="badge badge-outline"
+       href="https://github.com/ioi-framework/ioi-framework/blob/main/rules/sparql/ioi-007.rq"
+       target="_blank" rel="noopener">
+      Download ioi-007.rq ↗
+    </a>
+  </div>
+  
+
+  
+  <div style="font-size:0.8rem;color:var(--ink-light);margin-bottom:1.25rem;">
+    Tested on: <code>Virtuoso 7.2 (OpenLink OSE)</code>
+  </div>
+  
+
+  <div class="prose"><h2 id="dependency-specification">Dependency specification</h2>
+
+<ol>
+  <li><strong>Security.evtx</strong> — Event ID 1102 records with <code class="language-plaintext highlighter-rouge">startTime</code> and <code class="language-plaintext highlighter-rouge">eventRecordText</code></li>
+  <li><strong>$UsnJrnl</strong> — <code class="language-plaintext highlighter-rouge">DataTruncation</code> records against files matching <code class="language-plaintext highlighter-rouge">Security</code> in their filename</li>
+</ol>
+
+<p>Under normal operation neither Event 1102 nor a USN <code class="language-plaintext highlighter-rouge">DataTruncation</code> against <code class="language-plaintext highlighter-rouge">Security.evtx</code> should exist. Their co-occurrence signals deliberate log clearance.</p>
+
+<h2 id="contradiction-condition">Contradiction condition</h2>
+
+<p>Fires when Event 1102 exists in the event log graph <strong>or</strong> a USN <code class="language-plaintext highlighter-rouge">DataTruncation</code> record exists for the Security log. Both signals are returned in a unified timeline ordered by timestamp.</p>
+
+<h2 id="sparql-signature">SPARQL signature</h2>
+
+<div class="language-sparql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span><span class="w"> </span><span class="nv">?event_type</span><span class="w"> </span><span class="nv">?time</span><span class="w"> </span><span class="nv">?file_name</span><span class="w"> </span><span class="nv">?update_reasons</span><span class="w">
+</span><span class="k">WHERE</span><span class="w"> </span><span class="p">{</span><span class="w">
+  </span><span class="p">{</span><span class="w">
+    </span><span class="k">GRAPH</span><span class="w"> </span><span class="nn">&lt;security_case7&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="nv">?event</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">observable</span><span class="o">:</span><span class="ss">EventRecord</span><span class="w"> </span><span class="p">;</span><span class="w">
+             </span><span class="nn">core</span><span class="o">:</span><span class="ss">hasFacet</span><span class="w"> </span><span class="nv">?std_facet</span><span class="p">,</span><span class="w"> </span><span class="nv">?custom_facet</span><span class="w"> </span><span class="p">.</span><span class="w">
+      </span><span class="nv">?std_facet</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">observable</span><span class="o">:</span><span class="ss">EventRecordFacet</span><span class="w"> </span><span class="p">;</span><span class="w">
+                 </span><span class="nn">observable</span><span class="o">:</span><span class="ss">eventID</span><span class="w"> </span><span class="s2">"1102"</span><span class="w"> </span><span class="p">;</span><span class="w">
+                 </span><span class="nn">observable</span><span class="o">:</span><span class="ss">startTime</span><span class="w"> </span><span class="nv">?time</span><span class="w"> </span><span class="p">;</span><span class="w">
+                 </span><span class="nn">observable</span><span class="o">:</span><span class="ss">eventRecordText</span><span class="w"> </span><span class="nv">?text</span><span class="w"> </span><span class="p">.</span><span class="w">
+      </span><span class="nv">?custom_facet</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">ioi-ext</span><span class="o">:</span><span class="ss">EventLogFacet</span><span class="w"> </span><span class="p">;</span><span class="w">
+                    </span><span class="nn">ioi-ext</span><span class="o">:</span><span class="ss">channel</span><span class="w"> </span><span class="s2">"Security"</span><span class="w"> </span><span class="p">.</span><span class="w">
+      </span><span class="k">BIND</span><span class="p">(</span><span class="s2">"Event 1102 - Log Cleared"</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="nv">?event_type</span><span class="p">)</span><span class="w">
+      </span><span class="k">BIND</span><span class="p">(</span><span class="nv">?text</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="nv">?file_name</span><span class="p">)</span><span class="w">
+      </span><span class="k">BIND</span><span class="p">(</span><span class="s2">""</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="nv">?update_reasons</span><span class="p">)</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="k">UNION</span><span class="w">
+  </span><span class="p">{</span><span class="w">
+    </span><span class="k">GRAPH</span><span class="w"> </span><span class="nn">&lt;usn_case7&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="nv">?file</span><span class="w"> </span><span class="nn">core</span><span class="o">:</span><span class="ss">hasFacet</span><span class="w"> </span><span class="nv">?fileFacet</span><span class="p">,</span><span class="w"> </span><span class="nv">?usnFacet</span><span class="w"> </span><span class="p">.</span><span class="w">
+      </span><span class="nv">?fileFacet</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">observable</span><span class="o">:</span><span class="ss">FileFacet</span><span class="w"> </span><span class="p">;</span><span class="w">
+                 </span><span class="nn">observable</span><span class="o">:</span><span class="ss">fileName</span><span class="w"> </span><span class="nv">?filename</span><span class="w"> </span><span class="p">.</span><span class="w">
+      </span><span class="nv">?usnFacet</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">ioi-ext</span><span class="o">:</span><span class="ss">UsnFacet</span><span class="w"> </span><span class="p">;</span><span class="w">
+                </span><span class="nn">ioi-ext</span><span class="o">:</span><span class="ss">updateReasons</span><span class="w"> </span><span class="nv">?reasons</span><span class="w"> </span><span class="p">;</span><span class="w">
+                </span><span class="nn">ioi-ext</span><span class="o">:</span><span class="ss">updateTimestamp</span><span class="w"> </span><span class="nv">?time</span><span class="w"> </span><span class="p">.</span><span class="w">
+      </span><span class="k">FILTER</span><span class="p">(</span><span class="nb">CONTAINS</span><span class="p">(</span><span class="nv">?filename</span><span class="p">,</span><span class="w"> </span><span class="s2">"Security"</span><span class="p">))</span><span class="w">
+      </span><span class="k">FILTER</span><span class="p">(</span><span class="nb">CONTAINS</span><span class="p">(</span><span class="nv">?reasons</span><span class="p">,</span><span class="w"> </span><span class="s2">"DataTruncation"</span><span class="p">))</span><span class="w">
+      </span><span class="k">BIND</span><span class="p">(</span><span class="s2">"USN DataTruncation"</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="nv">?event_type</span><span class="p">)</span><span class="w">
+      </span><span class="k">BIND</span><span class="p">(</span><span class="nv">?filename</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="nv">?file_name</span><span class="p">)</span><span class="w">
+      </span><span class="k">BIND</span><span class="p">(</span><span class="nv">?reasons</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="nv">?update_reasons</span><span class="p">)</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="nv">?time</span><span class="w">
+</span></code></pre></div></div>
+
+<h2 id="graph-iri-substitution">Graph IRI substitution</h2>
+
+<p>Replace <code class="language-plaintext highlighter-rouge">&lt;security_case7&gt;</code> and <code class="language-plaintext highlighter-rouge">&lt;usn_case7&gt;</code> with your named graph IRIs.</p>
+
+<h2 id="expected-output">Expected output</h2>
+
+<p>Both the Event 1102 record and the USN truncation record are returned sorted by <code class="language-plaintext highlighter-rouge">?time</code>. The investigator reads the ordering directly from the result set to determine whether the log was truncated before or after the log-clear event was recorded.</p>
+</div>
+</div>
+</main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <span>© 2026 IoI Research Team · Forensic Science International: Digital Investigation</span>
+      <div class="footer-links">
+        <a href="/community/">Contribute</a>
+        <a href="https://github.com/ioi-framework/ioi-framework" target="_blank" rel="noopener">GitHub ↗</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/assets/js/main.js"></script>
+</body>
+</html>

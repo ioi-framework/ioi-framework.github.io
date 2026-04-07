@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Office XML Metadata vs. $MFT $SI Timestamp Cross-Graph Check — IoI Framework</title>
+  <meta name="description" content="Detects timestamp forging of Office documents by joining embedded dcterms:created from core.xml against the $SI creation timestamp in $MFT. Fires when embedded creation time precedes filesystem creation time.">
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="canonical" href="http://localhost:4000/rules/ioi-012/">
+</head>
+<body>
+
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <a class="nav-brand" href="/">IoI <span>Framework</span></a>
+      <ul class="nav-links" id="nav-links">
+        
+          <li>
+            <a href="/"
+               >Home</a>
+          </li>
+        
+          <li>
+            <a href="/quickstart/"
+               >Quick Start</a>
+          </li>
+        
+          <li>
+            <a href="/cases/"
+               >Cases</a>
+          </li>
+        
+          <li>
+            <a href="/rules/"
+               class="active"
+               >IoI Rules</a>
+          </li>
+        
+          <li>
+            <a href="/instantiators/"
+               >Instantiators</a>
+          </li>
+        
+          <li>
+            <a href="/artifacts/"
+               >Artifacts</a>
+          </li>
+        
+          <li>
+            <a href="/community/"
+               >Contribute</a>
+          </li>
+        
+          <li>
+            <a href="https://github.com/ioi-framework/ioi-framework"
+               class="external" target="_blank" rel="noopener"
+               >GitHub</a>
+          </li>
+        
+      </ul>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu">&#9776;</button>
+    </div>
+  </nav>
+
+  <main><div class="page-wrap">
+  <a href="/rules/" class="back-link">← All rules</a>
+
+  <div class="detail-header">
+    <div class="detail-id">IOI-012 · IoI Rule · Temporal</div>
+    <div class="detail-title">Office XML Metadata vs. $MFT $SI Timestamp Cross-Graph Check</div>
+    <div class="detail-meta">
+      
+
+  <span class="badge badge-green" style="font-size:0.65rem;">✓ Validated</span>
+
+
+      <span class="tag tag-temporal">Temporal</span>
+      
+        <span class="tag">Office core.xml</span>
+      
+        <span class="tag">$MFT</span>
+      
+    </div>
+    <div class="contrib-line">
+      Contributed by <strong>@ioi-framework</strong> · 2025-01-01
+       · v1.0
+      
+        · <a href="/cases/af-012/">View scenario →</a>
+      
+    </div>
+  </div>
+
+  
+  <div class="invariant-box">
+    <div class="invariant-label">Invariant predicate φ</div>
+    <div class="invariant-value">The Office XML embedded creation time must not be later than the MFT $SI creation timestamp for the same file.</div>
+  </div>
+  
+
+  
+  <div style="margin-bottom:1.25rem;">
+    <a class="badge badge-outline"
+       href="https://github.com/ioi-framework/ioi-framework/blob/main/rules/sparql/ioi-012.rq"
+       target="_blank" rel="noopener">
+      Download ioi-012.rq ↗
+    </a>
+  </div>
+  
+
+  
+  <div style="font-size:0.8rem;color:var(--ink-light);margin-bottom:1.25rem;">
+    Tested on: <code>Virtuoso 7.2 (OpenLink OSE)</code>
+  </div>
+  
+
+  <div class="prose"><h2 id="dependency-specification">Dependency specification</h2>
+
+<ol>
+  <li><strong>Office XML metadata graph</strong> — <code class="language-plaintext highlighter-rouge">ioi-ext:OfficeXmlMetadataFacet</code> with <code class="language-plaintext highlighter-rouge">dctermsCreated</code>; linked to <code class="language-plaintext highlighter-rouge">FileFacet</code> providing <code class="language-plaintext highlighter-rouge">fileName</code></li>
+  <li><strong>$MFT graph</strong> — <code class="language-plaintext highlighter-rouge">ioi-ext:MftFacet</code> with <code class="language-plaintext highlighter-rouge">created0x10</code> ($SI) and <code class="language-plaintext highlighter-rouge">created0x30</code> ($FN); linked to <code class="language-plaintext highlighter-rouge">FileFacet</code> providing <code class="language-plaintext highlighter-rouge">fileName</code></li>
+</ol>
+
+<p>Matching is on case-insensitive filename comparison across two named graphs.</p>
+
+<p>A document’s Office XML creation time must not be later than the filesystem <code class="language-plaintext highlighter-rouge">$SI</code> creation timestamp for the same file.</p>
+
+<h2 id="contradiction-condition">Contradiction condition</h2>
+
+<p>The embedded Office XML creation time is earlier than the MFT <code class="language-plaintext highlighter-rouge">$SI</code> creation timestamp — indicating the filesystem timestamp was set forward after the document was created.</p>
+
+<h2 id="sparql-signature">SPARQL signature</h2>
+
+<div class="language-sparql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">PREFIX</span><span class="w"> </span><span class="nn">xsd</span><span class="o">:</span><span class="w"> </span><span class="nn">&lt;http://www.w3.org/2001/XMLSchema#&gt;</span><span class="w">
+
+</span><span class="k">SELECT</span><span class="w"> </span><span class="k">DISTINCT</span><span class="w">
+  </span><span class="nv">?officeFile</span><span class="w"> </span><span class="nv">?fileName</span><span class="w"> </span><span class="nv">?filePath</span><span class="w">
+  </span><span class="nv">?xmlCreated</span><span class="w"> </span><span class="nv">?mftSiCreated</span><span class="w"> </span><span class="nv">?mftFnCreated</span><span class="w">
+</span><span class="k">WHERE</span><span class="w"> </span><span class="p">{</span><span class="w">
+  </span><span class="k">GRAPH</span><span class="w"> </span><span class="nn">&lt;office_case12&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nv">?officeFile</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">observable</span><span class="o">:</span><span class="ss">File</span><span class="w"> </span><span class="p">;</span><span class="w">
+                </span><span class="nn">core</span><span class="o">:</span><span class="ss">hasFacet</span><span class="w"> </span><span class="nv">?xmlFacet</span><span class="p">,</span><span class="w"> </span><span class="nv">?officeFileFacet</span><span class="w"> </span><span class="p">.</span><span class="w">
+    </span><span class="nv">?xmlFacet</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">ioi-ext</span><span class="o">:</span><span class="ss">OfficeXmlMetadataFacet</span><span class="w"> </span><span class="p">;</span><span class="w">
+              </span><span class="nn">ioi-ext</span><span class="o">:</span><span class="ss">dctermsCreated</span><span class="w"> </span><span class="nv">?xmlCreated</span><span class="w"> </span><span class="p">.</span><span class="w">
+    </span><span class="nv">?officeFileFacet</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">observable</span><span class="o">:</span><span class="ss">FileFacet</span><span class="w"> </span><span class="p">;</span><span class="w">
+                     </span><span class="nn">observable</span><span class="o">:</span><span class="ss">fileName</span><span class="w"> </span><span class="nv">?fileName</span><span class="w"> </span><span class="p">;</span><span class="w">
+                     </span><span class="nn">observable</span><span class="o">:</span><span class="ss">filePath</span><span class="w"> </span><span class="nv">?filePath</span><span class="w"> </span><span class="p">.</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="k">GRAPH</span><span class="w"> </span><span class="nn">&lt;mft_case12&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nv">?mftFile</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">observable</span><span class="o">:</span><span class="ss">File</span><span class="w"> </span><span class="p">;</span><span class="w">
+             </span><span class="nn">core</span><span class="o">:</span><span class="ss">hasFacet</span><span class="w"> </span><span class="nv">?mftFileFacet</span><span class="p">,</span><span class="w"> </span><span class="nv">?mftFacet</span><span class="w"> </span><span class="p">.</span><span class="w">
+    </span><span class="nv">?mftFileFacet</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">observable</span><span class="o">:</span><span class="ss">FileFacet</span><span class="w"> </span><span class="p">;</span><span class="w">
+                  </span><span class="nn">observable</span><span class="o">:</span><span class="ss">fileName</span><span class="w"> </span><span class="nv">?mftFileName</span><span class="w"> </span><span class="p">.</span><span class="w">
+    </span><span class="nv">?mftFacet</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">ioi-ext</span><span class="o">:</span><span class="ss">MftFacet</span><span class="w"> </span><span class="p">;</span><span class="w">
+              </span><span class="nn">ioi-ext</span><span class="o">:</span><span class="ss">created0x10</span><span class="w"> </span><span class="nv">?mftSiCreated</span><span class="w"> </span><span class="p">;</span><span class="w">
+              </span><span class="nn">ioi-ext</span><span class="o">:</span><span class="ss">created0x30</span><span class="w"> </span><span class="nv">?mftFnCreated</span><span class="w"> </span><span class="p">.</span><span class="w">
+    </span><span class="k">FILTER</span><span class="p">(</span><span class="nb">LCASE</span><span class="p">(</span><span class="nb">STR</span><span class="p">(</span><span class="nv">?mftFileName</span><span class="p">))</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">LCASE</span><span class="p">(</span><span class="nb">STR</span><span class="p">(</span><span class="nv">?fileName</span><span class="p">)))</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="k">FILTER</span><span class="p">(</span><span class="nn">xsd</span><span class="o">:</span><span class="ss">dateTime</span><span class="p">(</span><span class="nv">?xmlCreated</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nn">xsd</span><span class="o">:</span><span class="ss">dateTime</span><span class="p">(</span><span class="nv">?mftSiCreated</span><span class="p">))</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="nv">?filePath</span><span class="w">
+</span></code></pre></div></div>
+
+<h2 id="graph-iri-substitution">Graph IRI substitution</h2>
+
+<p>Replace <code class="language-plaintext highlighter-rouge">&lt;office_case12&gt;</code> and <code class="language-plaintext highlighter-rouge">&lt;mft_case12&gt;</code> with your named graph IRIs.</p>
+
+<h2 id="implementation-note">Implementation note</h2>
+
+<p>The Office XML graph contains very few triples (19 in the proof-of-concept) while the MFT graph is large (~18M triples). The cross-graph join resolves efficiently because the Office graph drives the outer loop and the filename filter pushes selectivity into the MFT inner loop.</p>
+</div>
+</div>
+</main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <span>© 2026 IoI Research Team · Forensic Science International: Digital Investigation</span>
+      <div class="footer-links">
+        <a href="/community/">Contribute</a>
+        <a href="https://github.com/ioi-framework/ioi-framework" target="_blank" rel="noopener">GitHub ↗</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/assets/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IoI Rules — IoI Framework</title>
+  <meta name="description" content="Community-contributed SPARQL signatures for detecting cross-artifact inconsistencies.">
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="canonical" href="http://localhost:4000/rules/">
+</head>
+<body>
+
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <a class="nav-brand" href="/">IoI <span>Framework</span></a>
+      <ul class="nav-links" id="nav-links">
+        
+          <li>
+            <a href="/"
+               >Home</a>
+          </li>
+        
+          <li>
+            <a href="/quickstart/"
+               >Quick Start</a>
+          </li>
+        
+          <li>
+            <a href="/cases/"
+               >Cases</a>
+          </li>
+        
+          <li>
+            <a href="/rules/"
+               class="active"
+               >IoI Rules</a>
+          </li>
+        
+          <li>
+            <a href="/instantiators/"
+               >Instantiators</a>
+          </li>
+        
+          <li>
+            <a href="/artifacts/"
+               >Artifacts</a>
+          </li>
+        
+          <li>
+            <a href="/community/"
+               >Contribute</a>
+          </li>
+        
+          <li>
+            <a href="https://github.com/ioi-framework/ioi-framework"
+               class="external" target="_blank" rel="noopener"
+               >GitHub</a>
+          </li>
+        
+      </ul>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu">&#9776;</button>
+    </div>
+  </nav>
+
+  <main><div class="page-wrap">
+  <h1 class="page-title">IoI rules library</h1>
+  <p class="page-subtitle">
+    Reusable SPARQL signatures encoding invariant predicates over CASE/UCO knowledge graphs.
+    All rules are case-agnostic — substitute named graph IRIs to run against your own datasets.
+  </p>
+
+  <div style="display:flex;gap:2rem;flex-wrap:wrap;margin-bottom:1.75rem;font-size:0.82rem;color:var(--ink-light);">
+    <span><strong style="color:var(--ink);">5</strong> total rules</span>
+    <span><strong style="color:var(--green);">5</strong> validated</span>
+    <span><strong style="color:var(--amber);">0</strong> community</span>
+  </div>
+
+  <div class="filter-bar">
+    <button class="filter-btn active-filter" data-filter="all"
+      style="background:var(--accent);color:#fff;border:1px solid var(--accent);">All</button>
+    <button class="filter-btn" data-filter="temporal"
+      style="border:1px solid #aac4e0;background:#eef4fb;color:#1a4a7a;">Temporal</button>
+    <button class="filter-btn" data-filter="structural"
+      style="border:1px solid #b8d4b8;background:#eef6ee;color:#1a5a1a;">Structural</button>
+    <button class="filter-btn" data-filter="semantic"
+      style="border:1px solid #e0c8a0;background:#fdf6e8;color:#7a5a00;">Semantic</button>
+    <button class="filter-btn" data-filter="validated"
+      style="border:1px solid #b8ddc8;background:#e8f5ee;color:#1a6640;">Validated only</button>
+  </div>
+
+  <div id="rules-grid" class="card-grid">
+    
+    
+    <a class="card" href="/rules/ioi-002/"
+       data-category="semantic"
+       data-status="validated">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.2rem;">
+        <div class="card-tag" style="margin:0;">IOI-002</div>
+        
+
+  <span class="badge badge-green" style="font-size:0.65rem;">✓ Validated</span>
+
+
+      </div>
+      <h3>IndexedDB Cache ↔ History URL Semantic Check</h3>
+      <p>Detects missing Chrome History URL entries for domains evidenced by IndexedDB cache directories, corroborated by USN journal modification indicators on the History file.</p>
+      <div class="card-footer">
+        <span class="tag tag-semantic">Semantic</span>
+        <span class="tag">Chrome History</span><span class="tag">IndexedDB</span><span class="tag">$UsnJrnl</span>
+      </div>
+      
+      <div style="margin-top:0.6rem;">
+        <span style="font-family:var(--mono);font-size:0.65rem;color:var(--accent-mid);">ioi-002.rq</span>
+      </div>
+      
+      <div class="card-contrib">@ioi-framework · 2025-01-01</div>
+    </a>
+    
+    <a class="card" href="/rules/ioi-004/"
+       data-category="structural"
+       data-status="validated">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.2rem;">
+        <div class="card-tag" style="margin:0;">IOI-004</div>
+        
+
+  <span class="badge badge-green" style="font-size:0.65rem;">✓ Validated</span>
+
+
+      </div>
+      <h3>VSS Directory Presence Check</h3>
+      <p>Flags absent GUID snapshot directories and Apps_{} subdirectories under System Volume Information when VSS infrastructure files are present, corroborated by USN deletion records.</p>
+      <div class="card-footer">
+        <span class="tag tag-structural">Structural</span>
+        <span class="tag">$MFT</span><span class="tag">$UsnJrnl</span>
+      </div>
+      
+      <div style="margin-top:0.6rem;">
+        <span style="font-family:var(--mono);font-size:0.65rem;color:var(--accent-mid);">ioi-004.rq</span>
+      </div>
+      
+      <div class="card-contrib">@ioi-framework · 2025-01-01</div>
+    </a>
+    
+    <a class="card" href="/rules/ioi-007/"
+       data-category="temporal"
+       data-status="validated">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.2rem;">
+        <div class="card-tag" style="margin:0;">IOI-007</div>
+        
+
+  <span class="badge badge-green" style="font-size:0.65rem;">✓ Validated</span>
+
+
+      </div>
+      <h3>Event 1102 + USN DataTruncation Timeline</h3>
+      <p>Surfaces the temporal ordering of a Security log-clear event (Event 1102) against a USN DataTruncation record for Security.evtx, returning both signals sorted chronologically.</p>
+      <div class="card-footer">
+        <span class="tag tag-temporal">Temporal</span>
+        <span class="tag">Security.evtx</span><span class="tag">$UsnJrnl</span>
+      </div>
+      
+      <div style="margin-top:0.6rem;">
+        <span style="font-family:var(--mono);font-size:0.65rem;color:var(--accent-mid);">ioi-007.rq</span>
+      </div>
+      
+      <div class="card-contrib">@ioi-framework · 2025-01-01</div>
+    </a>
+    
+    <a class="card" href="/rules/ioi-011/"
+       data-category="temporal"
+       data-status="validated">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.2rem;">
+        <div class="card-tag" style="margin:0;">IOI-011</div>
+        
+
+  <span class="badge badge-green" style="font-size:0.65rem;">✓ Validated</span>
+
+
+      </div>
+      <h3>LNK vs. $MFT $SI Timestamp Divergence</h3>
+      <p>Detects timestamp forging by comparing LNK shortcut targetCreatedTime against the $SI timestamp for the same MFT entry, corroborated by $FN agreement with the LNK value.</p>
+      <div class="card-footer">
+        <span class="tag tag-temporal">Temporal</span>
+        <span class="tag">LNK</span><span class="tag">$MFT</span>
+      </div>
+      
+      <div style="margin-top:0.6rem;">
+        <span style="font-family:var(--mono);font-size:0.65rem;color:var(--accent-mid);">ioi-011.rq</span>
+      </div>
+      
+      <div class="card-contrib">@ioi-framework · 2025-01-01</div>
+    </a>
+    
+    <a class="card" href="/rules/ioi-012/"
+       data-category="temporal"
+       data-status="validated">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.2rem;">
+        <div class="card-tag" style="margin:0;">IOI-012</div>
+        
+
+  <span class="badge badge-green" style="font-size:0.65rem;">✓ Validated</span>
+
+
+      </div>
+      <h3>Office XML Metadata vs. $MFT $SI Timestamp Cross-Graph Check</h3>
+      <p>Detects timestamp forging of Office documents by joining embedded dcterms:created from core.xml against the $SI creation timestamp in $MFT. Fires when embedded creation time precedes filesystem creation time.</p>
+      <div class="card-footer">
+        <span class="tag tag-temporal">Temporal</span>
+        <span class="tag">Office core.xml</span><span class="tag">$MFT</span>
+      </div>
+      
+      <div style="margin-top:0.6rem;">
+        <span style="font-family:var(--mono);font-size:0.65rem;color:var(--accent-mid);">ioi-012.rq</span>
+      </div>
+      
+      <div class="card-contrib">@ioi-framework · 2025-01-01</div>
+    </a>
+    
+  </div>
+
+  <div style="margin-top:2.5rem;padding-top:1.5rem;border-top:1px solid var(--rule);">
+    <h2 style="font-family:var(--serif);font-weight:600;font-size:1rem;margin-bottom:0.6rem;">Contributing rules</h2>
+    <p style="font-size:0.88rem;color:var(--ink-mid);">
+      Submit new rules via Pull Request following the schema in
+      <a href="https://github.com/ioi-framework/ioi-framework/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">CONTRIBUTING.md ↗</a>.
+      Rules start with <span class="badge badge-amber" style="font-size:0.62rem;">Community</span> status
+      and can be promoted to <span class="badge badge-green" style="font-size:0.62rem;">✓ Validated</span>
+      after independent reproduction.
+    </p>
+  </div>
+</div>
+</main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <span>© 2026 IoI Research Team</span>
+      <div class="footer-links">
+        <a href="/community/">Contribute</a>
+        <a href="https://github.com/ioi-framework/ioi-framework" target="_blank" rel="noopener">GitHub ↗</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/assets/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Selective Browser History Removal — IoI Framework</title>
+  <meta name="description" content="Selective removal of visited sites from Chrome History (SQLite), detected via IndexedDB cache presence and USN journal modification indicators.">
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="canonical" href="http://localhost:4000/cases/af-002/">
+</head>
+<body>
+
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <a class="nav-brand" href="/">IoI <span>Framework</span></a>
+      <ul class="nav-links" id="nav-links">
+        
+          <li>
+            <a href="/"
+               >Home</a>
+          </li>
+        
+          <li>
+            <a href="/quickstart/"
+               >Quick Start</a>
+          </li>
+        
+          <li>
+            <a href="/cases/"
+               class="active"
+               >Cases</a>
+          </li>
+        
+          <li>
+            <a href="/rules/"
+               >IoI Rules</a>
+          </li>
+        
+          <li>
+            <a href="/instantiators/"
+               >Instantiators</a>
+          </li>
+        
+          <li>
+            <a href="/artifacts/"
+               >Artifacts</a>
+          </li>
+        
+          <li>
+            <a href="/community/"
+               >Contribute</a>
+          </li>
+        
+          <li>
+            <a href="https://github.com/ioi-framework/ioi-framework"
+               class="external" target="_blank" rel="noopener"
+               >GitHub</a>
+          </li>
+        
+      </ul>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu">&#9776;</button>
+    </div>
+  </nav>
+
+  <main><div class="page-wrap">
+  <a href="/cases/" class="back-link">← All cases</a>
+
+  <div class="detail-header">
+    <div class="detail-id">AF-002 · Semantic</div>
+    <div class="detail-title">Selective Browser History Removal</div>
+    <div class="detail-meta">
+      
+
+  <span class="badge badge-green" style="font-size:0.65rem;">✓ Validated</span>
+
+
+      
+        <span class="tag">browser-forensics</span>
+      
+        <span class="tag">sqlite-manipulation</span>
+      
+      
+        <span class="tag">Windows 10</span>
+      
+    </div>
+    <div class="contrib-line">
+      Contributed by <strong>@ioi-framework</strong> · 2025-01-01
+      
+        · <a href="/rules/ioi-002/">View IoI rule →</a>
+      
+    </div>
+  </div>
+
+  
+  <div class="artifact-strip">
+    <span class="artifact-strip-label">Dependent artifacts</span>
+    
+      <span class="tag">Chrome History</span>
+    
+      <span class="tag">IndexedDB</span>
+    
+      <span class="tag">$MFT</span>
+    
+      <span class="tag">$UsnJrnl</span>
+    
+  </div>
+  
+
+  <div class="prose"><h2 id="summary">Summary</h2>
+
+<p>The adversary selectively deleted specific URL entries from the Chrome History SQLite database (<code class="language-plaintext highlighter-rouge">Default/History</code>) while leaving behind corresponding IndexedDB cache directories under <code class="language-plaintext highlighter-rouge">Default/IndexedDB/</code>. These cache directories contain subdirectories named after visited origins (e.g., <code class="language-plaintext highlighter-rouge">https_www.youtube.com_0.indexeddb.leveldb</code>), providing an indirect record of browsing activity that persists even after History deletion.</p>
+
+<h2 id="scenario-steps">Scenario Steps</h2>
+
+<p><strong>1. Set Up</strong> — Deployed Windows 10 VM, installed Google Chrome, browsed to multiple websites (nytimes.com, youtube.com, reddit.com).</p>
+
+<p><strong>2. Baseline Collection</strong> — Closed Chrome to flush memory to disk. Backed up the unmodified History SQLite file from <code class="language-plaintext highlighter-rouge">C:\Users\resea\AppData\Local\Google\Chrome\User Data\Default\History</code>.</p>
+
+<p><strong>3. Tampering</strong> — Opened the History file in DB Browser for SQLite. Deleted URL and visit entries related to youtube.com.</p>
+
+<p><strong>4. Evidence Collection</strong> — Collected both original and tampered versions of History. Extracted <code class="language-plaintext highlighter-rouge">$MFT</code> using Autopsy and <code class="language-plaintext highlighter-rouge">$UsnJrnl:$J</code>.</p>
+
+<h2 id="ground-truth-criteria">Ground Truth Criteria</h2>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">$MFT</code> shows IndexedDB folders for domains (e.g., youtube.com) that were visited</li>
+  <li>Chrome’s History DB no longer reflects visited sites like youtube.com</li>
+  <li><code class="language-plaintext highlighter-rouge">$UsnJrnl</code> shows History file was modified with indicators: <code class="language-plaintext highlighter-rouge">DataOverwrite</code>, <code class="language-plaintext highlighter-rouge">DataTruncation</code>, or <code class="language-plaintext highlighter-rouge">DataExtend</code></li>
+</ul>
+
+<h2 id="expected-invariant">Expected Invariant</h2>
+
+<p>For every domain represented by an IndexedDB cache directory, a corresponding URL entry should exist in the Chrome History database.</p>
+
+<h2 id="inconsistency-summary">Inconsistency Summary</h2>
+
+<p>The Chrome History SQLite database was deliberately modified to remove evidence of specific websites, but this did not erase related filesystem activity. The <code class="language-plaintext highlighter-rouge">$MFT</code> and <code class="language-plaintext highlighter-rouge">$UsnJrnl</code> show modifications to History even though the visit records no longer exist, demonstrating how SQLite tampering leaves residual traces detectable by cross-artifact comparison.</p>
+
+<h2 id="detection-logic">Detection Logic</h2>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">-- Step 1: Find domains in MFT IndexedDB folders</span>
+<span class="n">FIND</span> <span class="n">mft_indexeddb</span> <span class="k">WHERE</span> <span class="n">mft_indexeddb</span><span class="p">.</span><span class="n">ParentPath</span> <span class="k">CONTAINS</span> <span class="s1">'IndexedDB'</span>
+  <span class="k">EXTRACT</span> <span class="k">domain</span> <span class="k">FROM</span> <span class="n">ParentPath</span>
+  <span class="k">RETURN</span> <span class="k">domain</span><span class="p">,</span> <span class="n">ParentPath</span>
+
+<span class="c1">-- Step 2: Check if domain exists in History database</span>
+<span class="n">FIND</span> <span class="n">history_urls</span> <span class="k">WHERE</span> <span class="n">history_urls</span><span class="p">.</span><span class="n">fullValue</span> <span class="k">CONTAINS</span> <span class="k">domain</span>
+  <span class="k">RETURN</span> <span class="n">url_entry</span>
+
+<span class="c1">-- Step 3: Check USN for History file tampering</span>
+<span class="n">FIND</span> <span class="n">usn_entries</span> <span class="k">WHERE</span> <span class="n">usn_entries</span><span class="p">.</span><span class="n">fileName</span> <span class="o">=</span> <span class="s1">'History'</span>
+  <span class="k">AND</span> <span class="n">usn_entries</span><span class="p">.</span><span class="n">updateReasons</span> <span class="k">CONTAINS</span> <span class="p">(</span><span class="s1">'DataTruncation'</span> <span class="k">OR</span> <span class="s1">'DataOverwrite'</span> <span class="k">OR</span> <span class="s1">'DataExtend'</span><span class="p">)</span>
+  <span class="k">RETURN</span> <span class="n">updateReasons</span>
+
+<span class="c1">-- Detection Rule</span>
+<span class="n">IF</span> <span class="k">domain</span> <span class="k">EXISTS</span> <span class="k">IN</span> <span class="n">mft_indexeddb</span>
+  <span class="k">AND</span> <span class="k">domain</span> <span class="k">NOT</span> <span class="k">EXISTS</span> <span class="k">IN</span> <span class="n">history_urls</span>
+  <span class="k">AND</span> <span class="n">usn_entries</span> <span class="n">SHOWS</span> <span class="n">tampering</span> <span class="n">evidence</span>
+<span class="k">THEN</span> <span class="n">FLAG</span> <span class="s1">'AF-002: Selective Browser History Deletion Detected'</span>
+</code></pre></div></div>
+
+<h2 id="performance">Performance</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Artifact</th>
+      <th>Input (MB)</th>
+      <th>Triples</th>
+      <th>Load (s)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>$MFT</td>
+      <td>157.2</td>
+      <td>17,137,388</td>
+      <td>149.0</td>
+    </tr>
+    <tr>
+      <td>$UsnJrnl</td>
+      <td>54.1</td>
+      <td>6,905,772</td>
+      <td>65.3</td>
+    </tr>
+    <tr>
+      <td>History</td>
+      <td>0.012</td>
+      <td>116</td>
+      <td>3.3</td>
+    </tr>
+    <tr>
+      <td><strong>Total</strong></td>
+      <td> </td>
+      <td><strong>24,042,852</strong></td>
+      <td><strong>217.5</strong></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Query time: <strong>4.32 s</strong> · Detections: <strong>1</strong> · False positives on baseline: <strong>0</strong></p>
+</div>
+</div>
+</main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <span>© 2026 IoI Research Team · Forensic Science International: Digital Investigation</span>
+      <div class="footer-links">
+        <a href="/community/">Contribute</a>
+        <a href="https://github.com/ioi-framework/ioi-framework" target="_blank" rel="noopener">GitHub ↗</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/assets/js/main.js"></script>
+</body>
+</html>

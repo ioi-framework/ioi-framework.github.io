@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LNK vs. $MFT $SI Timestamp Divergence — IoI Framework</title>
+  <meta name="description" content="Detects timestamp forging by comparing LNK shortcut targetCreatedTime against the $SI timestamp for the same MFT entry, corroborated by $FN agreement with the LNK value.">
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="canonical" href="http://localhost:4000/rules/ioi-011/">
+</head>
+<body>
+
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <a class="nav-brand" href="/">IoI <span>Framework</span></a>
+      <ul class="nav-links" id="nav-links">
+        
+          <li>
+            <a href="/"
+               >Home</a>
+          </li>
+        
+          <li>
+            <a href="/quickstart/"
+               >Quick Start</a>
+          </li>
+        
+          <li>
+            <a href="/cases/"
+               >Cases</a>
+          </li>
+        
+          <li>
+            <a href="/rules/"
+               class="active"
+               >IoI Rules</a>
+          </li>
+        
+          <li>
+            <a href="/instantiators/"
+               >Instantiators</a>
+          </li>
+        
+          <li>
+            <a href="/artifacts/"
+               >Artifacts</a>
+          </li>
+        
+          <li>
+            <a href="/community/"
+               >Contribute</a>
+          </li>
+        
+          <li>
+            <a href="https://github.com/ioi-framework/ioi-framework"
+               class="external" target="_blank" rel="noopener"
+               >GitHub</a>
+          </li>
+        
+      </ul>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu">&#9776;</button>
+    </div>
+  </nav>
+
+  <main><div class="page-wrap">
+  <a href="/rules/" class="back-link">← All rules</a>
+
+  <div class="detail-header">
+    <div class="detail-id">IOI-011 · IoI Rule · Temporal</div>
+    <div class="detail-title">LNK vs. $MFT $SI Timestamp Divergence</div>
+    <div class="detail-meta">
+      
+
+  <span class="badge badge-green" style="font-size:0.65rem;">✓ Validated</span>
+
+
+      <span class="tag tag-temporal">Temporal</span>
+      
+        <span class="tag">LNK</span>
+      
+        <span class="tag">$MFT</span>
+      
+    </div>
+    <div class="contrib-line">
+      Contributed by <strong>@ioi-framework</strong> · 2025-01-01
+       · v1.0
+      
+        · <a href="/cases/af-011/">View scenario →</a>
+      
+    </div>
+  </div>
+
+  
+  <div class="invariant-box">
+    <div class="invariant-label">Invariant predicate φ</div>
+    <div class="invariant-value">The LNK-recorded target creation time must agree with both the MFT $SI (0x10) and $FN (0x30) creation timestamps for the same entry, within a 2-second tolerance.</div>
+  </div>
+  
+
+  
+  <div style="margin-bottom:1.25rem;">
+    <a class="badge badge-outline"
+       href="https://github.com/ioi-framework/ioi-framework/blob/main/rules/sparql/ioi-011.rq"
+       target="_blank" rel="noopener">
+      Download ioi-011.rq ↗
+    </a>
+  </div>
+  
+
+  
+  <div style="font-size:0.8rem;color:var(--ink-light);margin-bottom:1.25rem;">
+    Tested on: <code>Virtuoso 7.2 (OpenLink OSE)</code>
+  </div>
+  
+
+  <div class="prose"><h2 id="dependency-specification">Dependency specification</h2>
+
+<ol>
+  <li><strong>LNK files</strong> — <code class="language-plaintext highlighter-rouge">targetMftEntryNumber</code>, <code class="language-plaintext highlighter-rouge">targetCreatedTime</code>, <code class="language-plaintext highlighter-rouge">observableCreatedTime</code></li>
+  <li><strong>$MFT</strong> — <code class="language-plaintext highlighter-rouge">created0x10</code> ($SI) and <code class="language-plaintext highlighter-rouge">created0x30</code> ($FN) timestamps keyed by <code class="language-plaintext highlighter-rouge">entryNumber</code></li>
+</ol>
+
+<p>Matching is on MFT entry number, which is stable across timestamp manipulation.</p>
+
+<p>The LNK-recorded creation time and MFT <code class="language-plaintext highlighter-rouge">$SI</code> creation time for the same entry must agree within 2 seconds. The <code class="language-plaintext highlighter-rouge">$FN</code> timestamp (harder to manipulate via user-mode tools) must agree with the LNK value, confirming the divergence is in <code class="language-plaintext highlighter-rouge">$SI</code> alone.</p>
+
+<h2 id="contradiction-condition">Contradiction condition</h2>
+
+<p>Fires when the LNK shortcut creation time differs from the MFT $SI creation time <strong>and</strong> the LNK time agrees with the MFT $FN creation time within 2 seconds — indicating $SI was modified while $FN was not.</p>
+
+<h2 id="sparql-signature-strict-variant">SPARQL signature (strict variant)</h2>
+
+<div class="language-sparql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">PREFIX</span><span class="w"> </span><span class="nn">bif</span><span class="o">:</span><span class="w"> </span><span class="nn">&lt;http://www.openlinksw.com/schemas/bif#&gt;</span><span class="w">
+
+</span><span class="k">SELECT</span><span class="w"> </span><span class="k">DISTINCT</span><span class="w">
+  </span><span class="nv">?lnkFile</span><span class="w"> </span><span class="nv">?lnkTargetPath</span><span class="w"> </span><span class="nv">?lnkShortcutCreated</span><span class="w">
+  </span><span class="nv">?lnkTargetCreated</span><span class="w"> </span><span class="nv">?mftSiCreated</span><span class="w"> </span><span class="nv">?mftFnCreated</span><span class="w">
+</span><span class="k">WHERE</span><span class="w"> </span><span class="p">{</span><span class="w">
+  </span><span class="p">{</span><span class="w">
+    </span><span class="k">SELECT</span><span class="w"> </span><span class="k">DISTINCT</span><span class="w">
+      </span><span class="nv">?entryNum</span><span class="w"> </span><span class="nv">?lnkFile</span><span class="w"> </span><span class="nv">?lnkTargetPath</span><span class="w">
+      </span><span class="nv">?lnkTargetCreated</span><span class="w"> </span><span class="nv">?lnkShortcutCreated</span><span class="w">
+    </span><span class="k">WHERE</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="k">GRAPH</span><span class="w"> </span><span class="nn">&lt;lnk_case11&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nv">?lnkFacet</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">ioi-ext</span><span class="o">:</span><span class="ss">WindowsLnkFacet</span><span class="w"> </span><span class="p">;</span><span class="w">
+                  </span><span class="nn">ioi-ext</span><span class="o">:</span><span class="ss">targetMftEntryNumber</span><span class="w"> </span><span class="nv">?entryNum</span><span class="w"> </span><span class="p">;</span><span class="w">
+                  </span><span class="nn">ioi-ext</span><span class="o">:</span><span class="ss">targetCreatedTime</span><span class="w"> </span><span class="nv">?lnkTargetCreated</span><span class="w"> </span><span class="p">;</span><span class="w">
+                  </span><span class="nn">ioi-ext</span><span class="o">:</span><span class="ss">targetFilePath</span><span class="w"> </span><span class="nv">?lnkTargetPath</span><span class="w"> </span><span class="p">.</span><span class="w">
+        </span><span class="nv">?lnkFile</span><span class="w"> </span><span class="nn">core</span><span class="o">:</span><span class="ss">hasFacet</span><span class="w"> </span><span class="nv">?lnkFacet</span><span class="w"> </span><span class="p">.</span><span class="w">
+        </span><span class="k">OPTIONAL</span><span class="w"> </span><span class="p">{</span><span class="w">
+          </span><span class="nv">?lnkFile</span><span class="w"> </span><span class="nn">core</span><span class="o">:</span><span class="ss">hasFacet</span><span class="w"> </span><span class="nv">?lf</span><span class="w"> </span><span class="p">.</span><span class="w">
+          </span><span class="nv">?lf</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">observable</span><span class="o">:</span><span class="ss">FileFacet</span><span class="w"> </span><span class="p">;</span><span class="w">
+              </span><span class="nn">observable</span><span class="o">:</span><span class="ss">observableCreatedTime</span><span class="w"> </span><span class="nv">?lnkShortcutCreated</span><span class="w"> </span><span class="p">.</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="k">GRAPH</span><span class="w"> </span><span class="nn">&lt;mft_case11&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nv">?mftFacet</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">ioi-ext</span><span class="o">:</span><span class="ss">MftFacet</span><span class="w"> </span><span class="p">;</span><span class="w">
+              </span><span class="nn">ioi-ext</span><span class="o">:</span><span class="ss">entryNumber</span><span class="w"> </span><span class="nv">?entryNum</span><span class="w"> </span><span class="p">;</span><span class="w">
+              </span><span class="nn">ioi-ext</span><span class="o">:</span><span class="ss">created0x10</span><span class="w"> </span><span class="nv">?mftSiCreated</span><span class="w"> </span><span class="p">;</span><span class="w">
+              </span><span class="nn">ioi-ext</span><span class="o">:</span><span class="ss">created0x30</span><span class="w"> </span><span class="nv">?mftFnCreated</span><span class="w"> </span><span class="p">.</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="k">FILTER</span><span class="p">(</span><span class="nb">BOUND</span><span class="p">(</span><span class="nv">?lnkShortcutCreated</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w">
+         </span><span class="nv">?lnkShortcutCreated</span><span class="w"> </span><span class="o">!</span><span class="p">=</span><span class="w"> </span><span class="nv">?mftSiCreated</span><span class="p">)</span><span class="w">
+  </span><span class="k">FILTER</span><span class="p">(</span><span class="o">!</span><span class="nb">BOUND</span><span class="p">(</span><span class="nv">?mftFnCreated</span><span class="p">)</span><span class="w"> </span><span class="o">||</span><span class="w">
+         </span><span class="nb">ABS</span><span class="p">(</span><span class="nn">bif</span><span class="o">:</span><span class="ss">datediff</span><span class="p">(</span><span class="s1">'second'</span><span class="p">,</span><span class="w">
+             </span><span class="nv">?lnkShortcutCreated</span><span class="p">,</span><span class="w"> </span><span class="nv">?mftFnCreated</span><span class="p">))</span><span class="w"> </span><span class="o">&lt;</span><span class="p">=</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="nv">?lnkFile</span><span class="w">
+</span></code></pre></div></div>
+
+<h2 id="permissive-variant">Permissive variant</h2>
+
+<p><code class="language-plaintext highlighter-rouge">ioi-011-permissive.rq</code> omits the <code class="language-plaintext highlighter-rouge">$FN</code> corroboration filter. Higher recall; flags any <code class="language-plaintext highlighter-rouge">$SI</code>/LNK divergence regardless of <code class="language-plaintext highlighter-rouge">$FN</code> agreement.</p>
+
+<h2 id="graph-iri-substitution">Graph IRI substitution</h2>
+
+<p>Replace <code class="language-plaintext highlighter-rouge">&lt;lnk_case11&gt;</code> and <code class="language-plaintext highlighter-rouge">&lt;mft_case11&gt;</code> with your named graph IRIs.</p>
+</div>
+</div>
+</main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <span>© 2026 IoI Research Team · Forensic Science International: Digital Investigation</span>
+      <div class="footer-links">
+        <a href="/community/">Contribute</a>
+        <a href="https://github.com/ioi-framework/ioi-framework" target="_blank" rel="noopener">GitHub ↗</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/assets/js/main.js"></script>
+</body>
+</html>

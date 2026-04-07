@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Office XML Metadata Instantiator — IoI Framework</title>
+  <meta name="description" content="Indicator of Inconsistency — A community-driven SPARQL framework for detecting cross-artifact contradictions in digital forensic investigations.">
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="canonical" href="http://localhost:4000/instantiators/inst-005/">
+</head>
+<body>
+
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <a class="nav-brand" href="/">IoI <span>Framework</span></a>
+      <ul class="nav-links" id="nav-links">
+        
+          <li>
+            <a href="/"
+               >Home</a>
+          </li>
+        
+          <li>
+            <a href="/quickstart/"
+               >Quick Start</a>
+          </li>
+        
+          <li>
+            <a href="/cases/"
+               >Cases</a>
+          </li>
+        
+          <li>
+            <a href="/rules/"
+               >IoI Rules</a>
+          </li>
+        
+          <li>
+            <a href="/instantiators/"
+               class="active"
+               >Instantiators</a>
+          </li>
+        
+          <li>
+            <a href="/artifacts/"
+               >Artifacts</a>
+          </li>
+        
+          <li>
+            <a href="/community/"
+               >Contribute</a>
+          </li>
+        
+          <li>
+            <a href="https://github.com/ioi-framework/ioi-framework"
+               class="external" target="_blank" rel="noopener"
+               >GitHub</a>
+          </li>
+        
+      </ul>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu">&#9776;</button>
+    </div>
+  </nav>
+
+  <main><div class="page-wrap">
+  <a href="/instantiators/" class="back-link">← All instantiators</a>
+
+  <div class="detail-header">
+    <div class="detail-id">INST-005 · Instantiator · Office core.xml</div>
+    <div class="detail-title">Office XML Metadata Instantiator</div>
+    <div class="detail-meta">
+      
+
+  <span class="badge badge-green" style="font-size:0.65rem;">✓ Validated</span>
+
+
+      <span class="tag">Python zipfile</span>
+      <span class="tag">DOCX/XML → </span>
+      <span class="tag">Python 3.9+</span>
+    </div>
+    <div class="contrib-line">
+      Contributed by <strong>@ioi-framework</strong> · 2025-01-01
+    </div>
+  </div>
+
+  
+  <div class="inst-note-box">
+    <div class="inst-note-label">Note</div>
+    <div class="inst-note-text">Accepts .docx/.xlsx/.pptx files directly (extracts core.xml via Python zipfile) or pre-extracted folders. Joins MFT timestamps with core.xml metadata by filename for IOI-012 timestomping detection.</div>
+  </div>
+  
+
+  <div class="inst-action-row">
+    
+    <a class="inst-dl-btn"
+       href="https://github.com/ioi-framework/ioi-framework/blob/main/instantiators/office_xml_instantiator.py"
+       target="_blank" rel="noopener">
+      <span class="inst-dl-icon">↓</span>
+      <span>
+        <span class="inst-dl-label">Script</span>
+        <span class="inst-dl-name">office_xml_instantiator.py</span>
+      </span>
+    </a>
+    
+    
+    <a class="inst-dl-btn"
+       href="https://github.com/ioi-framework/ioi-framework/tree/main/instantiators/templates/office_xml"
+       target="_blank" rel="noopener">
+      <span class="inst-dl-icon">↗</span>
+      <span>
+        <span class="inst-dl-label">Templates</span>
+        <span class="inst-dl-name">office_xml/</span>
+      </span>
+    </a>
+    
+  </div>
+
+  
+  <div class="inst-deps">
+    <span class="inst-deps-label">Dependencies</span>
+    <code>rdflib>=6.0</code>
+  </div>
+  
+
+  <div class="prose"><h2 id="overview">Overview</h2>
+
+<p>Combines MFT timestamps with embedded Office XML metadata (<code class="language-plaintext highlighter-rouge">docProps/core.xml</code>) into a single CASE/UCO JSON-LD graph. Accepts <code class="language-plaintext highlighter-rouge">.docx</code>/<code class="language-plaintext highlighter-rouge">.xlsx</code>/<code class="language-plaintext highlighter-rouge">.pptx</code> files directly — extracts <code class="language-plaintext highlighter-rouge">core.xml</code> internally via Python’s <code class="language-plaintext highlighter-rouge">zipfile</code> module, no external tools needed. Matches each document to its MFT record by filename, enabling the cross-source timestamp comparison used by IoI rule IOI-012.</p>
+
+<h2 id="input">Input</h2>
+
+<p>Requires an MFT CSV (from MFTECmd) and a folder containing the Office documents. The folder can hold raw <code class="language-plaintext highlighter-rouge">.docx</code>/<code class="language-plaintext highlighter-rouge">.xlsx</code>/<code class="language-plaintext highlighter-rouge">.pptx</code> files — the script extracts <code class="language-plaintext highlighter-rouge">core.xml</code> internally. Pre-extracted subdirectory layout is also supported as a fallback.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>office_folder/
+  secret.docx        ← script reads core.xml directly from the zip
+  report.xlsx
+</code></pre></div></div>
+
+<p>The script matches each document to its MFT record by filename, then combines both into one JSON-LD graph.</p>
+
+<h2 id="input-fields-consumed">Input fields consumed</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Source</th>
+      <th>Field</th>
+      <th>Mapped to</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>MFT CSV</td>
+      <td><code class="language-plaintext highlighter-rouge">Created0x10</code> / <code class="language-plaintext highlighter-rouge">LastModified0x10</code></td>
+      <td><code class="language-plaintext highlighter-rouge">ioi-ext:created0x10</code> / <code class="language-plaintext highlighter-rouge">ioi-ext:lastModified0x10</code></td>
+    </tr>
+    <tr>
+      <td>MFT CSV</td>
+      <td><code class="language-plaintext highlighter-rouge">Created0x30</code> / <code class="language-plaintext highlighter-rouge">LastModified0x30</code></td>
+      <td><code class="language-plaintext highlighter-rouge">ioi-ext:created0x30</code> / <code class="language-plaintext highlighter-rouge">ioi-ext:lastModified0x30</code></td>
+    </tr>
+    <tr>
+      <td>core.xml</td>
+      <td><code class="language-plaintext highlighter-rouge">dcterms:created</code></td>
+      <td><code class="language-plaintext highlighter-rouge">ioi-ext:dctermsCreated</code></td>
+    </tr>
+    <tr>
+      <td>core.xml</td>
+      <td><code class="language-plaintext highlighter-rouge">dcterms:modified</code></td>
+      <td><code class="language-plaintext highlighter-rouge">ioi-ext:dctermsModified</code></td>
+    </tr>
+    <tr>
+      <td>core.xml</td>
+      <td><code class="language-plaintext highlighter-rouge">dc:creator</code></td>
+      <td><code class="language-plaintext highlighter-rouge">observable:creator</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="usage">Usage</h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python instantiators/office_xml_instantiator.py <span class="se">\</span>
+  cases/data/AF-012/mft_post.csv <span class="se">\</span>
+  cases/data/AF-012/office_docs/ <span class="se">\</span>
+  cases/data/AF-012/graphs/office_case.jsonld
+</code></pre></div></div>
+
+<p>Place the <code class="language-plaintext highlighter-rouge">.docx</code>/<code class="language-plaintext highlighter-rouge">.xlsx</code>/<code class="language-plaintext highlighter-rouge">.pptx</code> files in <code class="language-plaintext highlighter-rouge">office_docs/</code> — no extraction step needed.</p>
+
+<h2 id="implementation-note">Implementation note</h2>
+
+<p>AF-012 was evaluated with the Office XML and MFT graphs loaded into separate named graphs and joined at query time via a SPARQL cross-graph join on <code class="language-plaintext highlighter-rouge">observable:filePath</code>.</p>
+</div>
+</div>
+</main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <span>© 2026 IoI Research Team · Forensic Science International: Digital Investigation</span>
+      <div class="footer-links">
+        <a href="/community/">Contribute</a>
+        <a href="https://github.com/ioi-framework/ioi-framework" target="_blank" rel="noopener">GitHub ↗</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/assets/js/main.js"></script>
+</body>
+</html>

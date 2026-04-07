@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VSS Directory Presence Check — IoI Framework</title>
+  <meta name="description" content="Flags absent GUID snapshot directories and Apps_{} subdirectories under System Volume Information when VSS infrastructure files are present, corroborated by USN deletion records.">
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="canonical" href="http://localhost:4000/rules/ioi-004/">
+</head>
+<body>
+
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <a class="nav-brand" href="/">IoI <span>Framework</span></a>
+      <ul class="nav-links" id="nav-links">
+        
+          <li>
+            <a href="/"
+               >Home</a>
+          </li>
+        
+          <li>
+            <a href="/quickstart/"
+               >Quick Start</a>
+          </li>
+        
+          <li>
+            <a href="/cases/"
+               >Cases</a>
+          </li>
+        
+          <li>
+            <a href="/rules/"
+               class="active"
+               >IoI Rules</a>
+          </li>
+        
+          <li>
+            <a href="/instantiators/"
+               >Instantiators</a>
+          </li>
+        
+          <li>
+            <a href="/artifacts/"
+               >Artifacts</a>
+          </li>
+        
+          <li>
+            <a href="/community/"
+               >Contribute</a>
+          </li>
+        
+          <li>
+            <a href="https://github.com/ioi-framework/ioi-framework"
+               class="external" target="_blank" rel="noopener"
+               >GitHub</a>
+          </li>
+        
+      </ul>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu">&#9776;</button>
+    </div>
+  </nav>
+
+  <main><div class="page-wrap">
+  <a href="/rules/" class="back-link">← All rules</a>
+
+  <div class="detail-header">
+    <div class="detail-id">IOI-004 · IoI Rule · Structural</div>
+    <div class="detail-title">VSS Directory Presence Check</div>
+    <div class="detail-meta">
+      
+
+  <span class="badge badge-green" style="font-size:0.65rem;">✓ Validated</span>
+
+
+      <span class="tag tag-structural">Structural</span>
+      
+        <span class="tag">$MFT</span>
+      
+        <span class="tag">$UsnJrnl</span>
+      
+    </div>
+    <div class="contrib-line">
+      Contributed by <strong>@ioi-framework</strong> · 2025-01-01
+       · v1.0
+      
+        · <a href="/cases/af-004/">View scenario →</a>
+      
+    </div>
+  </div>
+
+  
+  <div class="invariant-box">
+    <div class="invariant-label">Invariant predicate φ</div>
+    <div class="invariant-value">If VSS infrastructure files are present under System Volume Information, the corresponding GUID snapshot directories must also be present.</div>
+  </div>
+  
+
+  
+  <div style="margin-bottom:1.25rem;">
+    <a class="badge badge-outline"
+       href="https://github.com/ioi-framework/ioi-framework/blob/main/rules/sparql/ioi-004.rq"
+       target="_blank" rel="noopener">
+      Download ioi-004.rq ↗
+    </a>
+  </div>
+  
+
+  
+  <div style="font-size:0.8rem;color:var(--ink-light);margin-bottom:1.25rem;">
+    Tested on: <code>Virtuoso 7.2 (OpenLink OSE)</code>
+  </div>
+  
+
+  <div class="prose"><h2 id="dependency-specification">Dependency specification</h2>
+
+<ol>
+  <li><strong>$MFT</strong> — files under <code class="language-plaintext highlighter-rouge">System Volume Information</code>: infrastructure files (<code class="language-plaintext highlighter-rouge">tracking.log</code>, <code class="language-plaintext highlighter-rouge">IndexerVolumeGuid</code>, <code class="language-plaintext highlighter-rouge">_OnDiskSnapshotProp</code>) and GUID/Apps directories</li>
+  <li><strong>$UsnJrnl</strong> — <code class="language-plaintext highlighter-rouge">FileDelete</code> and <code class="language-plaintext highlighter-rouge">FileDeleteClose</code> records matching GUID-format or <code class="language-plaintext highlighter-rouge">Apps_{}</code> filenames</li>
+</ol>
+
+<p>If VSS infrastructure files exist under <code class="language-plaintext highlighter-rouge">System Volume Information</code>, the corresponding GUID snapshot directories and <code class="language-plaintext highlighter-rouge">Apps_{}</code> subdirectories must also be present.</p>
+
+<h2 id="contradiction-condition">Contradiction condition</h2>
+
+<p>Fires when infrastructure files are present <strong>and</strong> no GUID or <code class="language-plaintext highlighter-rouge">Apps_{}</code> directories appear in the MFT <strong>and</strong> USN records confirm their deletion.</p>
+
+<h2 id="sparql-signature">SPARQL signature</h2>
+
+<div class="language-sparql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">PREFIX</span><span class="w"> </span><span class="nn">core</span><span class="o">:</span><span class="w"> </span><span class="nn">&lt;https://ontology.unifiedcyberontology.org/uco/core/&gt;</span><span class="w">
+</span><span class="k">PREFIX</span><span class="w"> </span><span class="nn">observable</span><span class="o">:</span><span class="w"> </span><span class="nn">&lt;https://ontology.unifiedcyberontology.org/uco/observable/&gt;</span><span class="w">
+</span><span class="k">PREFIX</span><span class="w"> </span><span class="nn">ioi-ext</span><span class="o">:</span><span class="w"> </span><span class="nn">&lt;https://ioi-framework.github.io/ns/ioi-ext/&gt;</span><span class="w">
+
+</span><span class="k">SELECT</span><span class="w"> </span><span class="k">DISTINCT</span><span class="w"> </span><span class="nv">?vss_infrastructure</span><span class="w"> </span><span class="nv">?deleted_guid</span><span class="w"> </span><span class="nv">?usn_evidence</span><span class="w">
+</span><span class="k">WHERE</span><span class="w"> </span><span class="p">{</span><span class="w">
+  </span><span class="p">{</span><span class="w">
+    </span><span class="k">SELECT</span><span class="w"> </span><span class="p">(</span><span class="nb">GROUP_CONCAT</span><span class="p">(</span><span class="k">DISTINCT</span><span class="w"> </span><span class="nv">?vss_file</span><span class="p">;</span><span class="w"> </span><span class="nb">separator</span><span class="p">=</span><span class="s2">" ; "</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="nv">?vss_infrastructure</span><span class="p">)</span><span class="w">
+    </span><span class="k">WHERE</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="k">GRAPH</span><span class="w"> </span><span class="nn">&lt;mft_case4&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nv">?mft_entry</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">observable</span><span class="o">:</span><span class="ss">File</span><span class="w"> </span><span class="p">;</span><span class="w">
+                   </span><span class="nn">core</span><span class="o">:</span><span class="ss">hasFacet</span><span class="w"> </span><span class="nv">?file_facet</span><span class="p">,</span><span class="w"> </span><span class="nv">?mft_facet</span><span class="w"> </span><span class="p">.</span><span class="w">
+        </span><span class="nv">?file_facet</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">observable</span><span class="o">:</span><span class="ss">FileFacet</span><span class="w"> </span><span class="p">;</span><span class="w">
+                    </span><span class="nn">observable</span><span class="o">:</span><span class="ss">fileName</span><span class="w"> </span><span class="nv">?vss_file</span><span class="w"> </span><span class="p">.</span><span class="w">
+        </span><span class="nv">?mft_facet</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">ioi-ext</span><span class="o">:</span><span class="ss">MftFacet</span><span class="w"> </span><span class="p">;</span><span class="w">
+                   </span><span class="nn">ioi-ext</span><span class="o">:</span><span class="ss">parentPath</span><span class="w"> </span><span class="nv">?parent_path</span><span class="w"> </span><span class="p">.</span><span class="w">
+        </span><span class="k">FILTER</span><span class="p">(</span><span class="nb">CONTAINS</span><span class="p">(</span><span class="nv">?parent_path</span><span class="p">,</span><span class="w"> </span><span class="s2">"System Volume Information"</span><span class="p">))</span><span class="w">
+        </span><span class="k">FILTER</span><span class="p">(</span><span class="w">
+          </span><span class="nb">CONTAINS</span><span class="p">(</span><span class="nv">?vss_file</span><span class="p">,</span><span class="w"> </span><span class="s2">"tracking.log"</span><span class="p">)</span><span class="w"> </span><span class="o">||</span><span class="w">
+          </span><span class="nb">CONTAINS</span><span class="p">(</span><span class="nv">?vss_file</span><span class="p">,</span><span class="w"> </span><span class="s2">"IndexerVolumeGuid"</span><span class="p">)</span><span class="w"> </span><span class="o">||</span><span class="w">
+          </span><span class="nb">CONTAINS</span><span class="p">(</span><span class="nv">?vss_file</span><span class="p">,</span><span class="w"> </span><span class="s2">"_OnDiskSnapshotProp"</span><span class="p">)</span><span class="w">
+        </span><span class="p">)</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+
+  </span><span class="k">FILTER</span><span class="p">(</span><span class="nb">BOUND</span><span class="p">(</span><span class="nv">?vss_infrastructure</span><span class="p">))</span><span class="w">
+
+  </span><span class="p">{</span><span class="w">
+    </span><span class="k">FILTER</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="k">GRAPH</span><span class="w"> </span><span class="nn">&lt;mft_case4&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nv">?guid_entry</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">observable</span><span class="o">:</span><span class="ss">File</span><span class="w"> </span><span class="p">;</span><span class="w">
+                    </span><span class="nn">core</span><span class="o">:</span><span class="ss">hasFacet</span><span class="w"> </span><span class="nv">?guid_file_facet</span><span class="p">,</span><span class="w"> </span><span class="nv">?guid_mft_facet</span><span class="w"> </span><span class="p">.</span><span class="w">
+        </span><span class="nv">?guid_file_facet</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">observable</span><span class="o">:</span><span class="ss">FileFacet</span><span class="w"> </span><span class="p">;</span><span class="w">
+                         </span><span class="nn">observable</span><span class="o">:</span><span class="ss">fileName</span><span class="w"> </span><span class="nv">?guid_name</span><span class="w"> </span><span class="p">.</span><span class="w">
+        </span><span class="nv">?guid_mft_facet</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">ioi-ext</span><span class="o">:</span><span class="ss">MftFacet</span><span class="w"> </span><span class="p">;</span><span class="w">
+                        </span><span class="nn">ioi-ext</span><span class="o">:</span><span class="ss">parentPath</span><span class="w"> </span><span class="nv">?guid_parent</span><span class="w"> </span><span class="p">.</span><span class="w">
+        </span><span class="k">FILTER</span><span class="p">(</span><span class="nb">CONTAINS</span><span class="p">(</span><span class="nv">?guid_parent</span><span class="p">,</span><span class="w"> </span><span class="s2">"System Volume Information"</span><span class="p">))</span><span class="w">
+        </span><span class="k">FILTER</span><span class="p">(</span><span class="nb">STRSTARTS</span><span class="p">(</span><span class="nb">STR</span><span class="p">(</span><span class="nv">?guid_name</span><span class="p">),</span><span class="w"> </span><span class="s2">"Apps_{"</span><span class="p">))</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+    </span><span class="k">GRAPH</span><span class="w"> </span><span class="nn">&lt;usn_case4&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="nv">?usn_file</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">observable</span><span class="o">:</span><span class="ss">File</span><span class="w"> </span><span class="p">;</span><span class="w">
+                </span><span class="nn">core</span><span class="o">:</span><span class="ss">hasFacet</span><span class="w"> </span><span class="nv">?usn_file_facet</span><span class="p">,</span><span class="w"> </span><span class="nv">?usn_facet</span><span class="w"> </span><span class="p">.</span><span class="w">
+      </span><span class="nv">?usn_file_facet</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">observable</span><span class="o">:</span><span class="ss">FileFacet</span><span class="w"> </span><span class="p">;</span><span class="w">
+                      </span><span class="nn">observable</span><span class="o">:</span><span class="ss">fileName</span><span class="w"> </span><span class="nv">?usn_filename</span><span class="w"> </span><span class="p">.</span><span class="w">
+      </span><span class="nv">?usn_facet</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">ioi-ext</span><span class="o">:</span><span class="ss">UsnFacet</span><span class="w"> </span><span class="p">;</span><span class="w">
+                 </span><span class="nn">ioi-ext</span><span class="o">:</span><span class="ss">updateReasons</span><span class="w"> </span><span class="nv">?update_reasons</span><span class="w"> </span><span class="p">.</span><span class="w">
+      </span><span class="k">FILTER</span><span class="p">(</span><span class="nb">STRSTARTS</span><span class="p">(</span><span class="nb">STR</span><span class="p">(</span><span class="nv">?usn_filename</span><span class="p">),</span><span class="w"> </span><span class="s2">"Apps_{"</span><span class="p">))</span><span class="w">
+      </span><span class="k">VALUES</span><span class="w"> </span><span class="nv">?reason_term</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="s2">"FileDelete"</span><span class="w"> </span><span class="s2">"FileDeleteClose"</span><span class="w"> </span><span class="s2">"DataTruncation"</span><span class="w"> </span><span class="p">}</span><span class="w">
+      </span><span class="k">FILTER</span><span class="p">(</span><span class="nb">CONTAINS</span><span class="p">(</span><span class="nv">?update_reasons</span><span class="p">,</span><span class="w"> </span><span class="nv">?reason_term</span><span class="p">))</span><span class="w">
+      </span><span class="k">BIND</span><span class="p">(</span><span class="nv">?usn_filename</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="nv">?deleted_guid</span><span class="p">)</span><span class="w">
+      </span><span class="k">BIND</span><span class="p">(</span><span class="nv">?update_reasons</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="nv">?usn_evidence</span><span class="p">)</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="k">UNION</span><span class="w">
+  </span><span class="p">{</span><span class="w">
+    </span><span class="k">FILTER</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="k">GRAPH</span><span class="w"> </span><span class="nn">&lt;mft_case4&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nv">?guid_entry</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">observable</span><span class="o">:</span><span class="ss">File</span><span class="w"> </span><span class="p">;</span><span class="w">
+                    </span><span class="nn">core</span><span class="o">:</span><span class="ss">hasFacet</span><span class="w"> </span><span class="nv">?guid_file_facet</span><span class="p">,</span><span class="w"> </span><span class="nv">?guid_mft_facet</span><span class="w"> </span><span class="p">.</span><span class="w">
+        </span><span class="nv">?guid_file_facet</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">observable</span><span class="o">:</span><span class="ss">FileFacet</span><span class="w"> </span><span class="p">;</span><span class="w">
+                         </span><span class="nn">observable</span><span class="o">:</span><span class="ss">fileName</span><span class="w"> </span><span class="nv">?guid_name</span><span class="w"> </span><span class="p">.</span><span class="w">
+        </span><span class="nv">?guid_mft_facet</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">ioi-ext</span><span class="o">:</span><span class="ss">MftFacet</span><span class="w"> </span><span class="p">;</span><span class="w">
+                        </span><span class="nn">ioi-ext</span><span class="o">:</span><span class="ss">parentPath</span><span class="w"> </span><span class="nv">?guid_parent</span><span class="w"> </span><span class="p">.</span><span class="w">
+        </span><span class="k">FILTER</span><span class="p">(</span><span class="nb">CONTAINS</span><span class="p">(</span><span class="nv">?guid_parent</span><span class="p">,</span><span class="w"> </span><span class="s2">"System Volume Information"</span><span class="p">))</span><span class="w">
+        </span><span class="k">FILTER</span><span class="p">(</span><span class="nb">STRSTARTS</span><span class="p">(</span><span class="nb">STR</span><span class="p">(</span><span class="nv">?guid_name</span><span class="p">),</span><span class="w"> </span><span class="s2">"{"</span><span class="p">))</span><span class="w">
+        </span><span class="k">FILTER</span><span class="p">(</span><span class="nb">STRENDS</span><span class="p">(</span><span class="nb">STR</span><span class="p">(</span><span class="nv">?guid_name</span><span class="p">),</span><span class="w"> </span><span class="s2">"}"</span><span class="p">))</span><span class="w">
+        </span><span class="k">FILTER</span><span class="p">(</span><span class="nb">STRLEN</span><span class="p">(</span><span class="nb">STR</span><span class="p">(</span><span class="nv">?guid_name</span><span class="p">))</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">38</span><span class="p">)</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+    </span><span class="k">GRAPH</span><span class="w"> </span><span class="nn">&lt;usn_case4&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="nv">?usn_file</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">observable</span><span class="o">:</span><span class="ss">File</span><span class="w"> </span><span class="p">;</span><span class="w">
+                </span><span class="nn">core</span><span class="o">:</span><span class="ss">hasFacet</span><span class="w"> </span><span class="nv">?usn_file_facet</span><span class="p">,</span><span class="w"> </span><span class="nv">?usn_facet</span><span class="w"> </span><span class="p">.</span><span class="w">
+      </span><span class="nv">?usn_file_facet</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">observable</span><span class="o">:</span><span class="ss">FileFacet</span><span class="w"> </span><span class="p">;</span><span class="w">
+                      </span><span class="nn">observable</span><span class="o">:</span><span class="ss">fileName</span><span class="w"> </span><span class="nv">?usn_filename</span><span class="w"> </span><span class="p">.</span><span class="w">
+      </span><span class="nv">?usn_facet</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">ioi-ext</span><span class="o">:</span><span class="ss">UsnFacet</span><span class="w"> </span><span class="p">;</span><span class="w">
+                 </span><span class="nn">ioi-ext</span><span class="o">:</span><span class="ss">updateReasons</span><span class="w"> </span><span class="nv">?update_reasons</span><span class="w"> </span><span class="p">.</span><span class="w">
+      </span><span class="k">FILTER</span><span class="p">(</span><span class="nb">STRSTARTS</span><span class="p">(</span><span class="nb">STR</span><span class="p">(</span><span class="nv">?usn_filename</span><span class="p">),</span><span class="w"> </span><span class="s2">"{"</span><span class="p">))</span><span class="w">
+      </span><span class="k">FILTER</span><span class="p">(</span><span class="nb">STRENDS</span><span class="p">(</span><span class="nb">STR</span><span class="p">(</span><span class="nv">?usn_filename</span><span class="p">),</span><span class="w"> </span><span class="s2">"}"</span><span class="p">))</span><span class="w">
+      </span><span class="k">FILTER</span><span class="p">(</span><span class="nb">STRLEN</span><span class="p">(</span><span class="nb">STR</span><span class="p">(</span><span class="nv">?usn_filename</span><span class="p">))</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">38</span><span class="p">)</span><span class="w">
+      </span><span class="k">VALUES</span><span class="w"> </span><span class="nv">?reason_term</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="s2">"FileDelete"</span><span class="w"> </span><span class="s2">"FileDeleteClose"</span><span class="w"> </span><span class="s2">"DataTruncation"</span><span class="w"> </span><span class="p">}</span><span class="w">
+      </span><span class="k">FILTER</span><span class="p">(</span><span class="nb">CONTAINS</span><span class="p">(</span><span class="nv">?update_reasons</span><span class="p">,</span><span class="w"> </span><span class="nv">?reason_term</span><span class="p">))</span><span class="w">
+      </span><span class="k">BIND</span><span class="p">(</span><span class="nv">?usn_filename</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="nv">?deleted_guid</span><span class="p">)</span><span class="w">
+      </span><span class="k">BIND</span><span class="p">(</span><span class="nv">?update_reasons</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="nv">?usn_evidence</span><span class="p">)</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="nv">?deleted_guid</span><span class="w">
+</span></code></pre></div></div>
+
+<h2 id="graph-iri-substitution">Graph IRI substitution</h2>
+
+<p>Replace <code class="language-plaintext highlighter-rouge">&lt;mft_case4&gt;</code> and <code class="language-plaintext highlighter-rouge">&lt;usn_case4&gt;</code> with your named graph IRIs.</p>
+
+<h2 id="expected-output">Expected output</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Variable</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">?vss_infrastructure</code></td>
+      <td>Infrastructure files found in MFT</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">?usn_filename</code></td>
+      <td>Deleted directory names from USN</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">?update_reasons</code></td>
+      <td>USN update-reason flags confirming deletion</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <span>© 2026 IoI Research Team · Forensic Science International: Digital Investigation</span>
+      <div class="footer-links">
+        <a href="/community/">Contribute</a>
+        <a href="https://github.com/ioi-framework/ioi-framework" target="_blank" rel="noopener">GitHub ↗</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/assets/js/main.js"></script>
+</body>
+</html>

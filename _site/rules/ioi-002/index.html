@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IndexedDB Cache ↔ History URL Semantic Check — IoI Framework</title>
+  <meta name="description" content="Detects missing Chrome History URL entries for domains evidenced by IndexedDB cache directories, corroborated by USN journal modification indicators on the History file.">
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="canonical" href="http://localhost:4000/rules/ioi-002/">
+</head>
+<body>
+
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <a class="nav-brand" href="/">IoI <span>Framework</span></a>
+      <ul class="nav-links" id="nav-links">
+        
+          <li>
+            <a href="/"
+               >Home</a>
+          </li>
+        
+          <li>
+            <a href="/quickstart/"
+               >Quick Start</a>
+          </li>
+        
+          <li>
+            <a href="/cases/"
+               >Cases</a>
+          </li>
+        
+          <li>
+            <a href="/rules/"
+               class="active"
+               >IoI Rules</a>
+          </li>
+        
+          <li>
+            <a href="/instantiators/"
+               >Instantiators</a>
+          </li>
+        
+          <li>
+            <a href="/artifacts/"
+               >Artifacts</a>
+          </li>
+        
+          <li>
+            <a href="/community/"
+               >Contribute</a>
+          </li>
+        
+          <li>
+            <a href="https://github.com/ioi-framework/ioi-framework"
+               class="external" target="_blank" rel="noopener"
+               >GitHub</a>
+          </li>
+        
+      </ul>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu">&#9776;</button>
+    </div>
+  </nav>
+
+  <main><div class="page-wrap">
+  <a href="/rules/" class="back-link">← All rules</a>
+
+  <div class="detail-header">
+    <div class="detail-id">IOI-002 · IoI Rule · Semantic</div>
+    <div class="detail-title">IndexedDB Cache ↔ History URL Semantic Check</div>
+    <div class="detail-meta">
+      
+
+  <span class="badge badge-green" style="font-size:0.65rem;">✓ Validated</span>
+
+
+      <span class="tag tag-semantic">Semantic</span>
+      
+        <span class="tag">Chrome History</span>
+      
+        <span class="tag">IndexedDB</span>
+      
+        <span class="tag">$UsnJrnl</span>
+      
+    </div>
+    <div class="contrib-line">
+      Contributed by <strong>@ioi-framework</strong> · 2025-01-01
+       · v1.0
+      
+        · <a href="/cases/af-002/">View scenario →</a>
+      
+    </div>
+  </div>
+
+  
+  <div class="invariant-box">
+    <div class="invariant-label">Invariant predicate φ</div>
+    <div class="invariant-value">Every domain encoded in an IndexedDB cache path must have a corresponding URL entry in the Chrome History database.</div>
+  </div>
+  
+
+  
+  <div style="margin-bottom:1.25rem;">
+    <a class="badge badge-outline"
+       href="https://github.com/ioi-framework/ioi-framework/blob/main/rules/sparql/ioi-002.rq"
+       target="_blank" rel="noopener">
+      Download ioi-002.rq ↗
+    </a>
+  </div>
+  
+
+  
+  <div style="font-size:0.8rem;color:var(--ink-light);margin-bottom:1.25rem;">
+    Tested on: <code>Virtuoso 7.2 (OpenLink OSE)</code>
+  </div>
+  
+
+  <div class="prose"><h2 id="dependency-specification">Dependency specification</h2>
+
+<p>Three artifact classes are involved:</p>
+
+<ol>
+  <li><strong>Chrome IndexedDB cache directories</strong> — file paths under <code class="language-plaintext highlighter-rouge">Default/IndexedDB/</code> with origin-encoded domain names</li>
+  <li><strong>Chrome History database</strong> — URL facets with <code class="language-plaintext highlighter-rouge">observable:fullValue</code></li>
+  <li><strong>$UsnJrnl records</strong> — update-reason flags for the <code class="language-plaintext highlighter-rouge">History</code> file</li>
+</ol>
+
+<p>For every domain encoded in an IndexedDB cache path, a corresponding URL entry must exist in the History database, and no low-level modification should have been recorded against <code class="language-plaintext highlighter-rouge">History</code>.</p>
+
+<h2 id="contradiction-condition">Contradiction condition</h2>
+
+<p>Fires when a cached domain has no corresponding History URL <strong>and</strong> the USN journal records <code class="language-plaintext highlighter-rouge">DataTruncation</code>, <code class="language-plaintext highlighter-rouge">DataOverwrite</code>, or <code class="language-plaintext highlighter-rouge">DataExtend</code> against <code class="language-plaintext highlighter-rouge">History</code>.</p>
+
+<h2 id="sparql-signature">SPARQL signature</h2>
+
+<div class="language-sparql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span><span class="w"> </span><span class="nv">?domain</span><span class="w"> </span><span class="nv">?evidence_files</span><span class="w"> </span><span class="nv">?mft_examples</span><span class="w"> </span><span class="nv">?usn_events</span><span class="w"> </span><span class="nv">?usn_evidence</span><span class="w">
+</span><span class="k">WHERE</span><span class="w"> </span><span class="p">{</span><span class="w">
+  </span><span class="p">{</span><span class="w">
+    </span><span class="k">SELECT</span><span class="w"> </span><span class="nv">?domain</span><span class="w">
+           </span><span class="p">(</span><span class="nb">COUNT</span><span class="p">(</span><span class="k">DISTINCT</span><span class="w"> </span><span class="nv">?mft_file</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="nv">?evidence_files</span><span class="p">)</span><span class="w">
+           </span><span class="p">(</span><span class="nb">GROUP_CONCAT</span><span class="p">(</span><span class="k">DISTINCT</span><span class="w"> </span><span class="nv">?mft_file</span><span class="p">;</span><span class="w"> </span><span class="nb">separator</span><span class="p">=</span><span class="s2">" ; "</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="nv">?mft_examples</span><span class="p">)</span><span class="w">
+    </span><span class="k">WHERE</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="k">GRAPH</span><span class="w"> </span><span class="nn">&lt;mft_case&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="p">{</span><span class="w"> </span><span class="nv">?facet</span><span class="w"> </span><span class="nn">ioi-ext</span><span class="o">:</span><span class="ss">parentPath</span><span class="w"> </span><span class="nv">?path</span><span class="w"> </span><span class="p">.</span><span class="w">
+          </span><span class="k">FILTER</span><span class="p">(</span><span class="nb">CONTAINS</span><span class="p">(</span><span class="nv">?path</span><span class="p">,</span><span class="w"> </span><span class="s2">"IndexedDB"</span><span class="p">))</span><span class="w"> </span><span class="p">}</span><span class="w">
+        </span><span class="k">UNION</span><span class="w">
+        </span><span class="p">{</span><span class="w"> </span><span class="nv">?facet</span><span class="w"> </span><span class="nn">observable</span><span class="o">:</span><span class="ss">filePath</span><span class="w"> </span><span class="nv">?path</span><span class="w"> </span><span class="p">.</span><span class="w">
+          </span><span class="k">FILTER</span><span class="p">(</span><span class="nb">CONTAINS</span><span class="p">(</span><span class="nv">?path</span><span class="p">,</span><span class="w"> </span><span class="s2">"IndexedDB"</span><span class="p">))</span><span class="w"> </span><span class="p">}</span><span class="w">
+        </span><span class="k">BIND</span><span class="p">(</span><span class="nb">STRBEFORE</span><span class="p">(</span><span class="nb">STRAFTER</span><span class="p">(</span><span class="nv">?path</span><span class="p">,</span><span class="w"> </span><span class="s2">"https_www."</span><span class="p">),</span><span class="w"> </span><span class="s2">"_"</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="nv">?domain</span><span class="p">)</span><span class="w">
+        </span><span class="k">BIND</span><span class="p">(</span><span class="nv">?path</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="nv">?mft_file</span><span class="p">)</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+      </span><span class="k">FILTER</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="k">GRAPH</span><span class="w"> </span><span class="nn">&lt;history_case&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+          </span><span class="nv">?url_facet</span><span class="w"> </span><span class="nn">observable</span><span class="o">:</span><span class="ss">fullValue</span><span class="w"> </span><span class="nv">?url_value</span><span class="w"> </span><span class="p">.</span><span class="w">
+          </span><span class="k">FILTER</span><span class="p">(</span><span class="nb">CONTAINS</span><span class="p">(</span><span class="nb">LCASE</span><span class="p">(</span><span class="nb">STR</span><span class="p">(</span><span class="nv">?url_value</span><span class="p">)),</span><span class="w"> </span><span class="nb">LCASE</span><span class="p">(</span><span class="nv">?domain</span><span class="p">)))</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+    </span><span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="nv">?domain</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="p">{</span><span class="w">
+    </span><span class="k">SELECT</span><span class="w"> </span><span class="p">(</span><span class="nb">COUNT</span><span class="p">(</span><span class="k">DISTINCT</span><span class="w"> </span><span class="nv">?usn_file</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="nv">?usn_events</span><span class="p">)</span><span class="w">
+           </span><span class="p">(</span><span class="nb">GROUP_CONCAT</span><span class="p">(</span><span class="k">DISTINCT</span><span class="w"> </span><span class="nv">?update_reasons</span><span class="p">;</span><span class="w"> </span><span class="nb">separator</span><span class="p">=</span><span class="s2">" ; "</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="nv">?usn_evidence</span><span class="p">)</span><span class="w">
+    </span><span class="k">WHERE</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="k">GRAPH</span><span class="w"> </span><span class="nn">&lt;usn_case&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nv">?usn_file</span><span class="w"> </span><span class="nn">core</span><span class="o">:</span><span class="ss">hasFacet</span><span class="w"> </span><span class="nv">?usn_file_facet</span><span class="p">,</span><span class="w"> </span><span class="nv">?usn_facet</span><span class="w"> </span><span class="p">.</span><span class="w">
+        </span><span class="nv">?usn_file_facet</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">observable</span><span class="o">:</span><span class="ss">FileFacet</span><span class="w"> </span><span class="p">;</span><span class="w">
+                        </span><span class="nn">observable</span><span class="o">:</span><span class="ss">fileName</span><span class="w"> </span><span class="s2">"History"</span><span class="w"> </span><span class="p">.</span><span class="w">
+        </span><span class="nv">?usn_facet</span><span class="w"> </span><span class="nn">ioi-ext</span><span class="o">:</span><span class="ss">updateReasons</span><span class="w"> </span><span class="nv">?update_reasons</span><span class="w"> </span><span class="p">.</span><span class="w">
+        </span><span class="k">FILTER</span><span class="p">(</span><span class="nb">CONTAINS</span><span class="p">(</span><span class="nv">?update_reasons</span><span class="p">,</span><span class="w"> </span><span class="s2">"DataTruncation"</span><span class="p">)</span><span class="w"> </span><span class="o">||</span><span class="w">
+               </span><span class="nb">CONTAINS</span><span class="p">(</span><span class="nv">?update_reasons</span><span class="p">,</span><span class="w"> </span><span class="s2">"DataOverwrite"</span><span class="p">)</span><span class="w"> </span><span class="o">||</span><span class="w">
+               </span><span class="nb">CONTAINS</span><span class="p">(</span><span class="nv">?update_reasons</span><span class="p">,</span><span class="w"> </span><span class="s2">"DataExtend"</span><span class="p">))</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="k">FILTER</span><span class="p">(</span><span class="nv">?usn_events</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<h2 id="graph-iri-substitution">Graph IRI substitution</h2>
+
+<p>Replace <code class="language-plaintext highlighter-rouge">&lt;mft_case&gt;</code>, <code class="language-plaintext highlighter-rouge">&lt;history_case&gt;</code>, and <code class="language-plaintext highlighter-rouge">&lt;usn_case&gt;</code> with your named graph IRIs.</p>
+
+<h2 id="expected-output">Expected output</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Variable</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">?domain</code></td>
+      <td>Domain present in IndexedDB but absent from History</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">?evidence_files</code></td>
+      <td>Count of IndexedDB paths evidencing the domain</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">?mft_examples</code></td>
+      <td>Semicolon-separated IndexedDB paths</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">?usn_events</code></td>
+      <td>Count of USN modification records against <code class="language-plaintext highlighter-rouge">History</code></td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">?usn_evidence</code></td>
+      <td>Semicolon-separated update-reason strings</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <span>© 2026 IoI Research Team · Forensic Science International: Digital Investigation</span>
+      <div class="footer-links">
+        <a href="/community/">Contribute</a>
+        <a href="https://github.com/ioi-framework/ioi-framework" target="_blank" rel="noopener">GitHub ↗</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/assets/js/main.js"></script>
+</body>
+</html>

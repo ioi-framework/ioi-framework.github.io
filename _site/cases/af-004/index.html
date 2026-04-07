@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Volume Shadow Copy Complete Deletion — IoI Framework</title>
+  <meta name="description" content="All VSS deleted; VSS infrastructure files persist in MFT but GUID snapshot directories are absent; UsnJrnl confirms deletion activity.">
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="canonical" href="http://localhost:4000/cases/af-004/">
+</head>
+<body>
+
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <a class="nav-brand" href="/">IoI <span>Framework</span></a>
+      <ul class="nav-links" id="nav-links">
+        
+          <li>
+            <a href="/"
+               >Home</a>
+          </li>
+        
+          <li>
+            <a href="/quickstart/"
+               >Quick Start</a>
+          </li>
+        
+          <li>
+            <a href="/cases/"
+               class="active"
+               >Cases</a>
+          </li>
+        
+          <li>
+            <a href="/rules/"
+               >IoI Rules</a>
+          </li>
+        
+          <li>
+            <a href="/instantiators/"
+               >Instantiators</a>
+          </li>
+        
+          <li>
+            <a href="/artifacts/"
+               >Artifacts</a>
+          </li>
+        
+          <li>
+            <a href="/community/"
+               >Contribute</a>
+          </li>
+        
+          <li>
+            <a href="https://github.com/ioi-framework/ioi-framework"
+               class="external" target="_blank" rel="noopener"
+               >GitHub</a>
+          </li>
+        
+      </ul>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu">&#9776;</button>
+    </div>
+  </nav>
+
+  <main><div class="page-wrap">
+  <a href="/cases/" class="back-link">← All cases</a>
+
+  <div class="detail-header">
+    <div class="detail-id">AF-004 · Structural</div>
+    <div class="detail-title">Volume Shadow Copy Complete Deletion</div>
+    <div class="detail-meta">
+      
+
+  <span class="badge badge-green" style="font-size:0.65rem;">✓ Validated</span>
+
+
+      
+        <span class="tag">vss</span>
+      
+        <span class="tag">event-logs</span>
+      
+      
+        <span class="tag">Windows 10</span>
+      
+    </div>
+    <div class="contrib-line">
+      Contributed by <strong>@ioi-framework</strong> · 2025-01-01
+      
+        · <a href="/rules/ioi-004/">View IoI rule →</a>
+      
+    </div>
+  </div>
+
+  
+  <div class="artifact-strip">
+    <span class="artifact-strip-label">Dependent artifacts</span>
+    
+      <span class="tag">$MFT</span>
+    
+      <span class="tag">$UsnJrnl</span>
+    
+  </div>
+  
+
+  <div class="prose"><h2 id="summary">Summary</h2>
+
+<p>This case models an anti-forensic tactic where Volume Shadow Copies (VSCs) are deleted to eliminate system restore points that could reveal prior system states. The detection identifies when VSS infrastructure files exist in the System Volume Information folder, but the corresponding GUID directories (which contain actual shadow copy data) have been deleted. USN Journal entries confirm the deletion activity.</p>
+
+<h2 id="scenario-steps">Scenario Steps</h2>
+
+<p><strong>1. Set Up</strong> — Launched Windows 10 Pro x64 VM with System Protection and VSS configured. Used <code class="language-plaintext highlighter-rouge">wmic shadowcopy call create Volume="C:\"</code> to generate a restore point.</p>
+
+<p><strong>2. Tampering</strong> — Deleted all shadow copies with: <code class="language-plaintext highlighter-rouge">vssadmin delete shadows /all /quiet</code></p>
+
+<p><strong>3. Evidence Collection</strong> — Extracted <code class="language-plaintext highlighter-rouge">$MFT</code> and <code class="language-plaintext highlighter-rouge">$UsnJrnl:$J</code> from the NTFS volume.</p>
+
+<h2 id="ground-truth-criteria">Ground Truth Criteria</h2>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">$MFT</code> shows VSS infrastructure files exist (<code class="language-plaintext highlighter-rouge">tracking.log</code>, <code class="language-plaintext highlighter-rouge">IndexerVolumeGuid</code>, <code class="language-plaintext highlighter-rouge">_OnDiskSnapshotProp</code>) in System Volume Information</li>
+  <li><code class="language-plaintext highlighter-rouge">$MFT</code> shows GUID directories are missing (no <code class="language-plaintext highlighter-rouge">{XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX}</code> folders)</li>
+  <li><code class="language-plaintext highlighter-rouge">$UsnJrnl</code> shows GUID directory deletions with indicators: <code class="language-plaintext highlighter-rouge">FileDelete</code>, <code class="language-plaintext highlighter-rouge">FileDeleteClose</code>, <code class="language-plaintext highlighter-rouge">DataTruncation</code></li>
+</ul>
+
+<h2 id="inconsistency-summary">Inconsistency Summary</h2>
+
+<p>VSS infrastructure files exist in System Volume Information, indicating VSS was configured. However, the GUID directories that contain actual shadow copy data are missing from MFT. USN Journal confirms these GUID directories were deleted — the attacker deleted recovery points while leaving infrastructure traces behind.</p>
+
+<h2 id="detection-logic">Detection Logic</h2>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">-- Step 1: Find VSS infrastructure files in MFT</span>
+<span class="n">FIND</span> <span class="n">mft_vss</span> <span class="k">WHERE</span> <span class="n">mft_vss</span><span class="p">.</span><span class="n">ParentPath</span> <span class="k">CONTAINS</span> <span class="s1">'System Volume Information'</span>
+  <span class="k">AND</span> <span class="n">mft_vss</span><span class="p">.</span><span class="n">FileName</span> <span class="k">IN</span> <span class="p">(</span><span class="s1">'tracking.log'</span><span class="p">,</span> <span class="s1">'IndexerVolumeGuid'</span><span class="p">,</span> <span class="s1">'_OnDiskSnapshotProp'</span><span class="p">)</span>
+  <span class="k">RETURN</span> <span class="n">FileName</span> <span class="k">AS</span> <span class="n">vss_infrastructure</span>
+
+<span class="c1">-- Step 2: Check if GUID directories exist in MFT</span>
+<span class="n">FIND</span> <span class="n">mft_guid</span> <span class="k">WHERE</span> <span class="n">mft_guid</span><span class="p">.</span><span class="n">ParentPath</span> <span class="k">CONTAINS</span> <span class="s1">'System Volume Information'</span>
+  <span class="k">AND</span> <span class="n">mft_guid</span><span class="p">.</span><span class="n">FileName</span> <span class="n">MATCHES</span> <span class="n">GUID</span> <span class="n">pattern</span>
+  <span class="k">AND</span> <span class="n">mft_guid</span><span class="p">.</span><span class="n">isDirectory</span> <span class="o">=</span> <span class="k">true</span>
+  <span class="k">RETURN</span> <span class="n">FileName</span> <span class="k">AS</span> <span class="n">guid_directory</span>
+
+<span class="c1">-- Step 3: Find USN evidence of GUID deletion</span>
+<span class="n">FIND</span> <span class="n">usn_entries</span> <span class="k">WHERE</span> <span class="n">usn_entries</span><span class="p">.</span><span class="n">FileName</span> <span class="n">MATCHES</span> <span class="n">GUID</span> <span class="n">pattern</span>
+  <span class="k">AND</span> <span class="n">usn_entries</span><span class="p">.</span><span class="n">updateReasons</span> <span class="k">CONTAINS</span> <span class="p">(</span><span class="s1">'FileDelete'</span> <span class="k">OR</span> <span class="s1">'FileDeleteClose'</span> <span class="k">OR</span> <span class="s1">'DataTruncation'</span><span class="p">)</span>
+  <span class="k">RETURN</span> <span class="n">FileName</span> <span class="k">AS</span> <span class="n">deleted_guid</span><span class="p">,</span> <span class="n">updateReasons</span>
+
+<span class="c1">-- Detection Rule</span>
+<span class="n">IF</span> <span class="n">vss_infrastructure</span> <span class="k">EXISTS</span> <span class="k">IN</span> <span class="n">mft_vss</span>
+  <span class="k">AND</span> <span class="n">guid_directory</span> <span class="k">NOT</span> <span class="k">EXISTS</span> <span class="k">IN</span> <span class="n">mft_guid</span>
+  <span class="k">AND</span> <span class="n">deleted_guid</span> <span class="k">EXISTS</span> <span class="k">IN</span> <span class="n">usn_entries</span>
+<span class="k">THEN</span> <span class="n">FLAG</span> <span class="s1">'AF-004: Volume Shadow Copy Purge Detected'</span>
+</code></pre></div></div>
+</div>
+</div>
+</main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <span>© 2026 IoI Research Team · Forensic Science International: Digital Investigation</span>
+      <div class="footer-links">
+        <a href="/community/">Contribute</a>
+        <a href="https://github.com/ioi-framework/ioi-framework" target="_blank" rel="noopener">GitHub ↗</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/assets/js/main.js"></script>
+</body>
+</html>

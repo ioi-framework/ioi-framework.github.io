@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cases — IoI Framework</title>
+  <meta name="description" content="Anti-forensic scenarios contributed by the IoI community.">
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="canonical" href="http://localhost:4000/cases/">
+</head>
+<body>
+
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <a class="nav-brand" href="/">IoI <span>Framework</span></a>
+      <ul class="nav-links" id="nav-links">
+        
+          <li>
+            <a href="/"
+               >Home</a>
+          </li>
+        
+          <li>
+            <a href="/quickstart/"
+               >Quick Start</a>
+          </li>
+        
+          <li>
+            <a href="/cases/"
+               class="active"
+               >Cases</a>
+          </li>
+        
+          <li>
+            <a href="/rules/"
+               >IoI Rules</a>
+          </li>
+        
+          <li>
+            <a href="/instantiators/"
+               >Instantiators</a>
+          </li>
+        
+          <li>
+            <a href="/artifacts/"
+               >Artifacts</a>
+          </li>
+        
+          <li>
+            <a href="/community/"
+               >Contribute</a>
+          </li>
+        
+          <li>
+            <a href="https://github.com/ioi-framework/ioi-framework"
+               class="external" target="_blank" rel="noopener"
+               >GitHub</a>
+          </li>
+        
+      </ul>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu">&#9776;</button>
+    </div>
+  </nav>
+
+  <main><div class="page-wrap">
+  <h1 class="page-title">Cases</h1>
+  <p class="page-subtitle">
+    Anti-forensic scenarios with ground-truth specifications, dependent artifact lists, and linked IoI rules.
+    Contributions welcome — see the <a href="/community/">contribution guide</a>.
+  </p>
+
+  <!-- Stats row -->
+  <div style="display:flex;gap:2rem;flex-wrap:wrap;margin-bottom:1.75rem;font-size:0.82rem;color:var(--ink-light);">
+    <span><strong style="color:var(--ink);">5</strong> total cases</span>
+    <span><strong style="color:var(--green);">5</strong> validated</span>
+    <span><strong style="color:var(--amber);">0</strong> community</span>
+  </div>
+
+  <!-- Filter bar -->
+  <div class="filter-bar">
+    <button class="filter-btn active-filter" data-filter="all"
+      style="background:var(--accent);color:#fff;border:1px solid var(--accent);">All</button>
+    <button class="filter-btn" data-filter="temporal"
+      style="border:1px solid #aac4e0;background:#eef4fb;color:#1a4a7a;">Temporal</button>
+    <button class="filter-btn" data-filter="structural"
+      style="border:1px solid #b8d4b8;background:#eef6ee;color:#1a5a1a;">Structural</button>
+    <button class="filter-btn" data-filter="semantic"
+      style="border:1px solid #e0c8a0;background:#fdf6e8;color:#7a5a00;">Semantic</button>
+    <button class="filter-btn" data-filter="validated"
+      style="border:1px solid #b8ddc8;background:#e8f5ee;color:#1a6640;">Validated only</button>
+  </div>
+
+  <!-- Case list -->
+  <div id="cases-grid" style="display:flex;flex-direction:column;gap:0.75rem;">
+    
+    
+    <a class="card" href="/cases/af-002/"
+       data-category="semantic"
+       data-status="validated"
+       style="display:grid;grid-template-columns:100px 1fr;gap:1.25rem;align-items:start;">
+      <div>
+        <div style="font-family:var(--mono);font-size:0.62rem;color:var(--ink-light);margin-bottom:0.3rem;text-transform:uppercase;letter-spacing:0.06em;">Case ID</div>
+        <div style="font-family:var(--serif);font-weight:600;font-size:1.35rem;color:var(--accent);line-height:1;">AF-002</div>
+        <div style="margin-top:0.4rem;">
+          <span class="tag tag-semantic">Semantic</span>
+        </div>
+      </div>
+      <div>
+        <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.25rem;">
+          <h3 style="margin:0;">Selective Browser History Removal</h3>
+          
+
+  <span class="badge badge-green" style="font-size:0.65rem;">✓ Validated</span>
+
+
+        </div>
+        <p style="margin-bottom:0.5rem;">Selective removal of visited sites from Chrome History (SQLite), detected via IndexedDB cache presence and USN journal modification indicators.</p>
+        <div class="card-footer">
+          <span class="tag">Chrome History</span><span class="tag">IndexedDB</span><span class="tag">$MFT</span><span class="tag">$UsnJrnl</span>
+        </div>
+        <div class="card-contrib">@ioi-framework · 2025-01-01</div>
+      </div>
+    </a>
+    
+    <a class="card" href="/cases/af-004/"
+       data-category="structural"
+       data-status="validated"
+       style="display:grid;grid-template-columns:100px 1fr;gap:1.25rem;align-items:start;">
+      <div>
+        <div style="font-family:var(--mono);font-size:0.62rem;color:var(--ink-light);margin-bottom:0.3rem;text-transform:uppercase;letter-spacing:0.06em;">Case ID</div>
+        <div style="font-family:var(--serif);font-weight:600;font-size:1.35rem;color:var(--accent);line-height:1;">AF-004</div>
+        <div style="margin-top:0.4rem;">
+          <span class="tag tag-structural">Structural</span>
+        </div>
+      </div>
+      <div>
+        <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.25rem;">
+          <h3 style="margin:0;">Volume Shadow Copy Complete Deletion</h3>
+          
+
+  <span class="badge badge-green" style="font-size:0.65rem;">✓ Validated</span>
+
+
+        </div>
+        <p style="margin-bottom:0.5rem;">All VSS deleted; VSS infrastructure files persist in MFT but GUID snapshot directories are absent; UsnJrnl confirms deletion activity.</p>
+        <div class="card-footer">
+          <span class="tag">$MFT</span><span class="tag">$UsnJrnl</span>
+        </div>
+        <div class="card-contrib">@ioi-framework · 2025-01-01</div>
+      </div>
+    </a>
+    
+    <a class="card" href="/cases/af-007/"
+       data-category="temporal"
+       data-status="validated"
+       style="display:grid;grid-template-columns:100px 1fr;gap:1.25rem;align-items:start;">
+      <div>
+        <div style="font-family:var(--mono);font-size:0.62rem;color:var(--ink-light);margin-bottom:0.3rem;text-transform:uppercase;letter-spacing:0.06em;">Case ID</div>
+        <div style="font-family:var(--serif);font-weight:600;font-size:1.35rem;color:var(--accent);line-height:1;">AF-007</div>
+        <div style="margin-top:0.4rem;">
+          <span class="tag tag-temporal">Temporal</span>
+        </div>
+      </div>
+      <div>
+        <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.25rem;">
+          <h3 style="margin:0;">Security Event Log Clearance and Repopulation</h3>
+          
+
+  <span class="badge badge-green" style="font-size:0.65rem;">✓ Validated</span>
+
+
+        </div>
+        <p style="margin-bottom:0.5rem;">Security.evtx cleared and repopulated; Event 1102 and USN DataTruncation timestamps reveal the ordering contradiction between log clearance and subsequent repopulation.</p>
+        <div class="card-footer">
+          <span class="tag">Security.evtx</span><span class="tag">$UsnJrnl</span>
+        </div>
+        <div class="card-contrib">@ioi-framework · 2025-01-01</div>
+      </div>
+    </a>
+    
+    <a class="card" href="/cases/af-011/"
+       data-category="temporal"
+       data-status="validated"
+       style="display:grid;grid-template-columns:100px 1fr;gap:1.25rem;align-items:start;">
+      <div>
+        <div style="font-family:var(--mono);font-size:0.62rem;color:var(--ink-light);margin-bottom:0.3rem;text-transform:uppercase;letter-spacing:0.06em;">Case ID</div>
+        <div style="font-family:var(--serif);font-weight:600;font-size:1.35rem;color:var(--accent);line-height:1;">AF-011</div>
+        <div style="margin-top:0.4rem;">
+          <span class="tag tag-temporal">Temporal</span>
+        </div>
+      </div>
+      <div>
+        <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.25rem;">
+          <h3 style="margin:0;">Timestamp Forging via Timestomper (LNK Corroboration)</h3>
+          
+
+  <span class="badge badge-green" style="font-size:0.65rem;">✓ Validated</span>
+
+
+        </div>
+        <p style="margin-bottom:0.5rem;">Filesystem timestamps forged via timestomper.exe; LNK shortcut metadata retains original creation time, diverging from forged SI timestamp.</p>
+        <div class="card-footer">
+          <span class="tag">LNK</span><span class="tag">$MFT</span>
+        </div>
+        <div class="card-contrib">@ioi-framework · 2025-01-01</div>
+      </div>
+    </a>
+    
+    <a class="card" href="/cases/af-012/"
+       data-category="temporal"
+       data-status="validated"
+       style="display:grid;grid-template-columns:100px 1fr;gap:1.25rem;align-items:start;">
+      <div>
+        <div style="font-family:var(--mono);font-size:0.62rem;color:var(--ink-light);margin-bottom:0.3rem;text-transform:uppercase;letter-spacing:0.06em;">Case ID</div>
+        <div style="font-family:var(--serif);font-weight:600;font-size:1.35rem;color:var(--accent);line-height:1;">AF-012</div>
+        <div style="margin-top:0.4rem;">
+          <span class="tag tag-temporal">Temporal</span>
+        </div>
+      </div>
+      <div>
+        <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.25rem;">
+          <h3 style="margin:0;">Office Metadata Timestamp Contradiction</h3>
+          
+
+  <span class="badge badge-green" style="font-size:0.65rem;">✓ Validated</span>
+
+
+        </div>
+        <p style="margin-bottom:0.5rem;">Filesystem timestamps forged via timestomper.exe; embedded Office core.xml creation time predates the forged SI timestamp in a cross-graph join.</p>
+        <div class="card-footer">
+          <span class="tag">Office core.xml</span><span class="tag">$MFT</span>
+        </div>
+        <div class="card-contrib">@ioi-framework · 2025-01-01</div>
+      </div>
+    </a>
+    
+  </div>
+</div>
+</main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <span>© 2026 IoI Research Team</span>
+      <div class="footer-links">
+        <a href="/community/">Contribute</a>
+        <a href="https://github.com/ioi-framework/ioi-framework" target="_blank" rel="noopener">GitHub ↗</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/assets/js/main.js"></script>
+</body>
+</html>

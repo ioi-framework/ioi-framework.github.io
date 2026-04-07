@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Windows Event Log (EVTX) Instantiator — IoI Framework</title>
+  <meta name="description" content="Indicator of Inconsistency — A community-driven SPARQL framework for detecting cross-artifact contradictions in digital forensic investigations.">
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="canonical" href="http://localhost:4000/instantiators/inst-004/">
+</head>
+<body>
+
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <a class="nav-brand" href="/">IoI <span>Framework</span></a>
+      <ul class="nav-links" id="nav-links">
+        
+          <li>
+            <a href="/"
+               >Home</a>
+          </li>
+        
+          <li>
+            <a href="/quickstart/"
+               >Quick Start</a>
+          </li>
+        
+          <li>
+            <a href="/cases/"
+               >Cases</a>
+          </li>
+        
+          <li>
+            <a href="/rules/"
+               >IoI Rules</a>
+          </li>
+        
+          <li>
+            <a href="/instantiators/"
+               class="active"
+               >Instantiators</a>
+          </li>
+        
+          <li>
+            <a href="/artifacts/"
+               >Artifacts</a>
+          </li>
+        
+          <li>
+            <a href="/community/"
+               >Contribute</a>
+          </li>
+        
+          <li>
+            <a href="https://github.com/ioi-framework/ioi-framework"
+               class="external" target="_blank" rel="noopener"
+               >GitHub</a>
+          </li>
+        
+      </ul>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu">&#9776;</button>
+    </div>
+  </nav>
+
+  <main><div class="page-wrap">
+  <a href="/instantiators/" class="back-link">← All instantiators</a>
+
+  <div class="detail-header">
+    <div class="detail-id">INST-004 · Instantiator · Security.evtx</div>
+    <div class="detail-title">Windows Event Log (EVTX) Instantiator</div>
+    <div class="detail-meta">
+      
+
+  <span class="badge badge-green" style="font-size:0.65rem;">✓ Validated</span>
+
+
+      <span class="tag">EvtxECmd</span>
+      <span class="tag">CSV → </span>
+      <span class="tag">Python 3.9+</span>
+    </div>
+    <div class="contrib-line">
+      Contributed by <strong>@ioi-framework</strong> · 2025-01-01
+    </div>
+  </div>
+
+  
+  <div class="inst-note-box">
+    <div class="inst-note-label">Note</div>
+    <div class="inst-note-text">Designed for Security.evtx but the template generalises to any EVTX channel by changing the ioi-ext:channel value.</div>
+  </div>
+  
+
+  <div class="inst-action-row">
+    
+    <a class="inst-dl-btn"
+       href="https://github.com/ioi-framework/ioi-framework/blob/main/instantiators/evtx_instantiator.py"
+       target="_blank" rel="noopener">
+      <span class="inst-dl-icon">↓</span>
+      <span>
+        <span class="inst-dl-label">Script</span>
+        <span class="inst-dl-name">evtx_instantiator.py</span>
+      </span>
+    </a>
+    
+    
+    <a class="inst-dl-btn"
+       href="https://github.com/ioi-framework/ioi-framework/tree/main/instantiators/templates/evtx"
+       target="_blank" rel="noopener">
+      <span class="inst-dl-icon">↗</span>
+      <span>
+        <span class="inst-dl-label">Templates</span>
+        <span class="inst-dl-name">evtx/</span>
+      </span>
+    </a>
+    
+  </div>
+
+  
+  <div class="inst-deps">
+    <span class="inst-deps-label">Dependencies</span>
+    <code>rdflib>=6.0</code><span style="color:var(--rule);margin:0 0.2rem;">·</span><code>pandas>=1.3</code>
+  </div>
+  
+
+  <div class="prose"><h2 id="overview">Overview</h2>
+
+<p>Maps EvtxECmd CSV output to CASE/UCO-compliant JSON-LD using <code class="language-plaintext highlighter-rouge">observable:EventRecordFacet</code> for standard event fields and <code class="language-plaintext highlighter-rouge">ioi-ext:EventLogFacet</code> for channel metadata. Used by IoI rule IOI-007.</p>
+
+<h2 id="input-fields-consumed">Input fields consumed</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>CSV field (EvtxECmd)</th>
+      <th>Mapped to</th>
+      <th>Notes</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">EventId</code></td>
+      <td><code class="language-plaintext highlighter-rouge">observable:eventID</code></td>
+      <td>Stored as string for SPARQL string-match</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">TimeCreated</code></td>
+      <td><code class="language-plaintext highlighter-rouge">observable:startTime</code></td>
+      <td>ISO-8601</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">Payload</code></td>
+      <td><code class="language-plaintext highlighter-rouge">observable:eventRecordText</code></td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">Channel</code></td>
+      <td><code class="language-plaintext highlighter-rouge">ioi-ext:channel</code></td>
+      <td>e.g. <code class="language-plaintext highlighter-rouge">Security</code></td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">Computer</code></td>
+      <td><code class="language-plaintext highlighter-rouge">ioi-ext:computer</code></td>
+      <td>Optional</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="usage">Usage</h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python instantiators/evtx_instantiator.py <span class="se">\</span>
+  <span class="nt">--input</span>   cases/data/AF-NNN/post-manipulation/security_post.csv <span class="se">\</span>
+  <span class="nt">--channel</span> Security <span class="se">\</span>
+  <span class="nt">--output</span>  cases/data/AF-NNN/graphs/security_case.jsonld <span class="se">\</span>
+  <span class="nt">--graph-iri</span> http://ioi/security_caseN
+</code></pre></div></div>
+</div>
+</div>
+</main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <span>© 2026 IoI Research Team · Forensic Science International: Digital Investigation</span>
+      <div class="footer-links">
+        <a href="/community/">Contribute</a>
+        <a href="https://github.com/ioi-framework/ioi-framework" target="_blank" rel="noopener">GitHub ↗</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/assets/js/main.js"></script>
+</body>
+</html>

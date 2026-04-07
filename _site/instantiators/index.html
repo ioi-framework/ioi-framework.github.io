@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Template Instantiators — IoI Framework</title>
+  <meta name="description" content="Python scripts that map forensic artifact parser output to CASE/UCO JSON-LD knowledge graphs.">
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="canonical" href="http://localhost:4000/instantiators/">
+</head>
+<body>
+
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <a class="nav-brand" href="/">IoI <span>Framework</span></a>
+      <ul class="nav-links" id="nav-links">
+        
+          <li>
+            <a href="/"
+               >Home</a>
+          </li>
+        
+          <li>
+            <a href="/quickstart/"
+               >Quick Start</a>
+          </li>
+        
+          <li>
+            <a href="/cases/"
+               >Cases</a>
+          </li>
+        
+          <li>
+            <a href="/rules/"
+               >IoI Rules</a>
+          </li>
+        
+          <li>
+            <a href="/instantiators/"
+               class="active"
+               >Instantiators</a>
+          </li>
+        
+          <li>
+            <a href="/artifacts/"
+               >Artifacts</a>
+          </li>
+        
+          <li>
+            <a href="/community/"
+               >Contribute</a>
+          </li>
+        
+          <li>
+            <a href="https://github.com/ioi-framework/ioi-framework"
+               class="external" target="_blank" rel="noopener"
+               >GitHub</a>
+          </li>
+        
+      </ul>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu">&#9776;</button>
+    </div>
+  </nav>
+
+  <main><div class="page-wrap">
+  <h1 class="page-title">Template Instantiators</h1>
+  <p class="page-subtitle">
+    Python scripts that map artifact-specific parser CSV/XML output to CASE/UCO-compliant JSON-LD graphs,
+    ready for IoI rule evaluation. Each instantiator targets one artifact type and one upstream parser.
+  </p>
+
+  <div style="display:flex;gap:2rem;flex-wrap:wrap;margin-bottom:1.75rem;font-size:0.82rem;color:var(--ink-light);">
+    <span><strong style="color:var(--ink);">5</strong> instantiators</span>
+    <span><strong style="color:var(--green);">5</strong> validated</span>
+  </div>
+
+  <div id="inst-grid" class="inst-list">
+    
+    
+    <a class="inst-row" href="/instantiators/inst-001/" data-status="validated">
+      <div class="inst-row-left">
+        <div class="inst-row-id">INST-001</div>
+        <div class="inst-row-title">NTFS $MFT Instantiator</div>
+        
+        <div class="inst-row-note">Handles both $MFT record-level fields ($SI and $FN timestamps, entry number, parent path) and extended attributes used by IoI rules IOI-011 and IOI-012.</div>
+        
+      </div>
+      <div class="inst-row-right">
+        
+
+  <span class="badge badge-green" style="font-size:0.65rem;">✓ Validated</span>
+
+
+        <span class="tag">$MFT</span>
+        <span class="tag">MFTECmd</span>
+        
+        <span style="font-family:var(--mono);font-size:0.62rem;color:var(--accent-mid);background:var(--accent-light);padding:0.1rem 0.4rem;border-radius:2px;">mft_instantiator.py</span>
+        
+      </div>
+    </a>
+    
+    <a class="inst-row" href="/instantiators/inst-002/" data-status="validated">
+      <div class="inst-row-left">
+        <div class="inst-row-id">INST-002</div>
+        <div class="inst-row-title">NTFS $UsnJrnl Instantiator</div>
+        
+        <div class="inst-row-note">Parses $UsnJrnl:$J CSV output from MFTECmd. updateReasons field is a semicolon-delimited string; the instantiator preserves the full string for SPARQL CONTAINS() filtering.</div>
+        
+      </div>
+      <div class="inst-row-right">
+        
+
+  <span class="badge badge-green" style="font-size:0.65rem;">✓ Validated</span>
+
+
+        <span class="tag">$UsnJrnl</span>
+        <span class="tag">MFTECmd</span>
+        
+        <span style="font-family:var(--mono);font-size:0.62rem;color:var(--accent-mid);background:var(--accent-light);padding:0.1rem 0.4rem;border-radius:2px;">usn_instantiator.py</span>
+        
+      </div>
+    </a>
+    
+    <a class="inst-row" href="/instantiators/inst-003/" data-status="validated">
+      <div class="inst-row-left">
+        <div class="inst-row-id">INST-003</div>
+        <div class="inst-row-title">Windows LNK Instantiator</div>
+        
+        <div class="inst-row-note">Extracts targetMftEntryNumber for cross-reference with $MFT entry numbers in IOI-011.</div>
+        
+      </div>
+      <div class="inst-row-right">
+        
+
+  <span class="badge badge-green" style="font-size:0.65rem;">✓ Validated</span>
+
+
+        <span class="tag">LNK</span>
+        <span class="tag">LECmd</span>
+        
+        <span style="font-family:var(--mono);font-size:0.62rem;color:var(--accent-mid);background:var(--accent-light);padding:0.1rem 0.4rem;border-radius:2px;">lnk_instantiator.py</span>
+        
+      </div>
+    </a>
+    
+    <a class="inst-row" href="/instantiators/inst-004/" data-status="validated">
+      <div class="inst-row-left">
+        <div class="inst-row-id">INST-004</div>
+        <div class="inst-row-title">Windows Event Log (EVTX) Instantiator</div>
+        
+        <div class="inst-row-note">Designed for Security.evtx but the template generalises to any EVTX channel by changing the ioi-ext:channel value.</div>
+        
+      </div>
+      <div class="inst-row-right">
+        
+
+  <span class="badge badge-green" style="font-size:0.65rem;">✓ Validated</span>
+
+
+        <span class="tag">Security.evtx</span>
+        <span class="tag">EvtxECmd</span>
+        
+        <span style="font-family:var(--mono);font-size:0.62rem;color:var(--accent-mid);background:var(--accent-light);padding:0.1rem 0.4rem;border-radius:2px;">evtx_instantiator.py</span>
+        
+      </div>
+    </a>
+    
+    <a class="inst-row" href="/instantiators/inst-005/" data-status="validated">
+      <div class="inst-row-left">
+        <div class="inst-row-id">INST-005</div>
+        <div class="inst-row-title">Office XML Metadata Instantiator</div>
+        
+        <div class="inst-row-note">Accepts .docx/.xlsx/.pptx files directly (extracts core.xml via Python zipfile) or pre-extracted folders. Joins MFT timestamps with core.xml metadata by filename for IOI-012 timestomping detection.</div>
+        
+      </div>
+      <div class="inst-row-right">
+        
+
+  <span class="badge badge-green" style="font-size:0.65rem;">✓ Validated</span>
+
+
+        <span class="tag">Office core.xml</span>
+        <span class="tag">Python zipfile</span>
+        
+        <span style="font-family:var(--mono);font-size:0.62rem;color:var(--accent-mid);background:var(--accent-light);padding:0.1rem 0.4rem;border-radius:2px;">office_xml_instantiator.py</span>
+        
+      </div>
+    </a>
+    
+  </div>
+
+  <div style="margin-top:2.5rem;padding-top:1.5rem;border-top:1px solid var(--rule);">
+    <h2 style="font-family:var(--serif);font-weight:600;font-size:1rem;margin-bottom:0.6rem;">Contributing instantiators</h2>
+    <p style="font-size:0.88rem;color:var(--ink-mid);">
+      Instantiators for new artifact types or parsers can be submitted as PRs. See
+      <a href="https://github.com/ioi-framework/ioi-framework/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">CONTRIBUTING.md ↗</a>
+      for the front-matter schema and the <code>instantiators/</code> script requirements.
+    </p>
+  </div>
+</div>
+</main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <span>© 2026 IoI Research Team</span>
+      <div class="footer-links">
+        <a href="/community/">Contribute</a>
+        <a href="https://github.com/ioi-framework/ioi-framework" target="_blank" rel="noopener">GitHub ↗</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/assets/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Timestamp Forging via Timestomper (LNK Corroboration) — IoI Framework</title>
+  <meta name="description" content="Filesystem timestamps forged via timestomper.exe; LNK shortcut metadata retains original creation time, diverging from forged SI timestamp.">
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="canonical" href="http://localhost:4000/cases/af-011/">
+</head>
+<body>
+
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <a class="nav-brand" href="/">IoI <span>Framework</span></a>
+      <ul class="nav-links" id="nav-links">
+        
+          <li>
+            <a href="/"
+               >Home</a>
+          </li>
+        
+          <li>
+            <a href="/quickstart/"
+               >Quick Start</a>
+          </li>
+        
+          <li>
+            <a href="/cases/"
+               class="active"
+               >Cases</a>
+          </li>
+        
+          <li>
+            <a href="/rules/"
+               >IoI Rules</a>
+          </li>
+        
+          <li>
+            <a href="/instantiators/"
+               >Instantiators</a>
+          </li>
+        
+          <li>
+            <a href="/artifacts/"
+               >Artifacts</a>
+          </li>
+        
+          <li>
+            <a href="/community/"
+               >Contribute</a>
+          </li>
+        
+          <li>
+            <a href="https://github.com/ioi-framework/ioi-framework"
+               class="external" target="_blank" rel="noopener"
+               >GitHub</a>
+          </li>
+        
+      </ul>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu">&#9776;</button>
+    </div>
+  </nav>
+
+  <main><div class="page-wrap">
+  <a href="/cases/" class="back-link">← All cases</a>
+
+  <div class="detail-header">
+    <div class="detail-id">AF-011 · Temporal</div>
+    <div class="detail-title">Timestamp Forging via Timestomper (LNK Corroboration)</div>
+    <div class="detail-meta">
+      
+
+  <span class="badge badge-green" style="font-size:0.65rem;">✓ Validated</span>
+
+
+      
+        <span class="tag">timestamp-manipulation</span>
+      
+      
+        <span class="tag">Windows 10</span>
+      
+    </div>
+    <div class="contrib-line">
+      Contributed by <strong>@ioi-framework</strong> · 2025-01-01
+      
+        · <a href="/rules/ioi-011/">View IoI rule →</a>
+      
+    </div>
+  </div>
+
+  
+  <div class="artifact-strip">
+    <span class="artifact-strip-label">Dependent artifacts</span>
+    
+      <span class="tag">LNK</span>
+    
+      <span class="tag">$MFT</span>
+    
+  </div>
+  
+
+  <div class="prose"><h2 id="summary">Summary</h2>
+
+<p>This case demonstrates timestomping detection using LNK (shortcut) file analysis. When a file is timestomped using <code class="language-plaintext highlighter-rouge">timestomper.exe</code>, the MFT <code class="language-plaintext highlighter-rouge">$STANDARD_INFORMATION</code> (0x10) timestamps are modified. However, LNK shortcut files preserve the original target file timestamps from when the shortcut was created. Comparing LNK timestamps with current MFT timestamps reveals the forgery.</p>
+
+<h2 id="scenario-steps">Scenario Steps</h2>
+
+<p><strong>1. Set Up</strong> — Created <code class="language-plaintext highlighter-rouge">secret.docx</code> on Windows system. Created shortcut <code class="language-plaintext highlighter-rouge">secret.lnk</code> pointing to <code class="language-plaintext highlighter-rouge">secret.docx</code>. Captured original timestamps of <code class="language-plaintext highlighter-rouge">secret.docx</code>.</p>
+
+<p><strong>2. Tampering</strong> — Used <code class="language-plaintext highlighter-rouge">timestomper.exe</code> to forge timestamps of <code class="language-plaintext highlighter-rouge">secret.docx</code>. The <code class="language-plaintext highlighter-rouge">SetFileTime</code> API modifies MFT <code class="language-plaintext highlighter-rouge">$STANDARD_INFORMATION</code> (0x10) timestamps; <code class="language-plaintext highlighter-rouge">$FILE_NAME</code> (0x30) timestamps remain unchanged.</p>
+
+<p><strong>3. Evidence Collection</strong> — Extracted <code class="language-plaintext highlighter-rouge">$MFT</code> using forensic tools. Extracted <code class="language-plaintext highlighter-rouge">secret.lnk</code> shortcut file. Compared LNK target timestamps with MFT timestamps.</p>
+
+<h2 id="ground-truth-criteria">Ground Truth Criteria</h2>
+
+<ul>
+  <li>LNK shortcut creation time matches MFT <code class="language-plaintext highlighter-rouge">$FILE_NAME</code> (0x30) timestamp — both preserve original time</li>
+  <li>MFT <code class="language-plaintext highlighter-rouge">$STANDARD_INFORMATION</code> (0x10) timestamp differs from LNK and <code class="language-plaintext highlighter-rouge">$FILE_NAME</code> timestamps</li>
+  <li>MFT entry number links LNK target to MFT record</li>
+</ul>
+
+<h2 id="inconsistency-summary">Inconsistency Summary</h2>
+
+<p>When <code class="language-plaintext highlighter-rouge">timestomper.exe</code> modifies <code class="language-plaintext highlighter-rouge">secret.docx</code> timestamps, it only changes the MFT <code class="language-plaintext highlighter-rouge">$STANDARD_INFORMATION</code> (0x10) attribute. The LNK shortcut file retains the original target creation time. The <code class="language-plaintext highlighter-rouge">$FILE_NAME</code> (0x30) attribute in MFT also preserves the original timestamp. Detection: LNK shortcut time ≈ MFT <code class="language-plaintext highlighter-rouge">$FN</code> (0x30), but MFT <code class="language-plaintext highlighter-rouge">$SI</code> (0x10) differs.</p>
+
+<h2 id="detection-logic">Detection Logic</h2>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">-- Step 1: Get LNK file info with target timestamps</span>
+<span class="n">FIND</span> <span class="n">lnk_files</span>
+  <span class="k">RETURN</span> <span class="n">targetMftEntryNumber</span><span class="p">,</span> <span class="n">targetCreatedTime</span><span class="p">,</span> <span class="n">shortcutCreatedTime</span>
+
+<span class="c1">-- Step 2: Get MFT timestamps for same entry number</span>
+<span class="n">FIND</span> <span class="n">mft_entries</span> <span class="k">WHERE</span> <span class="n">mft_entries</span><span class="p">.</span><span class="n">entryNumber</span> <span class="o">=</span> <span class="n">lnk_files</span><span class="p">.</span><span class="n">targetMftEntryNumber</span>
+  <span class="k">RETURN</span> <span class="n">created0x10</span> <span class="k">AS</span> <span class="n">mftSiCreated</span><span class="p">,</span> <span class="n">created0x30</span> <span class="k">AS</span> <span class="n">mftFnCreated</span>
+
+<span class="c1">-- Detection Rule</span>
+<span class="n">IF</span> <span class="n">lnkShortcutCreated</span> <span class="o">!=</span> <span class="n">mftSiCreated</span>
+  <span class="k">AND</span> <span class="n">truncate_to_seconds</span><span class="p">(</span><span class="n">lnkShortcutCreated</span><span class="p">)</span> <span class="o">=</span> <span class="n">truncate_to_seconds</span><span class="p">(</span><span class="n">mftFnCreated</span><span class="p">)</span>
+<span class="k">THEN</span> <span class="n">FLAG</span> <span class="s1">'AF-011: Timestomping Detected via LNK Analysis'</span>
+</code></pre></div></div>
+</div>
+</div>
+</main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <span>© 2026 IoI Research Team · Forensic Science International: Digital Investigation</span>
+      <div class="footer-links">
+        <a href="/community/">Contribute</a>
+        <a href="https://github.com/ioi-framework/ioi-framework" target="_blank" rel="noopener">GitHub ↗</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/assets/js/main.js"></script>
+</body>
+</html>
