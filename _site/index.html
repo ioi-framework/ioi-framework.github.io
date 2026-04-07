@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Indicator of Inconsistency Framework — IoI Framework</title>
+  <meta name="description" content="Indicator of Inconsistency — A community-driven SPARQL framework for detecting cross-artifact contradictions in digital forensic investigations.">
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="canonical" href="http://localhost:4000/">
+</head>
+<body>
+
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <a class="nav-brand" href="/">IoI <span>Framework</span></a>
+      <ul class="nav-links" id="nav-links">
+        
+          <li>
+            <a href="/"
+               class="active"
+               >Home</a>
+          </li>
+        
+          <li>
+            <a href="/quickstart/"
+               >Quick Start</a>
+          </li>
+        
+          <li>
+            <a href="/cases/"
+               >Cases</a>
+          </li>
+        
+          <li>
+            <a href="/rules/"
+               >IoI Rules</a>
+          </li>
+        
+          <li>
+            <a href="/instantiators/"
+               >Instantiators</a>
+          </li>
+        
+          <li>
+            <a href="/artifacts/"
+               >Artifacts</a>
+          </li>
+        
+          <li>
+            <a href="/community/"
+               >Contribute</a>
+          </li>
+        
+          <li>
+            <a href="https://github.com/ioi-framework/ioi-framework"
+               class="external" target="_blank" rel="noopener"
+               >GitHub</a>
+          </li>
+        
+      </ul>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu">&#9776;</button>
+    </div>
+  </nav>
+
+  <main><!-- ── Hero ──────────────────────────────────────────────── -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-label">Digital Forensics · SPARQL · CASE/UCO Ontology</div>
+    <h1>Indicator of <em>Inconsistency</em><br>Framework</h1>
+    <p class="hero-subtitle">
+      A formal framework for detecting cross-artifact contradictions
+      in digital forensic investigations using ontology-driven SPARQL signatures.
+    </p>
+    <div class="hero-badges">
+      <a class="badge badge-outline" href="/quickstart/">Quick start</a>
+      <a class="badge badge-outline" href="https://github.com/ioi-framework" target="_blank" rel="noopener">GitHub ↗</a>
+      <a class="badge badge-green" href="/artifacts/">Datasets &amp; artifacts</a>
+    </div>
+  </div>
+</div>
+
+<!-- ── Abstract ───────────────────────────────────────────── -->
+<div class="abstract-section">
+  <div class="abstract-inner">
+    <div class="abstract-label">Abstract</div>
+    <div class="abstract-text">
+      Identifying complex events and their reconstruction have been an exhaustive task through digital forensic investigations and analyses. We propose an <strong>Indicator of Inconsistency (IoI)</strong> framework that assists investigators in defining inconsistent digital artifacts, which in turn helps highlight events of probative value, such as anti-forensics attempts. IoIs are defined as schema-consistent SPARQL queries that detect contradictions among temporally, structurally, and semantically related artifacts. The framework leverages CASE/UCO ontology graphs and the SPARQL language, along with the corresponding reasoning framework. A proof-of-concept implementation was developed to generate reusable, machine-readable, and interoperable ontology-based knowledge graphs of digital artifacts along with corresponding signatures in SPARQL to detect contradicting artifacts and/or attributes across five curated anti-forensic scenarios.
+    </div>
+  </div>
+</div>
+
+<!-- ── Stats ──────────────────────────────────────────────── -->
+<div style="background:var(--bg-surface);border-bottom:1px solid var(--rule);padding:0.1rem 1.5rem;">
+  <div style="max-width:var(--max-w);margin:0 auto;">
+    <div class="highlights">
+      <div class="highlight-item">
+        <div class="highlight-num">5</div>
+        <div class="highlight-label">Anti-forensic scenarios</div>
+      </div>
+      <div class="highlight-item">
+        <div class="highlight-num">3</div>
+        <div class="highlight-label">IoI categories</div>
+      </div>
+      <div class="highlight-item">
+        <div class="highlight-num">0</div>
+        <div class="highlight-label">False positives</div>
+      </div>
+      <div class="highlight-item">
+        <div class="highlight-num">87M+</div>
+        <div class="highlight-label">RDF triples evaluated</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Cases ──────────────────────────────────────────────── -->
+<div class="section">
+  <div class="section-header">
+    <h2>Anti-forensic scenarios</h2>
+    <a class="section-count" href="/cases/">View all →</a>
+  </div>
+  <div class="card-grid">
+
+    <a class="card" href="/cases/af-002/">
+      <div class="card-tag">AF-002 · Semantic</div>
+      <h3>Browser history selective removal</h3>
+      <p>Chrome History SQLite manipulation detected via IndexedDB cache and USN journal corroboration.</p>
+      <div class="card-footer">
+        <span class="tag tag-semantic">Semantic</span>
+        <span class="tag">Chrome History</span>
+        <span class="tag">$UsnJrnl</span>
+      </div>
+    </a>
+
+    <a class="card" href="/cases/af-004/">
+      <div class="card-tag">AF-004 · Structural</div>
+      <h3>Volume Shadow Copy deletion</h3>
+      <p>VSS infrastructure files present but GUID snapshot directories absent; USN confirms deletion.</p>
+      <div class="card-footer">
+        <span class="tag tag-structural">Structural</span>
+        <span class="tag">$MFT</span>
+        <span class="tag">$UsnJrnl</span>
+      </div>
+    </a>
+
+    <a class="card" href="/cases/af-007/">
+      <div class="card-tag">AF-007 · Temporal</div>
+      <h3>Security event log clearance</h3>
+      <p>Event 1102 and USN DataTruncation ordering reveals log-clearing followed by continued activity.</p>
+      <div class="card-footer">
+        <span class="tag tag-temporal">Temporal</span>
+        <span class="tag">Security.evtx</span>
+        <span class="tag">$UsnJrnl</span>
+      </div>
+    </a>
+
+    <a class="card" href="/cases/af-011/">
+      <div class="card-tag">AF-011 · Temporal</div>
+      <h3>Timestamp forging via timestomper</h3>
+      <p>LNK shortcut timestamps diverge from forged $SI timestamps; $FN timestamps remain intact.</p>
+      <div class="card-footer">
+        <span class="tag tag-temporal">Temporal</span>
+        <span class="tag">LNK</span>
+        <span class="tag">$MFT</span>
+      </div>
+    </a>
+
+    <a class="card" href="/cases/af-012/">
+      <div class="card-tag">AF-012 · Temporal</div>
+      <h3>Office metadata timestamp contradiction</h3>
+      <p>Embedded Office core.xml creation time predates forged filesystem timestamp after cross-graph join.</p>
+      <div class="card-footer">
+        <span class="tag tag-temporal">Temporal</span>
+        <span class="tag">Office XML</span>
+        <span class="tag">$MFT</span>
+      </div>
+    </a>
+
+  </div>
+</div>
+
+<!-- ── IoI Rules ──────────────────────────────────────────── -->
+<div style="background:var(--bg-tint);border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);">
+  <div class="section">
+    <div class="section-header">
+      <h2>IoI rules library</h2>
+      <a class="section-count" href="/rules/">View all →</a>
+    </div>
+    <p style="font-size:0.88rem;color:var(--ink-mid);margin-bottom:1.25rem;">
+      Reusable SPARQL signatures encoding invariant predicates over CASE/UCO knowledge graphs.
+      Each rule is case-agnostic and can be executed against any conformant graph by substituting named graph IRIs.
+    </p>
+    <div class="card-grid">
+      <a class="card" href="/rules/ioi-002/">
+        <div class="card-tag">IOI-002 · Semantic</div>
+        <h3>IndexedDB ↔ History URL check</h3>
+        <p>Detects missing History entries for cached domains with USN corroboration.</p>
+        <div class="card-footer"><span class="tag tag-semantic">Semantic</span></div>
+      </a>
+      <a class="card" href="/rules/ioi-004/">
+        <div class="card-tag">IOI-004 · Structural</div>
+        <h3>VSS directory presence check</h3>
+        <p>Flags absent GUID/Apps shadow directories when VSS infrastructure files exist.</p>
+        <div class="card-footer"><span class="tag tag-structural">Structural</span></div>
+      </a>
+      <a class="card" href="/rules/ioi-007/">
+        <div class="card-tag">IOI-007 · Temporal</div>
+        <h3>Event 1102 + USN ordering</h3>
+        <p>Validates temporal ordering of log-clear event against USN truncation timestamp.</p>
+        <div class="card-footer"><span class="tag tag-temporal">Temporal</span></div>
+      </a>
+    </div>
+  </div>
+</div>
+
+
+</main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <span> ©2026 IoI Research</span>
+      <div class="footer-links">
+        <a href="/community/">Contribute</a>
+        <a href="https://github.com/ioi-framework/ioi-framework" target="_blank" rel="noopener">GitHub ↗</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/assets/js/main.js"></script>
+</body>
+</html>
