@@ -102,8 +102,8 @@
 
   <div class="artifact-strip">
     <span class="artifact-strip-label">Sample JSON-LD</span>
-    <a class="tag" href="https://github.com/ioi-framework/ioi-framework/blob/main/CASES/AF-011/snippets/lnk_files.jsonld" target="_blank" rel="noopener">LNK evaluated graph</a>
-    <a class="tag" href="https://github.com/ioi-framework/ioi-framework/blob/main/CASES/AF-011/snippets/mft_lnk_filtered.jsonld" target="_blank" rel="noopener">MFT evaluated graph</a>
+    <a class="tag" href="https://github.com/ioi-framework/ioi-framework/blob/main/CASES/AF-011/snippets/lnk_repro_sample.jsonld" target="_blank" rel="noopener">LNK reproducible sample</a>
+    <a class="tag" href="https://github.com/ioi-framework/ioi-framework/blob/main/CASES/AF-011/snippets/mft_repro_sample.jsonld" target="_blank" rel="noopener">MFT reproducible sample</a>
   </div>
   
 
@@ -113,11 +113,11 @@
 
 <h2 id="scenario-steps">Scenario Steps</h2>
 
-<p><strong>1. Set Up</strong> — Created <code class="language-plaintext highlighter-rouge">secret.docx</code> on Windows system. Created shortcut <code class="language-plaintext highlighter-rouge">secret.lnk</code> pointing to <code class="language-plaintext highlighter-rouge">secret.docx</code>. Captured original timestamps of <code class="language-plaintext highlighter-rouge">secret.docx</code>.</p>
+<p><strong>1. Set Up</strong> — Created <code class="language-plaintext highlighter-rouge">password.docx</code> on Windows system. Created shortcut <code class="language-plaintext highlighter-rouge">password.lnk</code> pointing to <code class="language-plaintext highlighter-rouge">password.docx</code>. Captured original timestamps of <code class="language-plaintext highlighter-rouge">password.docx</code>.</p>
 
-<p><strong>2. Tampering</strong> — Used <code class="language-plaintext highlighter-rouge">timestomper.exe</code> to forge timestamps of <code class="language-plaintext highlighter-rouge">secret.docx</code>. The <code class="language-plaintext highlighter-rouge">SetFileTime</code> API modifies MFT <code class="language-plaintext highlighter-rouge">$STANDARD_INFORMATION</code> (0x10) timestamps; <code class="language-plaintext highlighter-rouge">$FILE_NAME</code> (0x30) timestamps remain unchanged.</p>
+<p><strong>2. Tampering</strong> — Used <code class="language-plaintext highlighter-rouge">timestomper.exe</code> to forge timestamps of <code class="language-plaintext highlighter-rouge">password.docx</code>. The <code class="language-plaintext highlighter-rouge">SetFileTime</code> API modifies MFT <code class="language-plaintext highlighter-rouge">$STANDARD_INFORMATION</code> (0x10) timestamps; <code class="language-plaintext highlighter-rouge">$FILE_NAME</code> (0x30) timestamps remain unchanged.</p>
 
-<p><strong>3. Evidence Collection</strong> — Extracted <code class="language-plaintext highlighter-rouge">$MFT</code> using forensic tools. Extracted <code class="language-plaintext highlighter-rouge">secret.lnk</code> shortcut file. Compared LNK target timestamps with MFT timestamps.</p>
+<p><strong>3. Evidence Collection</strong> — Extracted <code class="language-plaintext highlighter-rouge">$MFT</code> using forensic tools. Extracted <code class="language-plaintext highlighter-rouge">password.lnk</code> shortcut file. Compared LNK target timestamps with MFT timestamps.</p>
 
 <h2 id="ground-truth-criteria">Ground Truth Criteria</h2>
 
@@ -129,7 +129,7 @@
 
 <h2 id="inconsistency-summary">Inconsistency Summary</h2>
 
-<p>When <code class="language-plaintext highlighter-rouge">timestomper.exe</code> modifies <code class="language-plaintext highlighter-rouge">secret.docx</code> timestamps, it only changes the MFT <code class="language-plaintext highlighter-rouge">$STANDARD_INFORMATION</code> (0x10) attribute. The LNK shortcut file retains the original target creation time. The <code class="language-plaintext highlighter-rouge">$FILE_NAME</code> (0x30) attribute in MFT also preserves the original timestamp. Detection: LNK shortcut time ≈ MFT <code class="language-plaintext highlighter-rouge">$FN</code> (0x30), but MFT <code class="language-plaintext highlighter-rouge">$SI</code> (0x10) differs.</p>
+<p>When <code class="language-plaintext highlighter-rouge">timestomper.exe</code> modifies <code class="language-plaintext highlighter-rouge">password.docx</code> timestamps, it only changes the MFT <code class="language-plaintext highlighter-rouge">$STANDARD_INFORMATION</code> (0x10) attribute. The LNK shortcut file retains the original target creation time. The <code class="language-plaintext highlighter-rouge">$FILE_NAME</code> (0x30) attribute in MFT also preserves the original timestamp. Detection: LNK shortcut time ≈ MFT <code class="language-plaintext highlighter-rouge">$FN</code> (0x30), but MFT <code class="language-plaintext highlighter-rouge">$SI</code> (0x10) differs.</p>
 
 <h2 id="detection-logic">Detection Logic</h2>
 

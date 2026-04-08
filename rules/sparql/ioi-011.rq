@@ -1,1 +1,40 @@
 # IoI SPARQL rule — ioi-011
+PREFIX core: <https://ontology.unifiedcyberontology.org/uco/core/>
+PREFIX observable: <https://ontology.unifiedcyberontology.org/uco/observable/>
+PREFIX ioi-ext: <https://ioi-framework.github.io/ns/ioi-ext/>
+
+SELECT DISTINCT
+  ?lnkFile ?lnkTargetPath ?lnkShortcutCreated
+  ?lnkTargetCreated ?mftSiCreated ?mftFnCreated
+WHERE {
+  {
+    SELECT DISTINCT
+      ?entryNum ?lnkFile ?lnkTargetPath
+      ?lnkTargetCreated ?lnkShortcutCreated
+    WHERE {
+      GRAPH <https://ioi-framework.github.io/cases/AF-011/graphs/lnk> {
+        ?lnkFacet a ioi-ext:WindowsLnkFacet ;
+                  ioi-ext:targetMftEntryNumber ?entryNum ;
+                  ioi-ext:targetCreatedTime ?lnkTargetCreated ;
+                  ioi-ext:targetFilePath ?lnkTargetPath .
+        ?lnkFile core:hasFacet ?lnkFacet .
+        OPTIONAL {
+          ?lnkFile core:hasFacet ?lf .
+          ?lf a observable:FileFacet ;
+              observable:observableCreatedTime ?lnkShortcutCreated .
+        }
+      }
+    }
+  }
+  GRAPH <https://ioi-framework.github.io/cases/AF-011/graphs/mft> {
+    ?mftFacet a ioi-ext:MftFacet ;
+              ioi-ext:entryNumber ?entryNum ;
+              ioi-ext:created0x10 ?mftSiCreated ;
+              ioi-ext:created0x30 ?mftFnCreated .
+  }
+  BIND(SUBSTR(STR(?lnkShortcutCreated), 1, 19) AS ?lnkShortcutCreatedSec)
+  BIND(SUBSTR(STR(?mftFnCreated), 1, 19) AS ?mftFnCreatedSec)
+  FILTER(BOUND(?lnkShortcutCreated) && ?lnkShortcutCreated != ?mftSiCreated)
+  FILTER(?lnkShortcutCreatedSec = ?mftFnCreatedSec)
+}
+ORDER BY ?lnkFile
