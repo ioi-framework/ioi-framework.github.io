@@ -13,14 +13,16 @@ All Level 2 and 3 contributions go through a Pull Request and are peer-reviewed 
 ## Repository structure at a glance
 
 ```
-_cases/               Case pages (one .md per scenario)
-_rules/               IoI rule pages (one .md per rule)
-_instantiators/       Template Instantiator pages (one .md per parser)
-CASES/AF-NNN/         Artifact datasets (CSV/JSON/JSONLD per case)
-RULES/{category}/     SPARQL .rq files organised by category
-instantiators/        Python instantiator scripts
-TEMPLATES/{subdir}/   Case-agnostic CASE/UCO JSON-LD templates
-ontologies/           ioi-ext.ttl namespace definitions
+_cases/                  Case pages (one .md per scenario)
+_rules/                  IoI rule pages (one .md per rule)
+_instantiators/          Template Instantiator pages (one .md per parser)
+CASES/AF-NNN/            Ground truth, snippets, test graphs, mapping notes
+RULES/{category}/        SPARQL .rq files organised by category
+instantiators/           Python instantiator scripts
+instantiators/templates/ Case-agnostic CASE/UCO JSON-LD templates
+ontologies/              ioi-ext.ttl namespace definitions
+registry.json            Artifact registry and linked cases/rules
+playground/              Browser-based graph explorer + SPARQL runner
 ```
 
 ---
@@ -32,7 +34,7 @@ ontologies/           ioi-ext.ttl namespace definitions
 | New anti-forensic case | `_cases/af-NNN.md` + `CASES/AF-NNN/ground_truth.md`                       |
 | New IoI rule           | `_rules/ioi-NNN.md` + `RULES/{category}/IOI-NNN_name.rq`                 |
 | New instantiator       | `_instantiators/inst-NNN.md` + `instantiators/NNN_instantiator.py`       |
-| New CASE/UCO template  | `TEMPLATES/{artifact_type}/` subfolder                                    |
+| New CASE/UCO template  | `instantiators/templates/{artifact_type}/` subfolder                      |
 | ioi-ext property       | Edit `ontologies/ioi-ext.ttl` + update documentation                     |
 | Documentation fix      | Edit site pages directly                                                  |
 
@@ -114,7 +116,7 @@ artifact:     $MFT              # Single artifact type this parser handles
 parser_tool:  MFTECmd           # Upstream parser tool
 input_format: CSV               # CSV | JSON | JSONL | SQLite | XML
 output:       JSON-LD           # Always JSON-LD
-template:     mft               # Subdirectory under TEMPLATES/
+template:     mft               # Subdirectory under instantiators/templates/
 script:       mft_instantiator.py  # Script under instantiators/
 contributor:  "@github-handle"
 date_added:   YYYY-MM-DD
@@ -164,9 +166,18 @@ RULES/{category}/
 To get the correct node/facet structure for the fields you do need:
 
 - **If an existing case uses the same artifact** (e.g. `$MFT`, `$UsnJrnl`, `LNK`) — copy the relevant fields from that case's `CASES/AF-NNN/snippets/` files, replace values with synthetic ones.
-- **If it is a new artifact type** — use `TEMPLATES/{artifact_type}/` as the structure reference.
+- **If it is a new artifact type** — use `instantiators/templates/{artifact_type}/` as the structure reference.
 
 The test graph must use the prefixes `core:`, `observable:`, `ioi-ext:` with their real URIs, and load into named graphs matching the IRIs in your `.rq` file.
+
+**Playground filename convention** — if you want the browser playground to auto-assign the correct named graph IRI, prefix sample files with the case ID. For example, `af011_lnk_repro_sample.jsonld` maps to `.../cases/AF-011/graphs/lnk`. Files without a case prefix fall back to `AF-NEW`, which is useful for new cases but wrong for existing validated cases.
+
+**Rule-writing expectations**
+
+- All rules should use named-graph `GRAPH <IRI>` clauses. Queries without `GRAPH` clauses will not work in the playground.
+- For cross-artifact anti-joins, use `FILTER NOT EXISTS` rather than `MINUS` subqueries.
+- Avoid Virtuoso-only helpers such as `bif:datediff(...)` and `bif:contains(...)` in contributed rules. Prefer portable SPARQL patterns.
+- Use the canonical graph IRI shape `https://ioi-framework.github.io/cases/{CASE_ID}/graphs/{artifact_lower}`.
 
 Then run the local validation script before pushing:
 
