@@ -33,5 +33,14 @@ layout: default
   </div>
   {% endif %}
 
+  {% if page.sample_jsonld %}
+  <div class="artifact-strip">
+    <span class="artifact-strip-label">Sample JSON-LD</span>
+    {% for sample in page.sample_jsonld %}
+      <a class="tag" href="{{ sample.href }}" target="_blank" rel="noopener">{{ sample.label }}</a>
+    {% endfor %}
+  </div>
+  {% endif %}
+
   <div class="prose">{{ content }}</div>
 </div>

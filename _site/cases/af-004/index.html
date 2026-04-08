@@ -102,6 +102,13 @@
   </div>
   
 
+  <div class="artifact-strip">
+    <span class="artifact-strip-label">Sample JSON-LD</span>
+    <a class="tag" href="https://github.com/ioi-framework/ioi-framework/blob/main/CASES/AF-004/snippets/mft_snippet.jsonld" target="_blank" rel="noopener">MFT snippet</a>
+    <a class="tag" href="https://github.com/ioi-framework/ioi-framework/blob/main/CASES/AF-004/snippets/usn_snippet.jsonld" target="_blank" rel="noopener">USN snippet</a>
+  </div>
+  
+
   <div class="prose"><h2 id="summary">Summary</h2>
 
 <p>This case models an anti-forensic tactic where Volume Shadow Copies (VSCs) are deleted to eliminate system restore points that could reveal prior system states. The detection identifies when VSS infrastructure files exist in the System Volume Information folder, but the corresponding GUID directories (which contain actual shadow copy data) have been deleted. USN Journal entries confirm the deletion activity.</p>

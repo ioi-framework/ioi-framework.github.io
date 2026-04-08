@@ -100,6 +100,13 @@
   </div>
   
 
+  <div class="artifact-strip">
+    <span class="artifact-strip-label">Sample JSON-LD</span>
+    <a class="tag" href="https://github.com/ioi-framework/ioi-framework/blob/main/CASES/AF-011/snippets/lnk_snippet.jsonld" target="_blank" rel="noopener">LNK snippet</a>
+    <a class="tag" href="https://github.com/ioi-framework/ioi-framework/blob/main/CASES/AF-011/snippets/mft_snippet.jsonld" target="_blank" rel="noopener">MFT snippet</a>
+  </div>
+  
+
   <div class="prose"><h2 id="summary">Summary</h2>
 
 <p>This case demonstrates timestomping detection using LNK (shortcut) file analysis. When a file is timestomped using <code class="language-plaintext highlighter-rouge">timestomper.exe</code>, the MFT <code class="language-plaintext highlighter-rouge">$STANDARD_INFORMATION</code> (0x10) timestamps are modified. However, LNK shortcut files preserve the original target file timestamps from when the shortcut was created. Comparing LNK timestamps with current MFT timestamps reveals the forgery.</p>

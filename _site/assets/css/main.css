@@ -131,6 +131,8 @@ a:hover { color: var(--accent); }
 
 /* ── Tags ─────────────────────────────────────────────────── */
 .tag { font-family: var(--mono); font-size: 0.62rem; padding: 0.15rem 0.45rem; border-radius: 2px; border: 1px solid var(--rule); color: var(--ink-light); background: var(--bg-tint); }
+.tag[href] { text-decoration: none; }
+.tag[href]:hover { color: var(--accent); border-color: var(--accent-mid); }
 .tag-temporal   { border-color: #aac4e0; color: #1a4a7a; background: #eef4fb; }
 .tag-structural { border-color: #b8d4b8; color: #1a5a1a; background: #eef6ee; }
 .tag-semantic   { border-color: #e0c8a0; color: #7a5a00; background: #fdf6e8; }

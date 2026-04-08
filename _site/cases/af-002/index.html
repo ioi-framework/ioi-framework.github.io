@@ -106,6 +106,14 @@
   </div>
   
 
+  <div class="artifact-strip">
+    <span class="artifact-strip-label">Sample JSON-LD</span>
+    <a class="tag" href="https://github.com/ioi-framework/ioi-framework/blob/main/CASES/AF-002/snippets/history_snippet.jsonld" target="_blank" rel="noopener">History snippet</a>
+    <a class="tag" href="https://github.com/ioi-framework/ioi-framework/blob/main/CASES/AF-002/snippets/mft_snippet.jsonld" target="_blank" rel="noopener">MFT snippet</a>
+    <a class="tag" href="https://github.com/ioi-framework/ioi-framework/blob/main/CASES/AF-002/snippets/usn_snippet.jsonld" target="_blank" rel="noopener">USN snippet</a>
+  </div>
+  
+
   <div class="prose"><h2 id="summary">Summary</h2>
 
 <p>The adversary selectively deleted specific URL entries from the Chrome History SQLite database (<code class="language-plaintext highlighter-rouge">Default/History</code>) while leaving behind corresponding IndexedDB cache directories under <code class="language-plaintext highlighter-rouge">Default/IndexedDB/</code>. These cache directories contain subdirectories named after visited origins (e.g., <code class="language-plaintext highlighter-rouge">https_www.youtube.com_0.indexeddb.leveldb</code>), providing an indirect record of browsing activity that persists even after History deletion.</p>

@@ -100,6 +100,13 @@
   </div>
   
 
+  <div class="artifact-strip">
+    <span class="artifact-strip-label">Sample JSON-LD</span>
+    <a class="tag" href="https://github.com/ioi-framework/ioi-framework/blob/main/CASES/AF-012/snippets/office_xml_snippet.jsonld" target="_blank" rel="noopener">Office XML snippet</a>
+    <a class="tag" href="https://github.com/ioi-framework/ioi-framework/blob/main/CASES/AF-012/snippets/office_xml_filled.jsonld" target="_blank" rel="noopener">Filled Office XML graph</a>
+  </div>
+  
+
   <div class="prose"><h2 id="summary">Summary</h2>
 
 <p>This case demonstrates timestomping detection using Office XML metadata. Office documents (<code class="language-plaintext highlighter-rouge">.docx</code>, <code class="language-plaintext highlighter-rouge">.xlsx</code>, <code class="language-plaintext highlighter-rouge">.pptx</code>) are ZIP archives containing internal XML metadata (<code class="language-plaintext highlighter-rouge">docProps/core.xml</code>) that preserves the original creation timestamp. When MFT timestamps are forged using <code class="language-plaintext highlighter-rouge">timestomper.exe</code>, the internal XML metadata remains unchanged, creating a detectable inconsistency.</p>

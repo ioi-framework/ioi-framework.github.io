@@ -100,6 +100,13 @@
   </div>
   
 
+  <div class="artifact-strip">
+    <span class="artifact-strip-label">Sample JSON-LD</span>
+    <a class="tag" href="https://github.com/ioi-framework/ioi-framework/blob/main/CASES/AF-007/snippets/evtx_snippet.jsonld" target="_blank" rel="noopener">EVTX snippet</a>
+    <a class="tag" href="https://github.com/ioi-framework/ioi-framework/blob/main/CASES/AF-007/snippets/usn_snippet.jsonld" target="_blank" rel="noopener">USN snippet</a>
+  </div>
+  
+
   <div class="prose"><h2 id="summary">Summary</h2>
 
 <p>This case demonstrates an anti-forensic technique where the Windows Security Event Log is cleared using the built-in <code class="language-plaintext highlighter-rouge">wevtutil</code> command. After clearing, normal system usage (logon and reboot) generates new records, giving the appearance of continuity. The presence of Event ID 1102 combined with USN <code class="language-plaintext highlighter-rouge">DataTruncation</code> evidence exposes the log clearing activity.</p>
