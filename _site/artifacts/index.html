@@ -94,21 +94,19 @@
 │       │   └── mft_case.jsonld
 │       └── ground_truth.md
 │
-├── TEMPLATES/                    # Case-agnostic CASE/UCO templates
-│   ├── mft/
-│   ├── usn/
-│   ├── lnk/
-│   ├── evtx/
-│   ├── browser_history/
-│   └── office_xml/
-│
 ├── instantiators/                # Template Instantiator scripts
 │   ├── mft_instantiator.py
 │   ├── usn_instantiator.py
 │   ├── lnk_instantiator.py
 │   ├── evtx_instantiator.py
 │   ├── office_xml_instantiator.py
-│   └── templates/                # Templates used by instantiators
+│   └── templates/                # Case-agnostic CASE/UCO templates
+│       ├── mft/
+│       ├── usn/
+│       ├── lnk/
+│       ├── evtx/
+│       ├── browser_history/
+│       └── office_xml/
 │
 ├── RULES/                        # IoI SPARQL signatures (.rq files)
 │   ├── semantic/
@@ -140,9 +138,9 @@
     </div>
 
     <div class="card">
-      <div class="card-tag">TEMPLATES/</div>
+      <div class="card-tag">instantiators/templates/</div>
       <h3>CASE/UCO templates</h3>
-      <p>Case-agnostic JSON-LD templates defining the facet structures referenced by IoI rules. Organised by artifact type. Use as the starting point for new Template Instantiators.</p>
+      <p>Case-agnostic JSON-LD templates defining the facet structures referenced by IoI rules. They now live under `instantiators/templates/` and serve as the starting point for new instantiators and artifact types.</p>
     </div>
 
     <div class="card">

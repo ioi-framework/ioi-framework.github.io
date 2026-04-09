@@ -98,8 +98,8 @@ docker cp CASES/AF-004/test/mft_test.nt vos:/database/mft_test.nt
 docker cp CASES/AF-004/test/usn_test.nt vos:/database/usn_test.nt
 
 # Load named graphs
-docker exec vos isql 1111 dba dba "exec=ld_dir('/database', 'mft_test.nt', 'http://example.org/mft_case4');"
-docker exec vos isql 1111 dba dba "exec=ld_dir('/database', 'usn_test.nt', 'http://example.org/usn_case4');"
+docker exec vos isql 1111 dba dba "exec=ld_dir('/database', 'mft_test.nt', 'https://ioi-framework.github.io/cases/AF-004/graphs/mft');"
+docker exec vos isql 1111 dba dba "exec=ld_dir('/database', 'usn_test.nt', 'https://ioi-framework.github.io/cases/AF-004/graphs/usn');"
 docker exec vos isql 1111 dba dba "exec=rdf_loader_run();"
 docker exec vos isql 1111 dba dba "exec=checkpoint;"
 
@@ -121,8 +121,8 @@ docker cp outputs/mft_case.nt vos:/database/mft_case.nt
 docker cp outputs/usn_case.nt vos:/database/usn_case.nt
 
 # Load named graphs
-docker exec vos isql 1111 dba dba "exec=ld_dir('/database', 'mft_case.nt', 'http://example.org/mft_case');"
-docker exec vos isql 1111 dba dba "exec=ld_dir('/database', 'usn_case.nt', 'http://example.org/usn_case');"
+docker exec vos isql 1111 dba dba "exec=ld_dir('/database', 'mft_case.nt', 'https://ioi-framework.github.io/cases/{your_case_id}/graphs/mft');"
+docker exec vos isql 1111 dba dba "exec=ld_dir('/database', 'usn_case.nt', 'https://ioi-framework.github.io/cases/{your_case_id}/graphs/usn');"
 docker exec vos isql 1111 dba dba "exec=rdf_loader_run();"
 docker exec vos isql 1111 dba dba "exec=checkpoint;"
 

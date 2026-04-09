@@ -3,7 +3,7 @@ inst_id:        INST-005
 title:          "Office XML Metadata Instantiator"
 artifact:       Office core.xml
 parser_tool:    Python zipfile
-input_format:   DOCX/XML
+input_format:   JSON
 output:         JSON-LD
 template:       office_xml
 script:         office_xml_instantiator.py
@@ -13,45 +13,45 @@ status:         Validated
 python_version: "3.9+"
 dependencies:
   - rdflib>=6.0
-notes:          "Accepts .docx/.xlsx/.pptx files directly (extracts core.xml via Python zipfile) or pre-extracted folders. Joins MFT timestamps with core.xml metadata by filename for IOI-012 timestomping detection."
+notes:          "Consumes merged JSON from ArtifactExporter and emits a single CASE/UCO graph combining filesystem timestamps with embedded Office metadata for IOI-012."
 ---
 
 ## Overview
 
-Combines MFT timestamps with embedded Office XML metadata (`docProps/core.xml`) into a single CASE/UCO JSON-LD graph. Accepts `.docx`/`.xlsx`/`.pptx` files directly — extracts `core.xml` internally via Python's `zipfile` module, no external tools needed. Matches each document to its MFT record by filename, enabling the cross-source timestamp comparison used by IoI rule IOI-012.
+Consumes the merged JSON produced by ArtifactExporter for the `office_xml` artifact. Each record already contains filesystem timestamps from Autopsy together with embedded `docProps/core.xml` metadata, allowing IOI-012 to compare the tampered filesystem view with the authentic Office metadata in a single JSON-LD graph.
 
 ## Input
 
-Requires an MFT CSV (from MFTECmd) and a folder containing the Office documents. The folder can hold raw `.docx`/`.xlsx`/`.pptx` files — the script extracts `core.xml` internally. Pre-extracted subdirectory layout is also supported as a fallback.
+Requires a single merged JSON file produced by ArtifactExporter. Each record contains both filesystem timestamps and extracted Office XML metadata for one Office document.
 
+```json
+[
+  {
+    "filename": "report.docx",
+    "filepath": "C:/Users/.../report.docx",
+    "fs_created": "2025-03-04T10:15:43Z",
+    "xml_created": "2025-03-04T01:10:37Z"
+  }
+]
 ```
-office_folder/
-  secret.docx        ← script reads core.xml directly from the zip
-  report.xlsx
-```
-
-The script matches each document to its MFT record by filename, then combines both into one JSON-LD graph.
 
 ## Input fields consumed
 
 | Source | Field | Mapped to |
 |---|---|---|
-| MFT CSV | `Created0x10` / `LastModified0x10` | `ioi-ext:created0x10` / `ioi-ext:lastModified0x10` |
-| MFT CSV | `Created0x30` / `LastModified0x30` | `ioi-ext:created0x30` / `ioi-ext:lastModified0x30` |
-| core.xml | `dcterms:created` | `ioi-ext:dctermsCreated` |
-| core.xml | `dcterms:modified` | `ioi-ext:dctermsModified` |
-| core.xml | `dc:creator` | `observable:creator` |
+| merged JSON | `fs_created` / `fs_modified` / `fs_accessed` / `fs_changed` | `observable:observableCreatedTime` / `observable:modifiedTime` / `observable:accessedTime` / `observable:metadataChangeTime` |
+| merged JSON | `xml_created` | `ioi-ext:created` |
+| merged JSON | `xml_modified` | `ioi-ext:modified` |
+| merged JSON | `xml_creator` | `ioi-ext:creator` |
+| merged JSON | `xml_last_modified_by` | `ioi-ext:lastModifiedBy` |
 
 ## Usage
 
 ```bash
-python instantiators/office_xml_instantiator.py \
-  cases/data/AF-012/mft_post.csv \
-  cases/data/AF-012/office_docs/ \
-  cases/data/AF-012/graphs/office_case.jsonld
+python3 instantiators/office_xml_instantiator.py cases/data/AF-012/office_xml_merged.json cases/data/AF-012/graphs/office_case.jsonld
 ```
 
-Place the `.docx`/`.xlsx`/`.pptx` files in `office_docs/` — no extraction step needed.
+The merged JSON is produced upstream by ArtifactExporter using the `office_xml` export strategy.
 
 ## Implementation note
 

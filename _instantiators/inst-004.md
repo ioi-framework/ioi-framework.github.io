@@ -34,9 +34,5 @@ Maps EvtxECmd CSV output to CASE/UCO-compliant JSON-LD using `observable:EventRe
 ## Usage
 
 ```bash
-python instantiators/evtx_instantiator.py \
-  --input   cases/data/AF-NNN/post-manipulation/security_post.csv \
-  --channel Security \
-  --output  cases/data/AF-NNN/graphs/security_case.jsonld \
-  --graph-iri http://ioi/security_caseN
+python3 instantiators/evtx_instantiator.py cases/data/AF-NNN/post-manipulation/security_post.jsonl cases/data/AF-NNN/graphs/security_case.jsonld
 ```

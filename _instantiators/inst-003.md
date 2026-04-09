@@ -34,8 +34,5 @@ Maps LECmd CSV output to CASE/UCO-compliant JSON-LD using `ioi-ext:WindowsLnkFac
 ## Usage
 
 ```bash
-python instantiators/lnk_instantiator.py \
-  --input  cases/data/AF-NNN/post-manipulation/lnk_post.csv \
-  --output cases/data/AF-NNN/graphs/lnk_case.jsonld \
-  --graph-iri http://ioi/lnk_caseN
+python3 instantiators/lnk_instantiator.py cases/data/AF-NNN/post-manipulation/lnk_post.csv cases/data/AF-NNN/graphs/lnk_case.jsonld
 ```

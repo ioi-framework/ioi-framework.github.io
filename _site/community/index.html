@@ -156,7 +156,10 @@
 RULES/temporal/
   IOI-NEW_your_rule.rq</code></pre>
         <p style="font-size:0.82rem;color:var(--ink-light);margin-top:0.5rem;">
-          For the test graph structure: if an existing case uses the same artifact, copy from its <code>CASES/AF-NNN/snippets/</code>. If it is a new artifact type, use <code>TEMPLATES/{artifact_type}/</code> as reference. Use synthetic values — no real case data.
+          For the test graph structure: if an existing case uses the same artifact, copy from its <code>CASES/AF-NNN/snippets/</code>. If it is a new artifact type, use <code>instantiators/templates/{artifact_type}/</code> as reference. Use synthetic values — no real case data.
+        </p>
+        <p style="font-size:0.82rem;color:var(--ink-light);margin-top:0.5rem;">
+          For a new artifact type, also add a <code>registry.json</code> entry using the lowercase <code>artifact_type</code> key (for example <code>history</code> or <code>office_xml</code>) so graph segments, export strategy, and rule metadata stay aligned.
         </p>
       </div>
     </div>
@@ -164,8 +167,10 @@ RULES/temporal/
       <div class="step-num">3</div>
       <div class="step-content">
         <h3>Validate locally</h3>
-        <p>Run the front-matter validator before pushing. CI runs it again on every PR — catch errors locally first.</p>
-        <pre><code>python scripts/validate_frontmatter.py</code></pre>
+        <p>Run the local validation scripts before pushing. CI runs the same checks on every PR — catch errors locally first.</p>
+        <pre><code>python scripts/validate_sparql.py
+python scripts/validate_registry.py
+python scripts/validate_jsonld.py</code></pre>
       </div>
     </div>
     <div class="step">

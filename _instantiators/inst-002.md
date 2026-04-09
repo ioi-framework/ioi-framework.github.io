@@ -34,10 +34,10 @@ Maps MFTECmd `$UsnJrnl:$J` CSV output to CASE/UCO-compliant JSON-LD using `ioi-e
 ## Usage
 
 ```bash
-python instantiators/usn_instantiator.py \
-  --input  cases/data/AF-NNN/post-manipulation/usn_post.csv \
-  --output cases/data/AF-NNN/graphs/usn_case.jsonld \
-  --graph-iri http://ioi/usn_caseN
+python3 instantiators/usn_instantiator.py cases/data/AF-NNN/post-manipulation/usn_post.csv cases/data/AF-NNN/graphs/usn_case.jsonld
+
+# For large USN exports
+python3 instantiators/usn_instantiator.py cases/data/AF-NNN/post-manipulation/usn_post.csv cases/data/AF-NNN/graphs/usn_case.jsonld --chunk-size 5000
 ```
 
 ## Output structure

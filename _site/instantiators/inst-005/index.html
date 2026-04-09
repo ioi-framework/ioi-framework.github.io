@@ -75,7 +75,7 @@
 
 
       <span class="tag">Python zipfile</span>
-      <span class="tag">DOCX/XML → </span>
+      <span class="tag">JSON → </span>
       <span class="tag">Python 3.9+</span>
     </div>
     <div class="contrib-line">
@@ -86,7 +86,7 @@
   
   <div class="inst-note-box">
     <div class="inst-note-label">Note</div>
-    <div class="inst-note-text">Accepts .docx/.xlsx/.pptx files directly (extracts core.xml via Python zipfile) or pre-extracted folders. Joins MFT timestamps with core.xml metadata by filename for IOI-012 timestomping detection.</div>
+    <div class="inst-note-text">Consumes merged JSON from ArtifactExporter and emits a single CASE/UCO graph combining filesystem timestamps with embedded Office metadata for IOI-012.</div>
   </div>
   
 
@@ -128,14 +128,16 @@
 
 <h2 id="input">Input</h2>
 
-<p>Requires an MFT CSV (from MFTECmd) and a folder containing the Office documents. The folder can hold raw <code class="language-plaintext highlighter-rouge">.docx</code>/<code class="language-plaintext highlighter-rouge">.xlsx</code>/<code class="language-plaintext highlighter-rouge">.pptx</code> files — the script extracts <code class="language-plaintext highlighter-rouge">core.xml</code> internally. Pre-extracted subdirectory layout is also supported as a fallback.</p>
+<p>Requires a single merged JSON file produced by ArtifactExporter. Each record contains both filesystem timestamps and extracted Office XML metadata for one Office document.</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>office_folder/
-  secret.docx        ← script reads core.xml directly from the zip
-  report.xlsx
-</code></pre></div></div>
-
-<p>The script matches each document to its MFT record by filename, then combines both into one JSON-LD graph.</p>
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[
+  {
+    "filename": "report.docx",
+    "filepath": "C:/Users/.../report.docx",
+    "fs_created": "2025-03-04T10:15:43Z",
+    "xml_created": "2025-03-04T01:10:37Z"
+  }
+]</code></pre></div></div>
 
 <h2 id="input-fields-consumed">Input fields consumed</h2>
 
@@ -149,42 +151,39 @@
   </thead>
   <tbody>
     <tr>
-      <td>MFT CSV</td>
-      <td><code class="language-plaintext highlighter-rouge">Created0x10</code> / <code class="language-plaintext highlighter-rouge">LastModified0x10</code></td>
-      <td><code class="language-plaintext highlighter-rouge">ioi-ext:created0x10</code> / <code class="language-plaintext highlighter-rouge">ioi-ext:lastModified0x10</code></td>
+      <td>merged JSON</td>
+      <td><code class="language-plaintext highlighter-rouge">fs_created</code> / <code class="language-plaintext highlighter-rouge">fs_modified</code> / <code class="language-plaintext highlighter-rouge">fs_accessed</code> / <code class="language-plaintext highlighter-rouge">fs_changed</code></td>
+      <td><code class="language-plaintext highlighter-rouge">observable:observableCreatedTime</code> / <code class="language-plaintext highlighter-rouge">observable:modifiedTime</code> / <code class="language-plaintext highlighter-rouge">observable:accessedTime</code> / <code class="language-plaintext highlighter-rouge">observable:metadataChangeTime</code></td>
     </tr>
     <tr>
-      <td>MFT CSV</td>
-      <td><code class="language-plaintext highlighter-rouge">Created0x30</code> / <code class="language-plaintext highlighter-rouge">LastModified0x30</code></td>
-      <td><code class="language-plaintext highlighter-rouge">ioi-ext:created0x30</code> / <code class="language-plaintext highlighter-rouge">ioi-ext:lastModified0x30</code></td>
+      <td>merged JSON</td>
+      <td><code class="language-plaintext highlighter-rouge">xml_created</code></td>
+      <td><code class="language-plaintext highlighter-rouge">ioi-ext:created</code></td>
     </tr>
     <tr>
-      <td>core.xml</td>
-      <td><code class="language-plaintext highlighter-rouge">dcterms:created</code></td>
-      <td><code class="language-plaintext highlighter-rouge">ioi-ext:dctermsCreated</code></td>
+      <td>merged JSON</td>
+      <td><code class="language-plaintext highlighter-rouge">xml_modified</code></td>
+      <td><code class="language-plaintext highlighter-rouge">ioi-ext:modified</code></td>
     </tr>
     <tr>
-      <td>core.xml</td>
-      <td><code class="language-plaintext highlighter-rouge">dcterms:modified</code></td>
-      <td><code class="language-plaintext highlighter-rouge">ioi-ext:dctermsModified</code></td>
+      <td>merged JSON</td>
+      <td><code class="language-plaintext highlighter-rouge">xml_creator</code></td>
+      <td><code class="language-plaintext highlighter-rouge">ioi-ext:creator</code></td>
     </tr>
     <tr>
-      <td>core.xml</td>
-      <td><code class="language-plaintext highlighter-rouge">dc:creator</code></td>
-      <td><code class="language-plaintext highlighter-rouge">observable:creator</code></td>
+      <td>merged JSON</td>
+      <td><code class="language-plaintext highlighter-rouge">xml_last_modified_by</code></td>
+      <td><code class="language-plaintext highlighter-rouge">ioi-ext:lastModifiedBy</code></td>
     </tr>
   </tbody>
 </table>
 
 <h2 id="usage">Usage</h2>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python instantiators/office_xml_instantiator.py <span class="se">\</span>
-  cases/data/AF-012/mft_post.csv <span class="se">\</span>
-  cases/data/AF-012/office_docs/ <span class="se">\</span>
-  cases/data/AF-012/graphs/office_case.jsonld
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python3 instantiators/office_xml_instantiator.py cases/data/AF-012/office_xml_merged.json cases/data/AF-012/graphs/office_case.jsonld
 </code></pre></div></div>
 
-<p>Place the <code class="language-plaintext highlighter-rouge">.docx</code>/<code class="language-plaintext highlighter-rouge">.xlsx</code>/<code class="language-plaintext highlighter-rouge">.pptx</code> files in <code class="language-plaintext highlighter-rouge">office_docs/</code> — no extraction step needed.</p>
+<p>The merged JSON is produced upstream by ArtifactExporter using the <code class="language-plaintext highlighter-rouge">office_xml</code> export strategy.</p>
 
 <h2 id="implementation-note">Implementation note</h2>
 
