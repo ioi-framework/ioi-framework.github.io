@@ -75,54 +75,37 @@
   </div>
 
   <pre style="font-size:0.78rem;line-height:1.9;margin-bottom:2rem;"><code>ioi-framework/
-├── CASES/                        # Per-scenario datasets
+├── CASES/
 │   ├── AF-002/
-│   │   ├── data/                 # Artifact exports (CSV/JSON)
-│   │   ├── graphs/               # Instantiated JSON-LD knowledge graphs
-│   │   │   ├── mft_case.jsonld
-│   │   │   ├── usn_case.jsonld
-│   │   │   └── history_case.jsonld
-│   │   ├── ground_truth.md       # Invariant + violation specification
+│   │   ├── snippets/             # JSON-LD test graphs + sample data
+│   │   ├── ground_truth.md
+│   │   ├── mapping.md
 │   │   └── README.md
-│   ├── AF-004/  ...
-│   ├── AF-007/  ...
-│   ├── AF-011/  ...
-│   └── AF-012/
-│       ├── data/
-│       ├── graphs/
-│       │   ├── office_case.jsonld
-│       │   └── mft_case.jsonld
-│       └── ground_truth.md
+│   └── AF-012/  ...
 │
-├── instantiators/                # Template Instantiator scripts
+├── instantiators/
 │   ├── mft_instantiator.py
 │   ├── usn_instantiator.py
 │   ├── lnk_instantiator.py
 │   ├── evtx_instantiator.py
+│   ├── history_instantiator.py
 │   ├── office_xml_instantiator.py
-│   └── templates/                # Case-agnostic CASE/UCO templates
-│       ├── mft/
-│       ├── usn/
-│       ├── lnk/
-│       ├── evtx/
-│       ├── browser_history/
-│       └── office_xml/
+│   └── templates/
+│       ├── mft/  usn/  lnk/  evtx/  browser_history/  office_xml/
 │
-├── RULES/                        # IoI SPARQL signatures (.rq files)
-│   ├── semantic/
-│   │   └── IOI-002_chrome_history_missing.rq
-│   ├── structural/
-│   │   └── IOI-004_vss_traces_missing.rq
-│   └── temporal/
-│       ├── IOI-007_usn_clear_before_event.rq
-│       ├── IOI-011_lnk_mft_mismatch.rq
-│       └── IOI-012_office_mft_mismatch.rq
+├── RULES/
+│   ├── semantic/  structural/  temporal/
 │
+├── registry.json                 # Single source of truth for artifact metadata
 ├── SCRIPTS/
-│   └── convert_to_ntriples.py    # JSON-LD → N-Triples conversion
-│
+│   └── convert_to_ntriples.py
+├── scripts/
+│   ├── validate_registry.py
+│   ├── validate_sparql.py
+│   └── validate_jsonld.py
+├── playground/
 └── ontologies/
-    └── ioi-ext.ttl               # ioi-ext namespace definitions</code></pre>
+    └── ioi-ext.ttl</code></pre>
 
   <!-- Artifact types -->
   <div class="section-header" style="margin-bottom:1.25rem;">
