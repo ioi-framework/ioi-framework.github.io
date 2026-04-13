@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Office Metadata Timestamp Contradiction — IoI Framework</title>
-  <meta name="description" content="Filesystem timestamps forged via timestomper.exe; embedded Office core.xml creation time predates the forged SI timestamp in a cross-graph join.">
+  <meta name="description" content="Filesystem timestamps forged via timestomper.exe; embedded Office core.xml metadata predates the forged MFT $SI timestamp in a cross-graph filePath join.">
   <link rel="stylesheet" href="/assets/css/main.css">
   <link rel="canonical" href="http://localhost:4000/cases/af-012/">
 </head>
@@ -109,36 +109,36 @@
 
   <div class="prose"><h2 id="summary">Summary</h2>
 
-<p>This case demonstrates timestomping detection using Office XML metadata. Office documents (<code class="language-plaintext highlighter-rouge">.docx</code>, <code class="language-plaintext highlighter-rouge">.xlsx</code>, <code class="language-plaintext highlighter-rouge">.pptx</code>) are ZIP archives containing internal XML metadata (<code class="language-plaintext highlighter-rouge">docProps/core.xml</code>) that preserves the original creation timestamp. When MFT timestamps are forged using <code class="language-plaintext highlighter-rouge">timestomper.exe</code>, the internal XML metadata remains unchanged, creating a detectable inconsistency.</p>
+<p>This case demonstrates timestomping detection using Office XML metadata. Office documents (<code class="language-plaintext highlighter-rouge">.docx</code>, <code class="language-plaintext highlighter-rouge">.xlsx</code>, <code class="language-plaintext highlighter-rouge">.pptx</code>) are ZIP archives containing internal XML metadata in <code class="language-plaintext highlighter-rouge">docProps/core.xml</code>. When MFT timestamps are forged with <code class="language-plaintext highlighter-rouge">timestomper.exe</code>, the embedded Office metadata remains unchanged, creating a contradiction that can be detected by joining the Office graph with the MFT graph on normalized <code class="language-plaintext highlighter-rouge">filePath</code>.</p>
 
 <h2 id="scenario-steps">Scenario Steps</h2>
 
-<p><strong>1. Set Up</strong> — Created <code class="language-plaintext highlighter-rouge">secret.docx</code> on Windows system. Captured original timestamps.</p>
+<p><strong>1. Set Up</strong> — Created <code class="language-plaintext highlighter-rouge">password.docx</code> on the Windows system and recorded the original document metadata and MFT timestamps.</p>
 
-<p><strong>2. Tampering</strong> — Used <code class="language-plaintext highlighter-rouge">timestomper.exe</code> to forge timestamps of <code class="language-plaintext highlighter-rouge">secret.docx</code>. The <code class="language-plaintext highlighter-rouge">SetFileTime</code> API modifies MFT <code class="language-plaintext highlighter-rouge">$STANDARD_INFORMATION</code> (0x10) timestamps; internal Office XML metadata remains unmodified.</p>
+<p><strong>2. Tampering</strong> — Used <code class="language-plaintext highlighter-rouge">timestomper.exe</code> to forge the document timestamps. The <code class="language-plaintext highlighter-rouge">SetFileTime</code> API modifies MFT <code class="language-plaintext highlighter-rouge">$STANDARD_INFORMATION</code> (0x10) timestamps, but the embedded Office XML metadata in <code class="language-plaintext highlighter-rouge">docProps/core.xml</code> remains intact.</p>
 
-<p><strong>3. Evidence Collection</strong> — Extracted <code class="language-plaintext highlighter-rouge">$MFT</code> using forensic tools. Opened <code class="language-plaintext highlighter-rouge">secret.docx</code> as a ZIP archive. Extracted <code class="language-plaintext highlighter-rouge">docProps/core.xml</code> for internal metadata. Compared XML <code class="language-plaintext highlighter-rouge">dcterms:created</code> with MFT timestamps.</p>
+<p><strong>3. Evidence Collection</strong> — Parsed <code class="language-plaintext highlighter-rouge">$MFT</code> with the MFT instantiator, extracted Office XML metadata with <code class="language-plaintext highlighter-rouge">office_xml_instantiator.py</code>, and loaded both outputs into separate named graphs. Detection compares Office XML <code class="language-plaintext highlighter-rouge">ioi-ext:dctermsCreated</code> against MFT <code class="language-plaintext highlighter-rouge">ioi-ext:created0x10</code> for the same normalized file path.</p>
 
 <h2 id="ground-truth-criteria">Ground Truth Criteria</h2>
 
 <ul>
-  <li>Office XML metadata (<code class="language-plaintext highlighter-rouge">dcterms:created</code>) shows original creation time</li>
-  <li>MFT <code class="language-plaintext highlighter-rouge">$STANDARD_INFORMATION</code> (0x10) shows forged (later) timestamp</li>
-  <li>XML created time &lt; MFT <code class="language-plaintext highlighter-rouge">$SI</code> created time indicates timestomping</li>
+  <li>Office XML metadata (<code class="language-plaintext highlighter-rouge">ioi-ext:dctermsCreated</code>) preserves the original document creation time</li>
+  <li>MFT <code class="language-plaintext highlighter-rouge">$STANDARD_INFORMATION</code> (0x10) shows the forged, later creation timestamp</li>
+  <li><code class="language-plaintext highlighter-rouge">xmlCreated &lt; mftSiCreated</code> for the same normalized <code class="language-plaintext highlighter-rouge">filePath</code> indicates timestomping</li>
 </ul>
 
 <h2 id="inconsistency-summary">Inconsistency Summary</h2>
 
-<p>When <code class="language-plaintext highlighter-rouge">timestomper.exe</code> modifies <code class="language-plaintext highlighter-rouge">secret.docx</code> timestamps, it only changes the MFT <code class="language-plaintext highlighter-rouge">$STANDARD_INFORMATION</code> (0x10) attribute. The internal Office XML metadata in <code class="language-plaintext highlighter-rouge">docProps/core.xml</code> retains the original <code class="language-plaintext highlighter-rouge">dcterms:created</code> timestamp. Detection: XML metadata shows an earlier creation time than the MFT <code class="language-plaintext highlighter-rouge">$SI</code> timestamp.</p>
+<p>When <code class="language-plaintext highlighter-rouge">timestomper.exe</code> modifies <code class="language-plaintext highlighter-rouge">password.docx</code>, it changes the MFT filesystem timestamps but does not rewrite the Office metadata in <code class="language-plaintext highlighter-rouge">docProps/core.xml</code>. The Office graph therefore retains an earlier <code class="language-plaintext highlighter-rouge">ioi-ext:dctermsCreated</code> value than the MFT graph's <code class="language-plaintext highlighter-rouge">ioi-ext:created0x10</code> value for the same file path.</p>
 
 <h2 id="detection-logic">Detection Logic</h2>
 
 <div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">-- Step 1: Get Office XML metadata</span>
-<span class="n">FIND</span> <span class="n">office_files</span>
+<span class="n">FIND</span> <span class="n">office_entries</span>
   <span class="k">RETURN</span> <span class="n">filePath</span><span class="p">,</span> <span class="n">dctermsCreated</span> <span class="k">AS</span> <span class="n">xmlCreated</span>
 
-<span class="c1">-- Step 2: Get MFT timestamps for same file</span>
-<span class="n">FIND</span> <span class="n">mft_entries</span> <span class="k">WHERE</span> <span class="n">mft_entries</span><span class="p">.</span><span class="n">filePath</span> <span class="o">=</span> <span class="n">office_files</span><span class="p">.</span><span class="n">filePath</span>
+<span class="c1">-- Step 2: Get MFT timestamps for the same normalized path</span>
+<span class="n">FIND</span> <span class="n">mft_entries</span> <span class="k">WHERE</span> <span class="n">mft_entries</span><span class="p">.</span><span class="n">filePath</span> <span class="o">=</span> <span class="n">office_entries</span><span class="p">.</span><span class="n">filePath</span>
   <span class="k">RETURN</span> <span class="n">created0x10</span> <span class="k">AS</span> <span class="n">mftSiCreated</span><span class="p">,</span> <span class="n">created0x30</span> <span class="k">AS</span> <span class="n">mftFnCreated</span>
 
 <span class="c1">-- Detection Rule</span>

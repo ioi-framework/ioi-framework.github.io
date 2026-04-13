@@ -75,7 +75,7 @@
 
 
       <span class="tag">Python zipfile</span>
-      <span class="tag">JSON → </span>
+      <span class="tag">JSON / Office document → </span>
       <span class="tag">Python 3.9+</span>
     </div>
     <div class="contrib-line">
@@ -86,7 +86,7 @@
   
   <div class="inst-note-box">
     <div class="inst-note-label">Note</div>
-    <div class="inst-note-text">Consumes merged JSON from ArtifactExporter and emits a single CASE/UCO graph combining filesystem timestamps with embedded Office metadata for IOI-012.</div>
+    <div class="inst-note-text">Supports merged-JSON and direct Office-document input. Emits a dedicated Office XML graph with source-specific metadata properties for IOI-012.</div>
   </div>
   
 
@@ -124,18 +124,20 @@
 
   <div class="prose"><h2 id="overview">Overview</h2>
 
-<p>Combines MFT timestamps with embedded Office XML metadata (<code class="language-plaintext highlighter-rouge">docProps/core.xml</code>) into a single CASE/UCO JSON-LD graph. Accepts <code class="language-plaintext highlighter-rouge">.docx</code>/<code class="language-plaintext highlighter-rouge">.xlsx</code>/<code class="language-plaintext highlighter-rouge">.pptx</code> files directly — extracts <code class="language-plaintext highlighter-rouge">core.xml</code> internally via Python’s <code class="language-plaintext highlighter-rouge">zipfile</code> module, no external tools needed. Matches each document to its MFT record by filename, enabling the cross-source timestamp comparison used by IoI rule IOI-012.</p>
+<p>Generates a CASE/UCO JSON-LD Office metadata graph for IOI-012. The instantiator supports both merged JSON input from ArtifactExporter and raw Office-document input (<code class="language-plaintext highlighter-rouge">.docx</code>, <code class="language-plaintext highlighter-rouge">.xlsx</code>, <code class="language-plaintext highlighter-rouge">.pptx</code>, and macro-enabled variants). In both modes, the output contains an <code class="language-plaintext highlighter-rouge">ioi-ext:OfficeXMLFacet</code> plus an <code class="language-plaintext highlighter-rouge">observable:FileFacet</code>, and IOI-012 joins this graph to a separate MFT graph on normalized <code class="language-plaintext highlighter-rouge">filePath</code>.</p>
 
 <h2 id="input">Input</h2>
 
-<p>Requires a single merged JSON file produced by ArtifactExporter. Each record contains both filesystem timestamps and extracted Office XML metadata for one Office document.</p>
+<p>The instantiator supports two inputs: merged JSON mode from ArtifactExporter, or manual mode using a raw Office document plus an optional <code class="language-plaintext highlighter-rouge">--filepath</code> that matches the MFT graph path.</p>
 
 <div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[
   {
-    "filename": "report.docx",
-    "filepath": "C:/Users/.../report.docx",
-    "fs_created": "2025-03-04T10:15:43Z",
-    "xml_created": "2025-03-04T01:10:37Z"
+    "filename": "password.docx",
+    "filepath": "/Users/ktams/Desktop/Confidential/password.docx",
+    "xml_created": "2025-03-04T01:09:00Z",
+    "xml_modified": "2025-03-04T01:10:37Z",
+    "xml_creator": "ktams",
+    "xml_last_modified_by": "ktams"
   }
 ]</code></pre></div></div>
 
@@ -151,43 +153,46 @@
   </thead>
   <tbody>
     <tr>
-      <td>merged JSON</td>
-      <td><code class="language-plaintext highlighter-rouge">fs_created</code> / <code class="language-plaintext highlighter-rouge">fs_modified</code> / <code class="language-plaintext highlighter-rouge">fs_accessed</code> / <code class="language-plaintext highlighter-rouge">fs_changed</code></td>
-      <td><code class="language-plaintext highlighter-rouge">observable:observableCreatedTime</code> / <code class="language-plaintext highlighter-rouge">observable:modifiedTime</code> / <code class="language-plaintext highlighter-rouge">observable:accessedTime</code> / <code class="language-plaintext highlighter-rouge">observable:metadataChangeTime</code></td>
-    </tr>
-    <tr>
-      <td>merged JSON</td>
+      <td>merged JSON / <code class="language-plaintext highlighter-rouge">core.xml</code></td>
       <td><code class="language-plaintext highlighter-rouge">xml_created</code></td>
-      <td><code class="language-plaintext highlighter-rouge">ioi-ext:created</code></td>
+      <td><code class="language-plaintext highlighter-rouge">ioi-ext:dctermsCreated</code></td>
     </tr>
     <tr>
-      <td>merged JSON</td>
+      <td>merged JSON / <code class="language-plaintext highlighter-rouge">core.xml</code></td>
       <td><code class="language-plaintext highlighter-rouge">xml_modified</code></td>
-      <td><code class="language-plaintext highlighter-rouge">ioi-ext:modified</code></td>
+      <td><code class="language-plaintext highlighter-rouge">ioi-ext:dctermsModified</code></td>
     </tr>
     <tr>
-      <td>merged JSON</td>
+      <td>merged JSON / <code class="language-plaintext highlighter-rouge">core.xml</code></td>
       <td><code class="language-plaintext highlighter-rouge">xml_creator</code></td>
-      <td><code class="language-plaintext highlighter-rouge">ioi-ext:creator</code></td>
+      <td><code class="language-plaintext highlighter-rouge">ioi-ext:dcCreator</code></td>
     </tr>
     <tr>
-      <td>merged JSON</td>
+      <td>merged JSON / <code class="language-plaintext highlighter-rouge">core.xml</code></td>
       <td><code class="language-plaintext highlighter-rouge">xml_last_modified_by</code></td>
-      <td><code class="language-plaintext highlighter-rouge">ioi-ext:lastModifiedBy</code></td>
+      <td><code class="language-plaintext highlighter-rouge">ioi-ext:cpLastModifiedBy</code></td>
+    </tr>
+    <tr>
+      <td>merged JSON / manual input</td>
+      <td><code class="language-plaintext highlighter-rouge">filename</code>, <code class="language-plaintext highlighter-rouge">filepath</code>, <code class="language-plaintext highlighter-rouge">extension</code>, <code class="language-plaintext highlighter-rouge">size</code></td>
+      <td><code class="language-plaintext highlighter-rouge">observable:FileFacet</code> fields</td>
     </tr>
   </tbody>
 </table>
 
 <h2 id="usage">Usage</h2>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python3 instantiators/office_xml_instantiator.py cases/data/AF-012/office_xml_merged.json cases/data/AF-012/graphs/office_case.jsonld
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python3 instantiators/office_xml_instantiator.py office_xml_merged.json output.jsonld
 </code></pre></div></div>
 
-<p>The merged JSON is produced upstream by ArtifactExporter using the <code class="language-plaintext highlighter-rouge">office_xml</code> export strategy.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python3 instantiators/office_xml_instantiator.py password.docx output.jsonld --filepath /Users/ktams/Desktop/Confidential/password.docx
+</code></pre></div></div>
+
+<p>If <code class="language-plaintext highlighter-rouge">--filepath</code> is omitted in manual mode, the script prompts for the original file path so the generated Office graph can still join to the MFT graph.</p>
 
 <h2 id="implementation-note">Implementation note</h2>
 
-<p>AF-012 was evaluated with the Office XML and MFT graphs loaded into separate named graphs and joined at query time via a SPARQL cross-graph join on <code class="language-plaintext highlighter-rouge">observable:filePath</code>.</p>
+<p>AF-012 is evaluated with the Office XML and MFT graphs loaded into separate named graphs and joined at query time via normalized <code class="language-plaintext highlighter-rouge">observable:filePath</code>. The current rule uses source-specific Office XML properties: <code class="language-plaintext highlighter-rouge">dctermsCreated</code>, <code class="language-plaintext highlighter-rouge">dctermsModified</code>, <code class="language-plaintext highlighter-rouge">dcCreator</code>, and <code class="language-plaintext highlighter-rouge">cpLastModifiedBy</code>.</p>
 </div>
 </div>
 </main>

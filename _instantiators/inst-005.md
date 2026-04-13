@@ -3,7 +3,7 @@ inst_id:        INST-005
 title:          "Office XML Metadata Instantiator"
 artifact:       Office core.xml
 parser_tool:    Python zipfile
-input_format:   JSON
+input_format:   JSON / Office document
 output:         JSON-LD
 template:       office_xml
 script:         office_xml_instantiator.py
@@ -13,46 +13,61 @@ status:         Validated
 python_version: "3.9+"
 dependencies:
   - rdflib>=6.0
-notes:          "Consumes merged JSON from ArtifactExporter and emits a single CASE/UCO graph combining filesystem timestamps with embedded Office metadata for IOI-012."
+notes:          "Supports merged-JSON and direct Office-document input. Emits a dedicated Office XML graph with source-specific metadata properties for IOI-012."
 ---
 
 ## Overview
 
-Consumes the merged JSON produced by ArtifactExporter for the `office_xml` artifact. Each record already contains filesystem timestamps from Autopsy together with embedded `docProps/core.xml` metadata, allowing IOI-012 to compare the tampered filesystem view with the authentic Office metadata in a single JSON-LD graph.
+Generates a CASE/UCO JSON-LD Office metadata graph for IOI-012. The instantiator supports two input modes:
+
+1. **Merged JSON mode** — consumes the Autopsy/ArtifactExporter merged JSON for the `office_xml` artifact.
+2. **Manual document mode** — reads a raw Office document (`.docx`, `.xlsx`, `.pptx`, and macro-enabled variants), extracts `docProps/core.xml`, and emits the same Office XML graph.
+
+In both modes, the output contains an `ioi-ext:OfficeXMLFacet` plus an `observable:FileFacet`. Filesystem timestamps are intentionally excluded because IOI-012 compares the Office graph to a separate MFT graph using normalized `observable:filePath`.
 
 ## Input
 
-Requires a single merged JSON file produced by ArtifactExporter. Each record contains both filesystem timestamps and extracted Office XML metadata for one Office document.
+### Merged JSON mode
 
 ```json
 [
   {
-    "filename": "report.docx",
-    "filepath": "C:/Users/.../report.docx",
-    "fs_created": "2025-03-04T10:15:43Z",
-    "xml_created": "2025-03-04T01:10:37Z"
+    "filename": "password.docx",
+    "filepath": "/Users/ktams/Desktop/Confidential/password.docx",
+    "xml_created": "2025-03-04T01:09:00Z",
+    "xml_modified": "2025-03-04T01:10:37Z",
+    "xml_creator": "ktams",
+    "xml_last_modified_by": "ktams"
   }
 ]
 ```
+
+### Manual document mode
+
+Provide a raw Office file and, when needed, the original MFT path via `--filepath` so the resulting `observable:filePath` matches the MFT graph used by IOI-012.
 
 ## Input fields consumed
 
 | Source | Field | Mapped to |
 |---|---|---|
-| merged JSON | `fs_created` / `fs_modified` / `fs_accessed` / `fs_changed` | `observable:observableCreatedTime` / `observable:modifiedTime` / `observable:accessedTime` / `observable:metadataChangeTime` |
-| merged JSON | `xml_created` | `ioi-ext:created` |
-| merged JSON | `xml_modified` | `ioi-ext:modified` |
-| merged JSON | `xml_creator` | `ioi-ext:creator` |
-| merged JSON | `xml_last_modified_by` | `ioi-ext:lastModifiedBy` |
+| merged JSON / `core.xml` | `xml_created` | `ioi-ext:dctermsCreated` |
+| merged JSON / `core.xml` | `xml_modified` | `ioi-ext:dctermsModified` |
+| merged JSON / `core.xml` | `xml_creator` | `ioi-ext:dcCreator` |
+| merged JSON / `core.xml` | `xml_last_modified_by` | `ioi-ext:cpLastModifiedBy` |
+| merged JSON / manual input | `filename`, `filepath`, `extension`, `size` | `observable:FileFacet` fields |
 
 ## Usage
 
 ```bash
-python3 instantiators/office_xml_instantiator.py cases/data/AF-012/office_xml_merged.json cases/data/AF-012/graphs/office_case.jsonld
+python3 instantiators/office_xml_instantiator.py office_xml_merged.json output.jsonld
 ```
 
-The merged JSON is produced upstream by ArtifactExporter using the `office_xml` export strategy.
+```bash
+python3 instantiators/office_xml_instantiator.py password.docx output.jsonld --filepath /Users/ktams/Desktop/Confidential/password.docx
+```
+
+If `--filepath` is omitted in manual mode, the script prompts for the original file path so the Office graph can still join to the MFT graph.
 
 ## Implementation note
 
-AF-012 was evaluated with the Office XML and MFT graphs loaded into separate named graphs and joined at query time via a SPARQL cross-graph join on `observable:filePath`.
+AF-012 is evaluated with the Office XML and MFT graphs loaded into separate named graphs and joined at query time via a SPARQL cross-graph join on normalized `observable:filePath`. The current rule uses source-specific Office XML properties: `dctermsCreated`, `dctermsModified`, `dcCreator`, and `cpLastModifiedBy`.

@@ -1,1 +1,54 @@
-# IoI SPARQL rule — ioi-012
+# rule_id:   IOI-012
+# version:   1.3
+# status:    Validated
+# category:  temporal
+# title:     Office XML Metadata Timestamp Inconsistent with MFT
+# invariant: Office core.xml created time must not predate the MFT $SI created0x10 for the same file
+# artifacts: office_xml, mft
+# added:     2025-10-01
+# changed:   1.0→1.1: fix facet names, two named graphs, cross-graph fileName join
+#            1.1→1.2: case-agnostic graph IRIs (SPARQLExecutor rewrites AF-012 → case_id at runtime)
+#                     join on normalized filePath (forward-slash, absolute) to eliminate Cartesian product
+#                     GROUP BY + MIN(?mftSiCreated) as fallback dedupe for residual filename-only matches
+#            1.2→1.3: rename OfficeXMLFacet properties to source-specific names (dctermsCreated, dctermsModified,
+#                     dcCreator, cpLastModifiedBy)
+#
+PREFIX core:       <https://ontology.unifiedcyberontology.org/uco/core/>
+PREFIX observable: <https://ontology.unifiedcyberontology.org/uco/observable/>
+PREFIX ioi-ext:    <https://ioi-framework.github.io/ns/ioi-ext/>
+PREFIX xsd:        <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?officeEntry ?fileName ?filePath ?xmlCreated
+       (MIN(?mftSiCreated) AS ?mftSiCreated)
+       (MIN(?mftFnCreated) AS ?mftFnCreated)
+WHERE {
+  GRAPH <https://ioi-framework.github.io/cases/AF-012/graphs/office> {
+    ?officeEntry a observable:File ;
+                 core:hasFacet ?xmlFacet, ?officeFileFacet .
+
+    ?xmlFacet a ioi-ext:OfficeXMLFacet ;
+              ioi-ext:dctermsCreated ?xmlCreated .
+
+    ?officeFileFacet a observable:FileFacet ;
+                     observable:fileName ?fileName ;
+                     observable:filePath ?filePath .
+  }
+
+  GRAPH <https://ioi-framework.github.io/cases/AF-012/graphs/mft> {
+    ?mftEntry a observable:File ;
+              core:hasFacet ?mftFacet, ?mftFileFacet .
+
+    ?mftFacet a ioi-ext:MftFacet ;
+              ioi-ext:created0x10 ?mftSiCreated ;
+              ioi-ext:created0x30 ?mftFnCreated .
+
+    ?mftFileFacet a observable:FileFacet ;
+                  observable:filePath ?mftFilePath .
+
+    FILTER(LCASE(STR(?mftFilePath)) = LCASE(STR(?filePath)))
+  }
+
+  FILTER(xsd:dateTime(?xmlCreated) < xsd:dateTime(?mftSiCreated))
+}
+GROUP BY ?officeEntry ?fileName ?filePath ?xmlCreated
+ORDER BY ?filePath
