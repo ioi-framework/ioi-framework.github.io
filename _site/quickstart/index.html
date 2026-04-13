@@ -163,7 +163,7 @@ EOF
 
 # Run IOI-004 — expect 2 rows
 docker cp RULES/structural/IOI-004_vss_traces_missing.rq vos:/database/rule.rq
-docker exec vos bash -lc "printf 'SPARQL\n'; cat /database/rule.rq; printf '\n;'" \
+docker exec vos bash -lc "printf 'SPARQL\n'; sed '/^#/d' /database/rule.rq; printf '\n;'" \
   | docker exec -i vos isql 1111 dba dba</code></pre>
         <p>A result with <strong>2 rows</strong> confirms Virtuoso is correctly loaded and rules execute as expected. This flow uses <code>/usr/share/proj</code> because Virtuoso's default <code>DirsAllowed</code> configuration reads from that directory, and <code>TTLP_MT</code> loads the triples directly once the files are there. See <code>CASES/AF-004/ground_truth.md</code> for what this result means forensically.</p>
       </div>
@@ -186,7 +186,7 @@ EOF
 
 # Execute an IoI rule
 docker cp RULES/temporal/IOI-007_usn_clear_before_event.rq vos:/database/rule.rq
-docker exec vos bash -lc "printf 'SPARQL\n'; cat /database/rule.rq; printf '\n;'" \
+docker exec vos bash -lc "printf 'SPARQL\n'; sed '/^#/d' /database/rule.rq; printf '\n;'" \
   | docker exec -i vos isql 1111 dba dba</code></pre>
         <p>A non-empty result set indicates a detected inconsistency. Read the corresponding <code>CASES/AF-NNN/ground_truth.md</code> to interpret the result.</p>
       </div>
