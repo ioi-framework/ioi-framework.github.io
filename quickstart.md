@@ -69,13 +69,13 @@ LECmd.exe -f target.lnk --csv ./output</code></pre>
 python instantiators/mft_instantiator.py "&lt;MFT_CSV&gt;" outputs/mft_filled.jsonld
 python instantiators/usn_instantiator.py "&lt;USN_CSV&gt;" outputs/usn_filled.jsonld</code></pre>
         <p>Convert JSON-LD to N-Triples for bulk loading:</p>
-        <pre><code>python scripts/convert_to_ntriples.py outputs/mft_filled.jsonld outputs/mft_case.nt
-python scripts/convert_to_ntriples.py outputs/usn_filled.jsonld outputs/usn_case.nt</code></pre>
+        <pre><code>python3 SCRIPTS/convert_to_ntriples.py outputs/mft_filled.jsonld outputs/mft_case.nt
+python3 SCRIPTS/convert_to_ntriples.py outputs/usn_filled.jsonld outputs/usn_case.nt</code></pre>
         <p><strong>Note:</strong> For large MFT/USN files, use <code>--chunk-size 5000</code> to split the output into multiple JSON-LD chunks. Each chunk is then converted to N-Triples separately.</p>
         <pre><code>python instantiators/mft_instantiator.py "&lt;MFT_CSV&gt;" outputs/mft_filled.jsonld --chunk-size 5000
 # Converts each chunk: outputs/mft_filled_chunk0.jsonld, _chunk1.jsonld, ...
 for f in outputs/mft_filled_chunk*.jsonld; do
-  python scripts/convert_to_ntriples.py "$f" "${f%.jsonld}.nt"
+  python3 SCRIPTS/convert_to_ntriples.py "$f" "${f%.jsonld}.nt"
 done</code></pre>
       </div>
     </div>
@@ -94,20 +94,20 @@ docker exec vos isql 1111 dba dba "exec=select 1;"</code></pre>
         <p>You should see <code>1</code> returned. If the command fails, wait a few more seconds and retry.</p>
         <p><strong>Verify your environment using the AF-004 test graphs</strong> (no real data needed). These synthetic graphs are included in the repository and produce a known result:</p>
         <pre><code># Copy test graphs into the container
-docker cp CASES/AF-004/test/mft_test.nt vos:/database/mft_test.nt
-docker cp CASES/AF-004/test/usn_test.nt vos:/database/usn_test.nt
+docker cp CASES/AF-004/test/mft_test.nt vos:/usr/share/proj/mft_test.nt
+docker cp CASES/AF-004/test/usn_test.nt vos:/usr/share/proj/usn_test.nt
 
 # Load named graphs
-docker exec vos isql 1111 dba dba "exec=ld_dir('/database', 'mft_test.nt', 'https://ioi-framework.github.io/cases/AF-004/graphs/mft');"
-docker exec vos isql 1111 dba dba "exec=ld_dir('/database', 'usn_test.nt', 'https://ioi-framework.github.io/cases/AF-004/graphs/usn');"
-docker exec vos isql 1111 dba dba "exec=rdf_loader_run();"
-docker exec vos isql 1111 dba dba "exec=checkpoint;"
+docker exec -i vos isql 1111 dba dba <<'EOF'
+DB.DBA.TTLP_MT(file_to_string_output('/usr/share/proj/mft_test.nt'), '', 'https://ioi-framework.github.io/cases/AF-004/graphs/mft', 512);
+DB.DBA.TTLP_MT(file_to_string_output('/usr/share/proj/usn_test.nt'), '', 'https://ioi-framework.github.io/cases/AF-004/graphs/usn', 512);
+EOF
 
 # Run IOI-004 — expect 2 rows
 docker cp RULES/structural/IOI-004_vss_traces_missing.rq vos:/database/rule.rq
 docker exec vos bash -lc "printf 'SPARQL\n'; cat /database/rule.rq; printf '\n;'" \
   | docker exec -i vos isql 1111 dba dba</code></pre>
-        <p>A result with <strong>2 rows</strong> confirms Virtuoso is correctly loaded and rules execute as expected. See <code>CASES/AF-004/ground_truth.md</code> for what this result means forensically.</p>
+        <p>A result with <strong>2 rows</strong> confirms Virtuoso is correctly loaded and rules execute as expected. This flow uses <code>/usr/share/proj</code> because Virtuoso's default <code>DirsAllowed</code> configuration reads from that directory, and <code>TTLP_MT</code> loads the triples directly once the files are there. See <code>CASES/AF-004/ground_truth.md</code> for what this result means forensically.</p>
       </div>
     </div>
 
@@ -115,16 +115,16 @@ docker exec vos bash -lc "printf 'SPARQL\n'; cat /database/rule.rq; printf '\n;'
       <div class="step-num">5</div>
       <div class="step-content">
         <h3>Load your own graphs and execute IoI rules</h3>
-        <p>Copy your N-Triples into the container, load them as named graphs, then run any rule from <code>RULES/</code>:</p>
+        <p>Copy your N-Triples into the container, load them as named graphs from Virtuoso's allowed directory, then run any rule from <code>RULES/</code>:</p>
         <pre><code># Copy N-Triples into the container
-docker cp outputs/mft_case.nt vos:/database/mft_case.nt
-docker cp outputs/usn_case.nt vos:/database/usn_case.nt
+docker cp outputs/mft_case.nt vos:/usr/share/proj/mft_case.nt
+docker cp outputs/usn_case.nt vos:/usr/share/proj/usn_case.nt
 
 # Load named graphs
-docker exec vos isql 1111 dba dba "exec=ld_dir('/database', 'mft_case.nt', 'https://ioi-framework.github.io/cases/{your_case_id}/graphs/mft');"
-docker exec vos isql 1111 dba dba "exec=ld_dir('/database', 'usn_case.nt', 'https://ioi-framework.github.io/cases/{your_case_id}/graphs/usn');"
-docker exec vos isql 1111 dba dba "exec=rdf_loader_run();"
-docker exec vos isql 1111 dba dba "exec=checkpoint;"
+docker exec -i vos isql 1111 dba dba <<'EOF'
+DB.DBA.TTLP_MT(file_to_string_output('/usr/share/proj/mft_case.nt'), '', 'https://ioi-framework.github.io/cases/{your_case_id}/graphs/mft', 512);
+DB.DBA.TTLP_MT(file_to_string_output('/usr/share/proj/usn_case.nt'), '', 'https://ioi-framework.github.io/cases/{your_case_id}/graphs/usn', 512);
+EOF
 
 # Execute an IoI rule
 docker cp RULES/temporal/IOI-007_usn_clear_before_event.rq vos:/database/rule.rq
