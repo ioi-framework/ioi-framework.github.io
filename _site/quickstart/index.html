@@ -113,7 +113,10 @@ MFTECmd.exe -f "$J"   --csv ./output --csvf usn.csv
 EvtxECmd.exe -f Security.evtx --csv ./output
 
 # LNK files
-LECmd.exe -f target.lnk --csv ./output</code></pre>
+LECmd.exe -f target.lnk --csv ./output
+
+# Manual Chrome History export (if you have a copied SQLite History DB)
+python3 SCRIPTS/export_chrome_history.py "/path/to/History" ./output/history.json</code></pre>
       </div>
     </div>
 
@@ -125,8 +128,9 @@ LECmd.exe -f target.lnk --csv ./output</code></pre>
         <pre><code>mkdir -p outputs
 
 python instantiators/mft_instantiator.py "&lt;MFT_CSV&gt;" outputs/mft_filled.jsonld
-python instantiators/usn_instantiator.py "&lt;USN_CSV&gt;" outputs/usn_filled.jsonld</code></pre>
-        <p>Convert JSON-LD to N-Triples for bulk loading:</p>
+python instantiators/usn_instantiator.py "&lt;USN_CSV&gt;" outputs/usn_filled.jsonld
+python3 instantiators/history_instantiator.py ./output/history.json outputs/history_filled.jsonld</code></pre>
+        <p>Convert JSON-LD to N-Triples for bulk loading. For browser-history work outside Autopsy, the flow is: copied Chrome <code>History</code> SQLite DB → <code>SCRIPTS/export_chrome_history.py</code> → <code>history_instantiator.py</code> → JSON-LD/N-Triples:</p>
         <pre><code>python3 SCRIPTS/convert_to_ntriples.py outputs/mft_filled.jsonld outputs/mft_case.nt
 python3 SCRIPTS/convert_to_ntriples.py outputs/usn_filled.jsonld outputs/usn_case.nt</code></pre>
         <p><strong>Note:</strong> For large MFT/USN files, use <code>--chunk-size 5000</code> to split the output into multiple JSON-LD chunks. Each chunk is then converted to N-Triples separately.</p>

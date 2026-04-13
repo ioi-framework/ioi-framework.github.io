@@ -40,7 +40,8 @@ permalink: /artifacts/
 │
 ├── registry.json                 # Single source of truth for artifact metadata
 ├── SCRIPTS/
-│   └── convert_to_ntriples.py
+│   ├── convert_to_ntriples.py
+│   └── export_chrome_history.py  # Manual Chrome History SQLite → framework JSON
 ├── scripts/
 │   ├── validate_registry.py
 │   ├── validate_sparql.py
@@ -71,7 +72,7 @@ permalink: /artifacts/
     <div class="card">
       <div class="card-tag">instantiators/</div>
       <h3>Template Instantiators</h3>
-      <p>Python scripts that map artifact-specific parser CSV output to CASE/UCO template structures, producing case-specific JSON-LD graphs for each scenario.</p>
+      <p>Python scripts that map artifact-specific parser output to CASE/UCO template structures, producing case-specific JSON-LD graphs for each scenario. This now includes the browser-history flow plus a manual Chrome History SQLite exporter under <code>SCRIPTS/</code>.</p>
     </div>
 
     <div class="card">
@@ -154,6 +155,6 @@ permalink: /artifacts/
     <strong style="color:var(--ink);">Repository.</strong>
     Ground truth documents, IoI rules, instantiators, and templates are publicly available at
     <a href="https://github.com/ioi-framework/ioi-framework" target="_blank" rel="noopener">github.com/ioi-framework/ioi-framework</a>.
-    See the <a href="/quickstart/">quick start</a> for setup and execution instructions.
+    See the <a href="/quickstart/">quick start</a> for setup and execution instructions, including the manual Chrome History SQLite export path.
   </div>
 </div>
