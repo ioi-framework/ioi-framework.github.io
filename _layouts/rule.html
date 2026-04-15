@@ -33,7 +33,7 @@ layout: default
   {% if page.sparql_file %}
   <div style="margin-bottom:1.25rem;">
     <a class="badge badge-outline"
-       href="https://github.com/ioi-framework/ioi-framework/blob/main/rules/sparql/{{ page.sparql_file }}"
+       href="https://github.com/ioi-framework/ioi-framework/blob/main/{% if page.sparql_path %}{{ page.sparql_path }}{% else %}rules/sparql/{{ page.sparql_file }}{% endif %}"
        target="_blank" rel="noopener">
       Download {{ page.sparql_file }} ↗
     </a>
