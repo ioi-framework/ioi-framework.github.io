@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chrome Browser History Instantiator — IoI Framework</title>
+  <meta name="description" content="Indicator of Inconsistency — A community-driven SPARQL framework for detecting cross-artifact contradictions in digital forensic investigations.">
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="canonical" href="https://ioi-framework.github.io/instantiators/inst-006/">
+</head>
+<body>
+
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <a class="nav-brand" href="/">IoI <span>Framework</span></a>
+      <ul class="nav-links" id="nav-links">
+        
+          <li>
+            <a href="/"
+               >Home</a>
+          </li>
+        
+          <li>
+            <a href="/quickstart/"
+               >Executing Rules</a>
+          </li>
+        
+          <li>
+            <a href="/cases/"
+               >Cases</a>
+          </li>
+        
+          <li>
+            <a href="/rules/"
+               >IoI Rules</a>
+          </li>
+        
+          <li>
+            <a href="/instantiators/"
+               class="active"
+               >Instantiators</a>
+          </li>
+        
+          <li>
+            <a href="/artifacts/"
+               >Artifacts</a>
+          </li>
+        
+          <li>
+            <a href="/community/"
+               >Contribute</a>
+          </li>
+        
+          <li>
+            <a href="https://github.com/ioi-framework/ioi-framework"
+               class="external" target="_blank" rel="noopener"
+               >GitHub</a>
+          </li>
+        
+      </ul>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu">&#9776;</button>
+    </div>
+  </nav>
+
+  <main><div class="page-wrap">
+  <a href="/instantiators/" class="back-link">← All instantiators</a>
+
+  <div class="detail-header">
+    <div class="detail-id">INST-006 · Instantiator · Chrome History</div>
+    <div class="detail-title">Chrome Browser History Instantiator</div>
+    <div class="detail-meta">
+      
+
+  <span class="badge badge-green" style="font-size:0.65rem;">✓ Validated</span>
+
+
+      <span class="tag">SQLite export / Autopsy plugin</span>
+      <span class="tag">JSON → </span>
+      <span class="tag">Python 3.9+</span>
+    </div>
+    <div class="contrib-line">
+      Contributed by <strong>@ioi-framework</strong> · 2026-04-15
+    </div>
+  </div>
+
+  
+  <div class="inst-note-box">
+    <div class="inst-note-label">Note</div>
+    <div class="inst-note-text">Consumes the same urls/visits JSON contract produced internally by the Autopsy plugin. Manual users can create that JSON from a copied Chrome History SQLite database with SCRIPTS/export_chrome_history.py.</div>
+  </div>
+  
+
+  <div class="inst-action-row">
+    
+    <a class="inst-dl-btn"
+       href="https://github.com/ioi-framework/ioi-framework/blob/main/instantiators/history_instantiator.py"
+       target="_blank" rel="noopener">
+      <span class="inst-dl-icon">↓</span>
+      <span>
+        <span class="inst-dl-label">Script</span>
+        <span class="inst-dl-name">history_instantiator.py</span>
+      </span>
+    </a>
+    
+    
+    <a class="inst-dl-btn"
+       href="https://github.com/ioi-framework/ioi-framework/tree/main/instantiators/templates/browser_history"
+       target="_blank" rel="noopener">
+      <span class="inst-dl-icon">↗</span>
+      <span>
+        <span class="inst-dl-label">Templates</span>
+        <span class="inst-dl-name">browser_history/</span>
+      </span>
+    </a>
+    
+  </div>
+
+  
+  <div class="inst-deps">
+    <span class="inst-deps-label">Dependencies</span>
+    <code>rdflib>=6.0</code>
+  </div>
+  
+
+  <div class="prose"><h2 id="overview">Overview</h2>
+
+<p>Maps Chrome History URL and visit records to CASE/UCO-compliant JSON-LD using the browser-history template snippets under <code class="language-plaintext highlighter-rouge">instantiators/templates/browser_history/</code>. This instantiator is used by IOI-002 to represent Chrome History evidence separately from IndexedDB filesystem evidence and USN modification evidence.</p>
+
+<p>The Autopsy plugin performs the SQLite-to-JSON export internally before invoking this instantiator. Manual users can run the same flow explicitly with <code class="language-plaintext highlighter-rouge">SCRIPTS/export_chrome_history.py</code>.</p>
+
+<h2 id="input-contract">Input contract</h2>
+
+<p>The instantiator expects a JSON object with <code class="language-plaintext highlighter-rouge">urls</code> and <code class="language-plaintext highlighter-rouge">visits</code> arrays:</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"urls"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://example.com"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Example"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"visit_count"</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"typed_count"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"last_visit_datetime"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2026-04-15 10:00:00"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">],</span><span class="w">
+  </span><span class="nl">"visits"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"url"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"visit_datetime"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2026-04-15 10:00:00"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"visit_duration"</span><span class="p">:</span><span class="w"> </span><span class="mi">2000000</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"transition"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"from_visit"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<h2 id="input-fields-consumed">Input fields consumed</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>JSON field</th>
+      <th>Mapped to</th>
+      <th>Notes</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">urls[].url</code></td>
+      <td><code class="language-plaintext highlighter-rouge">observable:fullValue</code></td>
+      <td>URL resource value used by IOI-002 domain matching</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">urls[].title</code></td>
+      <td>browser-history entry title</td>
+      <td>Preserved as page title metadata</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">urls[].visit_count</code></td>
+      <td>visit count</td>
+      <td>Stored as integer metadata</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">urls[].typed_count</code></td>
+      <td>typed count</td>
+      <td>Stored as integer metadata</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">urls[].last_visit_datetime</code></td>
+      <td>last visit timestamp</td>
+      <td>Accepts Chrome WebKit timestamps or string timestamps</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">visits[].visit_datetime</code></td>
+      <td>visit timestamp</td>
+      <td>Serialized as a visit facet timestamp</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">visits[].visit_duration</code></td>
+      <td>visit duration</td>
+      <td>Converted from microseconds to seconds</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">visits[].transition</code></td>
+      <td>transition type</td>
+      <td>Normalized from Chrome transition integer to label</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">visits[].from_visit</code></td>
+      <td>referring visit</td>
+      <td>Optional link to prior visit</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="usage">Usage</h2>
+
+<p>Autopsy path:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># The Autopsy plugin exports Chrome History SQLite to this JSON shape internally.</span>
+python3 instantiators/history_instantiator.py history.json outputs/history_filled.jsonld
+</code></pre></div></div>
+
+<p>Manual path:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python3 SCRIPTS/export_chrome_history.py <span class="s2">"/path/to/History"</span> outputs/history.json
+python3 instantiators/history_instantiator.py outputs/history.json outputs/history_filled.jsonld
+python3 SCRIPTS/convert_to_ntriples.py outputs/history_filled.jsonld outputs/history_case.nt
+</code></pre></div></div>
+
+<h2 id="output-structure">Output structure</h2>
+
+<p>Produces URL resource nodes, browser history entry nodes, and visit nodes in a JSON-LD <code class="language-plaintext highlighter-rouge">@graph</code>. The output is loaded into a browser-history named graph and joined by IOI-002 with MFT-derived IndexedDB paths and USN History-file modification records.</p>
+</div>
+</div>
+</main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <span>© 2026 IoI Research Team</span>
+      <div class="footer-links">
+        <a href="/community/">Contribute</a>
+        <a href="https://github.com/ioi-framework/ioi-framework" target="_blank" rel="noopener">GitHub ↗</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/assets/js/main.js"></script>
+</body>
+</html>
