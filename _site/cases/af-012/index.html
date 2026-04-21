@@ -6,7 +6,7 @@
   <title>Office Metadata Timestamp Contradiction — IoI Framework</title>
   <meta name="description" content="Filesystem timestamps forged via timestomper.exe; embedded Office core.xml metadata predates the forged MFT $SI timestamp in a cross-graph filePath join.">
   <link rel="stylesheet" href="/assets/css/main.css">
-  <link rel="canonical" href="http://localhost:4000/cases/af-012/">
+  <link rel="canonical" href="https://ioi-framework.github.io/cases/af-012/">
 </head>
 <body>
 
@@ -100,10 +100,24 @@
   </div>
   
 
+  
   <div class="artifact-strip">
     <span class="artifact-strip-label">Sample JSON-LD</span>
-    <a class="tag" href="https://github.com/ioi-framework/ioi-framework/blob/main/CASES/AF-012/snippets/office_xml_filled.jsonld" target="_blank" rel="noopener">Office evaluated graph</a>
-    <a class="tag" href="https://github.com/ioi-framework/ioi-framework/blob/main/CASES/AF-012/snippets/office_xml_snippet.jsonld" target="_blank" rel="noopener">Office XML snippet</a>
+    
+      <a class="tag" href="https://github.com/ioi-framework/ioi-framework/blob/main/CASES/AF-012/snippets/office_xml_filled.jsonld" target="_blank" rel="noopener">Office evaluated graph</a>
+    
+      <a class="tag" href="https://github.com/ioi-framework/ioi-framework/blob/main/CASES/AF-012/snippets/office_xml_snippet.jsonld" target="_blank" rel="noopener">Office XML snippet</a>
+    
+  </div>
+  
+
+  
+  
+  
+  
+  <div class="artifact-strip">
+    <span class="artifact-strip-label">Reproducibility bundle</span>
+    <a class="tag" href="https://zenodo.org/records/19684302" target="_blank" rel="noopener">Zenodo DOI ↗</a>
   </div>
   
 
@@ -129,7 +143,7 @@
 
 <h2 id="inconsistency-summary">Inconsistency Summary</h2>
 
-<p>When <code class="language-plaintext highlighter-rouge">timestomper.exe</code> modifies <code class="language-plaintext highlighter-rouge">password.docx</code>, it changes the MFT filesystem timestamps but does not rewrite the Office metadata in <code class="language-plaintext highlighter-rouge">docProps/core.xml</code>. The Office graph therefore retains an earlier <code class="language-plaintext highlighter-rouge">ioi-ext:dctermsCreated</code> value than the MFT graph's <code class="language-plaintext highlighter-rouge">ioi-ext:created0x10</code> value for the same file path.</p>
+<p>When <code class="language-plaintext highlighter-rouge">timestomper.exe</code> modifies <code class="language-plaintext highlighter-rouge">password.docx</code>, it changes the MFT filesystem timestamps but does not rewrite the Office metadata in <code class="language-plaintext highlighter-rouge">docProps/core.xml</code>. The Office graph therefore retains an earlier <code class="language-plaintext highlighter-rouge">ioi-ext:dctermsCreated</code> value than the MFT graph’s <code class="language-plaintext highlighter-rouge">ioi-ext:created0x10</code> value for the same file path.</p>
 
 <h2 id="detection-logic">Detection Logic</h2>
 
@@ -151,7 +165,7 @@
 
   <footer class="site-footer">
     <div class="footer-inner">
-      <span>© 2026 IoI Research Team · Forensic Science International: Digital Investigation</span>
+      <span>© 2026 IoI Research Team</span>
       <div class="footer-links">
         <a href="/community/">Contribute</a>
         <a href="https://github.com/ioi-framework/ioi-framework" target="_blank" rel="noopener">GitHub ↗</a>

@@ -6,7 +6,7 @@
   <title>Timestamp Forging via Timestomper (LNK Corroboration) — IoI Framework</title>
   <meta name="description" content="Filesystem timestamps forged via timestomper.exe; LNK shortcut metadata retains original creation time, diverging from forged SI timestamp.">
   <link rel="stylesheet" href="/assets/css/main.css">
-  <link rel="canonical" href="http://localhost:4000/cases/af-011/">
+  <link rel="canonical" href="https://ioi-framework.github.io/cases/af-011/">
 </head>
 <body>
 
@@ -100,10 +100,24 @@
   </div>
   
 
+  
   <div class="artifact-strip">
     <span class="artifact-strip-label">Sample JSON-LD</span>
-    <a class="tag" href="https://github.com/ioi-framework/ioi-framework/blob/main/CASES/AF-011/snippets/af011_lnk_repro_sample.jsonld" target="_blank" rel="noopener">LNK reproducible sample</a>
-    <a class="tag" href="https://github.com/ioi-framework/ioi-framework/blob/main/CASES/AF-011/snippets/af011_mft_repro_sample.jsonld" target="_blank" rel="noopener">MFT reproducible sample</a>
+    
+      <a class="tag" href="https://github.com/ioi-framework/ioi-framework/blob/main/CASES/AF-011/snippets/af011_lnk_repro_sample.jsonld" target="_blank" rel="noopener">LNK reproducible sample</a>
+    
+      <a class="tag" href="https://github.com/ioi-framework/ioi-framework/blob/main/CASES/AF-011/snippets/af011_mft_repro_sample.jsonld" target="_blank" rel="noopener">MFT reproducible sample</a>
+    
+  </div>
+  
+
+  
+  
+  
+  
+  <div class="artifact-strip">
+    <span class="artifact-strip-label">Reproducibility bundle</span>
+    <a class="tag" href="https://zenodo.org/records/19684257" target="_blank" rel="noopener">Zenodo DOI ↗</a>
   </div>
   
 
@@ -113,7 +127,7 @@
 
 <h2 id="scenario-steps">Scenario Steps</h2>
 
-<p><strong>1. Set Up</strong> — Created <code class="language-plaintext highlighter-rouge">password.docx</code> on Windows system. Created shortcut <code class="language-plaintext highlighter-rouge">password.lnk</code> pointing to <code class="language-plaintext highlighter-rouge">password.docx</code>. Captured original timestamps of <code class="language-plaintext highlighter-rouge">password.docx</code>.</p>
+<p><strong>1. Set Up</strong> — Created <code class="language-plaintext highlighter-rouge">password.docx</code> on the Windows system. Created shortcut <code class="language-plaintext highlighter-rouge">password.lnk</code> pointing to <code class="language-plaintext highlighter-rouge">password.docx</code>. Captured the original timestamps of <code class="language-plaintext highlighter-rouge">password.docx</code>.</p>
 
 <p><strong>2. Tampering</strong> — Used <code class="language-plaintext highlighter-rouge">timestomper.exe</code> to forge timestamps of <code class="language-plaintext highlighter-rouge">password.docx</code>. The <code class="language-plaintext highlighter-rouge">SetFileTime</code> API modifies MFT <code class="language-plaintext highlighter-rouge">$STANDARD_INFORMATION</code> (0x10) timestamps; <code class="language-plaintext highlighter-rouge">$FILE_NAME</code> (0x30) timestamps remain unchanged.</p>
 
@@ -152,7 +166,7 @@
 
   <footer class="site-footer">
     <div class="footer-inner">
-      <span>© 2026 IoI Research Team · Forensic Science International: Digital Investigation</span>
+      <span>© 2026 IoI Research Team</span>
       <div class="footer-links">
         <a href="/community/">Contribute</a>
         <a href="https://github.com/ioi-framework/ioi-framework" target="_blank" rel="noopener">GitHub ↗</a>

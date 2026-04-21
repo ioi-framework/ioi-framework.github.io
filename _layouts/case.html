@@ -42,5 +42,17 @@ layout: default
   </div>
   {% endif %}
 
+  {% assign repro_url = page.repro_bundle_url | default: "" | strip %}
+  {% if repro_url != "" %}
+  {% assign repro_label = page.repro_bundle_label | default: "" | strip %}
+  {% if repro_label == "" %}
+    {% assign repro_label = "Zenodo DOI ↗" %}
+  {% endif %}
+  <div class="artifact-strip">
+    <span class="artifact-strip-label">Reproducibility bundle</span>
+    <a class="tag" href="{{ repro_url }}" target="_blank" rel="noopener">{{ repro_label }}</a>
+  </div>
+  {% endif %}
+
   <div class="prose">{{ content }}</div>
 </div>

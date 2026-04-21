@@ -101,6 +101,7 @@ permalink: /artifacts/
   </div>
 
   <div class="prose">
+    {% assign sorted_cases = site.cases | sort: "case_id" %}
     <table>
       <thead>
         <tr>
@@ -109,44 +110,30 @@ permalink: /artifacts/
           <th>Total triples</th>
           <th>JSON-LD graphs</th>
           <th>Ground truth</th>
+          <th>Reproducibility bundle</th>
         </tr>
       </thead>
       <tbody>
+        {% for case in sorted_cases %}
+        {% assign ground_truth_url = "https://github.com/ioi-framework/ioi-framework/blob/main/CASES/" | append: case.case_id | append: "/ground_truth.md" %}
         <tr>
-          <td><a href="/cases/af-002/">AF-002</a></td>
-          <td>$MFT, $UsnJrnl, Chrome History</td>
-          <td>24,042,852</td>
-          <td>3</td>
-          <td><a href="https://github.com/ioi-framework/ioi-framework/blob/main/CASES/AF-002/ground_truth.md" target="_blank" rel="noopener">ground_truth.md ↗</a></td>
+          <td><a href="{{ case.url | relative_url }}">{{ case.case_id }}</a></td>
+          <td>{{ case.artifact_summary }}</td>
+          <td>{{ case.total_triples }}</td>
+          <td>{{ case.jsonld_graphs }}</td>
+          <td><a href="{{ ground_truth_url }}" target="_blank" rel="noopener">ground_truth.md ↗</a></td>
+          <td>
+            {% assign repro_url = case.repro_bundle_url | default: "" | strip %}
+            {% if repro_url != "" %}
+            {% assign repro_label = case.repro_bundle_label | default: "" | strip %}
+            {% if repro_label == "" %}
+              {% assign repro_label = "Zenodo DOI ↗" %}
+            {% endif %}
+            <a href="{{ repro_url }}" target="_blank" rel="noopener">{{ repro_label }}</a>
+            {% endif %}
+          </td>
         </tr>
-        <tr>
-          <td><a href="/cases/af-004/">AF-004</a></td>
-          <td>$MFT, $UsnJrnl</td>
-          <td>21,004,830</td>
-          <td>2</td>
-          <td><a href="https://github.com/ioi-framework/ioi-framework/blob/main/CASES/AF-004/ground_truth.md" target="_blank" rel="noopener">ground_truth.md ↗</a></td>
-        </tr>
-        <tr>
-          <td><a href="/cases/af-007/">AF-007</a></td>
-          <td>Security.evtx, $UsnJrnl</td>
-          <td>5,922,784</td>
-          <td>2</td>
-          <td><a href="https://github.com/ioi-framework/ioi-framework/blob/main/CASES/AF-007/ground_truth.md" target="_blank" rel="noopener">ground_truth.md ↗</a></td>
-        </tr>
-        <tr>
-          <td><a href="/cases/af-011/">AF-011</a></td>
-          <td>LNK, $MFT</td>
-          <td>18,385,659</td>
-          <td>2</td>
-          <td><a href="https://github.com/ioi-framework/ioi-framework/blob/main/CASES/AF-011/ground_truth.md" target="_blank" rel="noopener">ground_truth.md ↗</a></td>
-        </tr>
-        <tr>
-          <td><a href="/cases/af-012/">AF-012</a></td>
-          <td>Office core.xml, $MFT</td>
-          <td>18,383,783</td>
-          <td>2</td>
-          <td><a href="https://github.com/ioi-framework/ioi-framework/blob/main/CASES/AF-012/ground_truth.md" target="_blank" rel="noopener">ground_truth.md ↗</a></td>
-        </tr>
+        {% endfor %}
       </tbody>
     </table>
   </div>
@@ -155,6 +142,6 @@ permalink: /artifacts/
     <strong style="color:var(--ink);">Repository.</strong>
     Ground truth documents, IoI rules, instantiators, and templates are publicly available at
     <a href="https://github.com/ioi-framework/ioi-framework" target="_blank" rel="noopener">github.com/ioi-framework/ioi-framework</a>.
-    See the <a href="/quickstart/">quick start</a> for setup and execution instructions, including the manual Chrome History SQLite export path.
+    See the <a href="/quickstart/">quick start</a> for setup and execution instructions, including the manual Chrome History SQLite export path. Published per-case reproducibility bundles will appear in the table above as they become available.
   </div>
 </div>
