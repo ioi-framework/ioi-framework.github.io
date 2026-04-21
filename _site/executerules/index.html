@@ -66,6 +66,13 @@
   <h1 class="page-title">Executing Rules</h1>
   <p class="page-subtitle">Execute IoI rules against your own forensic datasets in five steps.</p>
 
+  <div style="margin-bottom:1.5rem;padding:1rem 1.15rem;background:var(--bg-tint);border:1px solid var(--rule);border-radius:4px;">
+    <div style="font-family:var(--mono);font-size:0.65rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent-mid);margin-bottom:0.4rem;">Testing with published datasets</div>
+    <p style="font-size:0.88rem;color:var(--ink-mid);margin:0;">
+      To reproduce one of the published anti-forensic cases directly, start on the <a href="/artifacts/">Artifacts &amp; Datasets</a> page, download a per-case reproducibility bundle from the <strong>Reproducibility bundle</strong> column, then follow the steps below using the included raw artifacts and parser outputs.
+    </p>
+  </div>
+
   <div class="prose" style="margin-bottom:2rem;">
     <p>The framework operates in three layers:</p>
     <ul>
@@ -104,6 +111,7 @@ cd ioi-framework</code></pre>
       <div class="step-num">2</div>
       <div class="step-content">
         <h3>Parse your artifacts</h3>
+        <p>If you downloaded one of the published case bundles from <a href="/artifacts/">Artifacts &amp; Datasets</a>, use the bundled raw artifacts and CSV parser outputs here instead of exporting your own.</p>
         <p>Use artifact-specific parsers to produce structured CSV output. The framework was validated with the following tools:</p>
         <pre><code># NTFS $MFT and $UsnJrnl:$J
 MFTECmd.exe -f "$MFT" --csv ./output --csvf mft.csv
@@ -201,7 +209,7 @@ docker exec vos bash -lc "printf 'SPARQL\n'; sed '/^#/d' /database/rule.rq; prin
   <div style="margin-top:2.5rem;padding:1.25rem;background:var(--bg-tint);border:1px solid var(--rule);border-radius:4px;">
     <div style="font-family:var(--mono);font-size:0.65rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent-mid);margin-bottom:0.4rem;">Need help?</div>
     <p style="font-size:0.88rem;color:var(--ink-mid);margin:0;">
-      See the <a href="/artifacts/">artifacts &amp; datasets</a> page for pre-built knowledge graphs,
+      See the <a href="/artifacts/">artifacts &amp; datasets</a> page for published reproducibility bundles and downloadable case datasets,
       the <a href="/cases/">scenarios</a> for ground-truth specifications,
       and the <a href="/rules/">IoI rules library</a> for all SPARQL signatures.
       Open an issue on <a href="https://github.com/ioi-framework" target="_blank" rel="noopener">GitHub ↗</a> if you encounter problems.
