@@ -165,7 +165,7 @@ Add an entry under `"artifacts"`. Key must be the lowercase `artifact_type` iden
 
 ### 2. Instantiator script
 
-Follow the **Instantiator Contract** exactly — see [`INSTANTIATOR_CONTRACT.md`](./INSTANTIATOR_CONTRACT.md).
+Follow the framework repo's instantiator conventions — see [`instantiators/README.md`](https://github.com/ioi-framework/ioi-framework/blob/main/instantiators/README.md) and mirror the existing scripts under `instantiators/`.
 
 Key rules:
 - CLI: `python3 {artifact}_instantiator.py <input_file> <output_file>` — always 2 positional args
