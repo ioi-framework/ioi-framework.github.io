@@ -6,7 +6,7 @@
   <title>LNK vs. $MFT $SI Timestamp Divergence — IoI Framework</title>
   <meta name="description" content="Detects timestamp forging by comparing LNK shortcut targetCreatedTime against the $SI timestamp for the same MFT entry, corroborated by $FN agreement with the LNK value.">
   <link rel="stylesheet" href="/assets/css/main.css">
-  <link rel="canonical" href="http://localhost:4000/rules/ioi-011/">
+  <link rel="canonical" href="https://ioi-framework.github.io/rules/ioi-011/">
 </head>
 <body>
 
@@ -21,7 +21,7 @@
           </li>
         
           <li>
-            <a href="/quickstart/"
+            <a href="/executerules/"
                >Executing Rules</a>
           </li>
         
@@ -143,7 +143,7 @@
       </span><span class="nv">?entryNum</span><span class="w"> </span><span class="nv">?lnkFile</span><span class="w"> </span><span class="nv">?lnkTargetPath</span><span class="w">
       </span><span class="nv">?lnkTargetCreated</span><span class="w"> </span><span class="nv">?lnkShortcutCreated</span><span class="w">
     </span><span class="k">WHERE</span><span class="w"> </span><span class="p">{</span><span class="w">
-      </span><span class="k">GRAPH</span><span class="w"> </span><span class="nn">&lt;https://ioi-framework.github.io/cases/AF-011/graphs/lnk&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="k">GRAPH</span><span class="w"> </span><span class="nn">&lt;lnk_case11&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
         </span><span class="nv">?lnkFacet</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">ioi-ext</span><span class="o">:</span><span class="ss">WindowsLnkFacet</span><span class="w"> </span><span class="p">;</span><span class="w">
                   </span><span class="nn">ioi-ext</span><span class="o">:</span><span class="ss">targetMftEntryNumber</span><span class="w"> </span><span class="nv">?entryNum</span><span class="w"> </span><span class="p">;</span><span class="w">
                   </span><span class="nn">ioi-ext</span><span class="o">:</span><span class="ss">targetCreatedTime</span><span class="w"> </span><span class="nv">?lnkTargetCreated</span><span class="w"> </span><span class="p">;</span><span class="w">
@@ -157,16 +157,17 @@
       </span><span class="p">}</span><span class="w">
     </span><span class="p">}</span><span class="w">
   </span><span class="p">}</span><span class="w">
-  </span><span class="k">GRAPH</span><span class="w"> </span><span class="nn">&lt;https://ioi-framework.github.io/cases/AF-011/graphs/mft&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+  </span><span class="k">GRAPH</span><span class="w"> </span><span class="nn">&lt;mft_case11&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
     </span><span class="nv">?mftFacet</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">ioi-ext</span><span class="o">:</span><span class="ss">MftFacet</span><span class="w"> </span><span class="p">;</span><span class="w">
               </span><span class="nn">ioi-ext</span><span class="o">:</span><span class="ss">entryNumber</span><span class="w"> </span><span class="nv">?entryNum</span><span class="w"> </span><span class="p">;</span><span class="w">
               </span><span class="nn">ioi-ext</span><span class="o">:</span><span class="ss">created0x10</span><span class="w"> </span><span class="nv">?mftSiCreated</span><span class="w"> </span><span class="p">;</span><span class="w">
               </span><span class="nn">ioi-ext</span><span class="o">:</span><span class="ss">created0x30</span><span class="w"> </span><span class="nv">?mftFnCreated</span><span class="w"> </span><span class="p">.</span><span class="w">
   </span><span class="p">}</span><span class="w">
+  </span><span class="k">FILTER</span><span class="p">(</span><span class="nb">BOUND</span><span class="p">(</span><span class="nv">?lnkShortcutCreated</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w">
+         </span><span class="nv">?lnkShortcutCreated</span><span class="w"> </span><span class="o">!</span><span class="p">=</span><span class="w"> </span><span class="nv">?mftSiCreated</span><span class="p">)</span><span class="w">
   </span><span class="k">BIND</span><span class="p">(</span><span class="nb">SUBSTR</span><span class="p">(</span><span class="nb">STR</span><span class="p">(</span><span class="nv">?lnkShortcutCreated</span><span class="p">),</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">19</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="nv">?lnkShortcutCreatedSec</span><span class="p">)</span><span class="w">
   </span><span class="k">BIND</span><span class="p">(</span><span class="nb">SUBSTR</span><span class="p">(</span><span class="nb">STR</span><span class="p">(</span><span class="nv">?mftFnCreated</span><span class="p">),</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">19</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="nv">?mftFnCreatedSec</span><span class="p">)</span><span class="w">
-  </span><span class="k">FILTER</span><span class="p">(</span><span class="nb">BOUND</span><span class="p">(</span><span class="nv">?lnkShortcutCreated</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nv">?lnkShortcutCreated</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="nv">?mftSiCreated</span><span class="p">)</span><span class="w">
-  </span><span class="k">FILTER</span><span class="p">(</span><span class="nv">?lnkShortcutCreatedSec</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">?mftFnCreatedSec</span><span class="p">)</span><span class="w">
+  </span><span class="k">FILTER</span><span class="p">(</span><span class="nv">?lnkShortcutCreatedSec</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nv">?mftFnCreatedSec</span><span class="p">)</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="nv">?lnkFile</span><span class="w">
 </span></code></pre></div></div>
@@ -177,14 +178,14 @@
 
 <h2 id="graph-iri-substitution">Graph IRI substitution</h2>
 
-<p>The downloadable rule uses the canonical AF-011 graph IRIs. Replace them only if you load your data into different named graphs.</p>
+<p>Replace <code class="language-plaintext highlighter-rouge">&lt;lnk_case11&gt;</code> and <code class="language-plaintext highlighter-rouge">&lt;mft_case11&gt;</code> with your named graph IRIs.</p>
 </div>
 </div>
 </main>
 
   <footer class="site-footer">
     <div class="footer-inner">
-      <span>© 2026 IoI Research Team · Forensic Science International: Digital Investigation</span>
+      <span>© 2026 IoI Research Team</span>
       <div class="footer-links">
         <a href="/community/">Contribute</a>
         <a href="https://github.com/ioi-framework/ioi-framework" target="_blank" rel="noopener">GitHub ↗</a>

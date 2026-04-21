@@ -142,6 +142,6 @@ permalink: /artifacts/
     <strong style="color:var(--ink);">Repository.</strong>
     Ground truth documents, IoI rules, instantiators, and templates are publicly available at
     <a href="https://github.com/ioi-framework/ioi-framework" target="_blank" rel="noopener">github.com/ioi-framework/ioi-framework</a>.
-    See the <a href="/quickstart/">quick start</a> for setup and execution instructions, including the manual Chrome History SQLite export path. Published per-case reproducibility bundles will appear in the table above as they become available.
+    See the <a href="/executerules/">Executing Rules</a> page for setup and execution instructions, including the manual Chrome History SQLite export path. Published per-case reproducibility bundles will appear in the table above as they become available.
   </div>
 </div>

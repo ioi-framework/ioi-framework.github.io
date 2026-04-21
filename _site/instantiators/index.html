@@ -6,7 +6,7 @@
   <title>Template Instantiators — IoI Framework</title>
   <meta name="description" content="Python scripts that map forensic artifact parser output to CASE/UCO JSON-LD knowledge graphs.">
   <link rel="stylesheet" href="/assets/css/main.css">
-  <link rel="canonical" href="http://localhost:4000/instantiators/">
+  <link rel="canonical" href="https://ioi-framework.github.io/instantiators/">
 </head>
 <body>
 
@@ -21,7 +21,7 @@
           </li>
         
           <li>
-            <a href="/quickstart/"
+            <a href="/executerules/"
                >Executing Rules</a>
           </li>
         
@@ -70,8 +70,8 @@
   </p>
 
   <div style="display:flex;gap:2rem;flex-wrap:wrap;margin-bottom:1.75rem;font-size:0.82rem;color:var(--ink-light);">
-    <span><strong style="color:var(--ink);">5</strong> instantiators</span>
-    <span><strong style="color:var(--green);">5</strong> validated</span>
+    <span><strong style="color:var(--ink);">6</strong> instantiators</span>
+    <span><strong style="color:var(--green);">6</strong> validated</span>
   </div>
 
   <div id="inst-grid" class="inst-list">
@@ -170,7 +170,7 @@
         <div class="inst-row-id">INST-005</div>
         <div class="inst-row-title">Office XML Metadata Instantiator</div>
         
-        <div class="inst-row-note">Accepts .docx/.xlsx/.pptx files directly (extracts core.xml via Python zipfile) or pre-extracted folders. Joins MFT timestamps with core.xml metadata by filename for IOI-012 timestomping detection.</div>
+        <div class="inst-row-note">Supports merged-JSON and direct Office-document input. Emits a dedicated Office XML graph with source-specific metadata properties for IOI-012.</div>
         
       </div>
       <div class="inst-row-right">
@@ -183,6 +183,28 @@
         <span class="tag">Python zipfile</span>
         
         <span style="font-family:var(--mono);font-size:0.62rem;color:var(--accent-mid);background:var(--accent-light);padding:0.1rem 0.4rem;border-radius:2px;">office_xml_instantiator.py</span>
+        
+      </div>
+    </a>
+    
+    <a class="inst-row" href="/instantiators/inst-006/" data-status="validated">
+      <div class="inst-row-left">
+        <div class="inst-row-id">INST-006</div>
+        <div class="inst-row-title">Chrome Browser History Instantiator</div>
+        
+        <div class="inst-row-note">Consumes the same urls/visits JSON contract produced internally by the Autopsy plugin. Manual users can create that JSON from a copied Chrome History SQLite database with SCRIPTS/export_chrome_history.py.</div>
+        
+      </div>
+      <div class="inst-row-right">
+        
+
+  <span class="badge badge-green" style="font-size:0.65rem;">✓ Validated</span>
+
+
+        <span class="tag">Chrome History</span>
+        <span class="tag">SQLite export / Autopsy plugin</span>
+        
+        <span style="font-family:var(--mono);font-size:0.62rem;color:var(--accent-mid);background:var(--accent-light);padding:0.1rem 0.4rem;border-radius:2px;">history_instantiator.py</span>
         
       </div>
     </a>

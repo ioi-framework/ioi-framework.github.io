@@ -6,7 +6,7 @@
   <title>IoI Rules — IoI Framework</title>
   <meta name="description" content="Community-contributed SPARQL signatures for detecting cross-artifact inconsistencies.">
   <link rel="stylesheet" href="/assets/css/main.css">
-  <link rel="canonical" href="http://localhost:4000/rules/">
+  <link rel="canonical" href="https://ioi-framework.github.io/rules/">
 </head>
 <body>
 
@@ -21,7 +21,7 @@
           </li>
         
           <li>
-            <a href="/quickstart/"
+            <a href="/executerules/"
                >Executing Rules</a>
           </li>
         
@@ -202,8 +202,8 @@
 
 
       </div>
-      <h3>Office XML Metadata vs. $MFT $SI Timestamp Cross-Graph Check</h3>
-      <p>Detects timestamp forging of Office documents by joining embedded dcterms:created from core.xml against the $SI creation timestamp in $MFT. Fires when embedded creation time precedes filesystem creation time.</p>
+      <h3>Office XML Metadata Timestamp Inconsistent with MFT</h3>
+      <p>Detects timestamp forging of Office documents by joining embedded Office core.xml metadata against the MFT $SI creation timestamp for the same file path. Fires when the embedded creation time predates filesystem creation time.</p>
       <div class="card-footer">
         <span class="tag tag-temporal">Temporal</span>
         <span class="tag">Office core.xml</span><span class="tag">$MFT</span>

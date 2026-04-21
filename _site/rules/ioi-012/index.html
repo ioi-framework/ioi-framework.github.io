@@ -6,7 +6,7 @@
   <title>Office XML Metadata Timestamp Inconsistent with MFT — IoI Framework</title>
   <meta name="description" content="Detects timestamp forging of Office documents by joining embedded Office core.xml metadata against the MFT $SI creation timestamp for the same file path. Fires when the embedded creation time predates filesystem creation time.">
   <link rel="stylesheet" href="/assets/css/main.css">
-  <link rel="canonical" href="http://localhost:4000/rules/ioi-012/">
+  <link rel="canonical" href="https://ioi-framework.github.io/rules/ioi-012/">
 </head>
 <body>
 
@@ -21,7 +21,7 @@
           </li>
         
           <li>
-            <a href="/quickstart/"
+            <a href="/executerules/"
                >Executing Rules</a>
           </li>
         
@@ -100,7 +100,7 @@
   
   <div style="margin-bottom:1.25rem;">
     <a class="badge badge-outline"
-       href="https://github.com/ioi-framework/ioi-framework/blob/main/rules/sparql/ioi-012.rq"
+       href="https://github.com/ioi-framework/ioi-framework/blob/main/RULES/temporal/IOI-012_office_mft_mismatch.rq"
        target="_blank" rel="noopener">
       Download ioi-012.rq ↗
     </a>
@@ -130,14 +130,14 @@
 
 <h2 id="sparql-signature">SPARQL signature</h2>
 
-<div class="language-sparql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">PREFIX</span><span class="w"> </span><span class="nn">core</span><span class="o">:</span><span class="w"> </span><span class="nn">&lt;https://ontology.unifiedcyberontology.org/uco/core/&gt;</span><span class="w">
+<div class="language-sparql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">PREFIX</span><span class="w"> </span><span class="nn">core</span><span class="o">:</span><span class="w">       </span><span class="nn">&lt;https://ontology.unifiedcyberontology.org/uco/core/&gt;</span><span class="w">
 </span><span class="k">PREFIX</span><span class="w"> </span><span class="nn">observable</span><span class="o">:</span><span class="w"> </span><span class="nn">&lt;https://ontology.unifiedcyberontology.org/uco/observable/&gt;</span><span class="w">
-</span><span class="k">PREFIX</span><span class="w"> </span><span class="nn">ioi-ext</span><span class="o">:</span><span class="w"> </span><span class="nn">&lt;https://ioi-framework.github.io/ns/ioi-ext/&gt;</span><span class="w">
-</span><span class="k">PREFIX</span><span class="w"> </span><span class="nn">xsd</span><span class="o">:</span><span class="w"> </span><span class="nn">&lt;http://www.w3.org/2001/XMLSchema#&gt;</span><span class="w">
+</span><span class="k">PREFIX</span><span class="w"> </span><span class="nn">ioi-ext</span><span class="o">:</span><span class="w">    </span><span class="nn">&lt;https://ioi-framework.github.io/ns/ioi-ext/&gt;</span><span class="w">
+</span><span class="k">PREFIX</span><span class="w"> </span><span class="nn">xsd</span><span class="o">:</span><span class="w">        </span><span class="nn">&lt;http://www.w3.org/2001/XMLSchema#&gt;</span><span class="w">
 
-</span><span class="k">SELECT</span><span class="w"> </span><span class="nv">?officeEntry</span><span class="w"> </span><span class="nv">?fileName</span><span class="w"> </span><span class="nv">?filePath</span><span class="w"> </span><span class="nv">?xmlCreated</span>
-       <span class="p">(</span><span class="nb">MIN</span><span class="p">(</span><span class="nv">?mftSiCreated</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="nv">?mftSiCreated</span><span class="p">)</span>
-       <span class="p">(</span><span class="nb">MIN</span><span class="p">(</span><span class="nv">?mftFnCreated</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="nv">?mftFnCreated</span><span class="p">)</span>
+</span><span class="k">SELECT</span><span class="w"> </span><span class="nv">?officeEntry</span><span class="w"> </span><span class="nv">?fileName</span><span class="w"> </span><span class="nv">?filePath</span><span class="w"> </span><span class="nv">?xmlCreated</span><span class="w">
+       </span><span class="p">(</span><span class="nb">MIN</span><span class="p">(</span><span class="nv">?mftSiCreated</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="nv">?mftSiCreated</span><span class="p">)</span><span class="w">
+       </span><span class="p">(</span><span class="nb">MIN</span><span class="p">(</span><span class="nv">?mftFnCreated</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="nv">?mftFnCreated</span><span class="p">)</span><span class="w">
 </span><span class="k">WHERE</span><span class="w"> </span><span class="p">{</span><span class="w">
   </span><span class="k">GRAPH</span><span class="w"> </span><span class="nn">&lt;https://ioi-framework.github.io/cases/AF-012/graphs/office&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
     </span><span class="nv">?officeEntry</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">observable</span><span class="o">:</span><span class="ss">File</span><span class="w"> </span><span class="p">;</span><span class="w">
@@ -166,14 +166,20 @@
   </span><span class="p">}</span><span class="w">
 
   </span><span class="k">FILTER</span><span class="p">(</span><span class="nn">xsd</span><span class="o">:</span><span class="ss">dateTime</span><span class="p">(</span><span class="nv">?xmlCreated</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nn">xsd</span><span class="o">:</span><span class="ss">dateTime</span><span class="p">(</span><span class="nv">?mftSiCreated</span><span class="p">))</span><span class="w">
-</span><span class="p">}</span>
-<span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="nv">?officeEntry</span><span class="w"> </span><span class="nv">?fileName</span><span class="w"> </span><span class="nv">?filePath</span><span class="w"> </span><span class="nv">?xmlCreated</span>
-<span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="nv">?filePath</span>
-</code></pre></div></div>
+</span><span class="p">}</span><span class="w">
+</span><span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="nv">?officeEntry</span><span class="w"> </span><span class="nv">?fileName</span><span class="w"> </span><span class="nv">?filePath</span><span class="w"> </span><span class="nv">?xmlCreated</span><span class="w">
+</span><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="nv">?filePath</span><span class="w">
+</span></code></pre></div></div>
 
 <h2 id="graph-iri-substitution">Graph IRI substitution</h2>
 
-<p>The checked-in rule uses the canonical placeholders <code class="language-plaintext highlighter-rouge">https://ioi-framework.github.io/cases/AF-012/graphs/office</code> and <code class="language-plaintext highlighter-rouge">https://ioi-framework.github.io/cases/AF-012/graphs/mft</code>. The executor rewrites <code class="language-plaintext highlighter-rouge">AF-012</code> to the active case ID at runtime.</p>
+<p>The checked-in rule uses the canonical placeholders:</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">https://ioi-framework.github.io/cases/AF-012/graphs/office</code></li>
+  <li><code class="language-plaintext highlighter-rouge">https://ioi-framework.github.io/cases/AF-012/graphs/mft</code></li>
+</ul>
+
+<p>The executor rewrites <code class="language-plaintext highlighter-rouge">AF-012</code> to the active case ID at runtime.</p>
 
 <h2 id="implementation-note">Implementation note</h2>
 
@@ -184,7 +190,7 @@
 
   <footer class="site-footer">
     <div class="footer-inner">
-      <span>© 2026 IoI Research Team · Forensic Science International: Digital Investigation</span>
+      <span>© 2026 IoI Research Team</span>
       <div class="footer-links">
         <a href="/community/">Contribute</a>
         <a href="https://github.com/ioi-framework/ioi-framework" target="_blank" rel="noopener">GitHub ↗</a>

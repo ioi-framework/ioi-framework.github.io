@@ -6,7 +6,7 @@
   <title>Office XML Metadata Instantiator — IoI Framework</title>
   <meta name="description" content="Indicator of Inconsistency — A community-driven SPARQL framework for detecting cross-artifact contradictions in digital forensic investigations.">
   <link rel="stylesheet" href="/assets/css/main.css">
-  <link rel="canonical" href="http://localhost:4000/instantiators/inst-005/">
+  <link rel="canonical" href="https://ioi-framework.github.io/instantiators/inst-005/">
 </head>
 <body>
 
@@ -21,7 +21,7 @@
           </li>
         
           <li>
-            <a href="/quickstart/"
+            <a href="/executerules/"
                >Executing Rules</a>
           </li>
         
@@ -124,22 +124,34 @@
 
   <div class="prose"><h2 id="overview">Overview</h2>
 
-<p>Generates a CASE/UCO JSON-LD Office metadata graph for IOI-012. The instantiator supports both merged JSON input from ArtifactExporter and raw Office-document input (<code class="language-plaintext highlighter-rouge">.docx</code>, <code class="language-plaintext highlighter-rouge">.xlsx</code>, <code class="language-plaintext highlighter-rouge">.pptx</code>, and macro-enabled variants). In both modes, the output contains an <code class="language-plaintext highlighter-rouge">ioi-ext:OfficeXMLFacet</code> plus an <code class="language-plaintext highlighter-rouge">observable:FileFacet</code>, and IOI-012 joins this graph to a separate MFT graph on normalized <code class="language-plaintext highlighter-rouge">filePath</code>.</p>
+<p>Generates a CASE/UCO JSON-LD Office metadata graph for IOI-012. The instantiator supports two input modes:</p>
+
+<ol>
+  <li><strong>Merged JSON mode</strong> — consumes the Autopsy/ArtifactExporter merged JSON for the <code class="language-plaintext highlighter-rouge">office_xml</code> artifact.</li>
+  <li><strong>Manual document mode</strong> — reads a raw Office document (<code class="language-plaintext highlighter-rouge">.docx</code>, <code class="language-plaintext highlighter-rouge">.xlsx</code>, <code class="language-plaintext highlighter-rouge">.pptx</code>, and macro-enabled variants), extracts <code class="language-plaintext highlighter-rouge">docProps/core.xml</code>, and emits the same Office XML graph.</li>
+</ol>
+
+<p>In both modes, the output contains an <code class="language-plaintext highlighter-rouge">ioi-ext:OfficeXMLFacet</code> plus an <code class="language-plaintext highlighter-rouge">observable:FileFacet</code>. Filesystem timestamps are intentionally excluded because IOI-012 compares the Office graph to a separate MFT graph using normalized <code class="language-plaintext highlighter-rouge">observable:filePath</code>.</p>
 
 <h2 id="input">Input</h2>
 
-<p>The instantiator supports two inputs: merged JSON mode from ArtifactExporter, or manual mode using a raw Office document plus an optional <code class="language-plaintext highlighter-rouge">--filepath</code> that matches the MFT graph path.</p>
+<h3 id="merged-json-mode">Merged JSON mode</h3>
 
-<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[
-  {
-    "filename": "password.docx",
-    "filepath": "/Users/ktams/Desktop/Confidential/password.docx",
-    "xml_created": "2025-03-04T01:09:00Z",
-    "xml_modified": "2025-03-04T01:10:37Z",
-    "xml_creator": "ktams",
-    "xml_last_modified_by": "ktams"
-  }
-]</code></pre></div></div>
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">[</span><span class="w">
+  </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"filename"</span><span class="p">:</span><span class="w"> </span><span class="s2">"password.docx"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"filepath"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/Users/ktams/Desktop/Confidential/password.docx"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"xml_created"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2025-03-04T01:09:00Z"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"xml_modified"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2025-03-04T01:10:37Z"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"xml_creator"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ktams"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"xml_last_modified_by"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ktams"</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">]</span><span class="w">
+</span></code></pre></div></div>
+
+<h3 id="manual-document-mode">Manual document mode</h3>
+
+<p>Provide a raw Office file and, when needed, the original MFT path via <code class="language-plaintext highlighter-rouge">--filepath</code> so the resulting <code class="language-plaintext highlighter-rouge">observable:filePath</code> matches the MFT graph used by IOI-012.</p>
 
 <h2 id="input-fields-consumed">Input fields consumed</h2>
 
@@ -185,21 +197,21 @@
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python3 instantiators/office_xml_instantiator.py office_xml_merged.json output.jsonld
 </code></pre></div></div>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python3 instantiators/office_xml_instantiator.py password.docx output.jsonld --filepath /Users/ktams/Desktop/Confidential/password.docx
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python3 instantiators/office_xml_instantiator.py password.docx output.jsonld <span class="nt">--filepath</span> /Users/ktams/Desktop/Confidential/password.docx
 </code></pre></div></div>
 
-<p>If <code class="language-plaintext highlighter-rouge">--filepath</code> is omitted in manual mode, the script prompts for the original file path so the generated Office graph can still join to the MFT graph.</p>
+<p>If <code class="language-plaintext highlighter-rouge">--filepath</code> is omitted in manual mode, the script prompts for the original file path so the Office graph can still join to the MFT graph.</p>
 
 <h2 id="implementation-note">Implementation note</h2>
 
-<p>AF-012 is evaluated with the Office XML and MFT graphs loaded into separate named graphs and joined at query time via normalized <code class="language-plaintext highlighter-rouge">observable:filePath</code>. The current rule uses source-specific Office XML properties: <code class="language-plaintext highlighter-rouge">dctermsCreated</code>, <code class="language-plaintext highlighter-rouge">dctermsModified</code>, <code class="language-plaintext highlighter-rouge">dcCreator</code>, and <code class="language-plaintext highlighter-rouge">cpLastModifiedBy</code>.</p>
+<p>AF-012 is evaluated with the Office XML and MFT graphs loaded into separate named graphs and joined at query time via a SPARQL cross-graph join on normalized <code class="language-plaintext highlighter-rouge">observable:filePath</code>. The current rule uses source-specific Office XML properties: <code class="language-plaintext highlighter-rouge">dctermsCreated</code>, <code class="language-plaintext highlighter-rouge">dctermsModified</code>, <code class="language-plaintext highlighter-rouge">dcCreator</code>, and <code class="language-plaintext highlighter-rouge">cpLastModifiedBy</code>.</p>
 </div>
 </div>
 </main>
 
   <footer class="site-footer">
     <div class="footer-inner">
-      <span>© 2026 IoI Research Team · Forensic Science International: Digital Investigation</span>
+      <span>© 2026 IoI Research Team</span>
       <div class="footer-links">
         <a href="/community/">Contribute</a>
         <a href="https://github.com/ioi-framework/ioi-framework" target="_blank" rel="noopener">GitHub ↗</a>

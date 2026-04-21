@@ -36,7 +36,7 @@ defaults:
 # ── Navigation ─────────────────────────────────────────────
 nav:
   - { title: "Home",           url: "/" }
-  - { title: "Executing Rules", url: "/quickstart/" }
+  - { title: "Executing Rules", url: "/executerules/" }
   - { title: "Cases",          url: "/cases/" }
   - { title: "IoI Rules",      url: "/rules/" }
   - { title: "Instantiators",  url: "/instantiators/" }

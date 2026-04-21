@@ -6,7 +6,7 @@
   <title>NTFS $MFT Instantiator — IoI Framework</title>
   <meta name="description" content="Indicator of Inconsistency — A community-driven SPARQL framework for detecting cross-artifact contradictions in digital forensic investigations.">
   <link rel="stylesheet" href="/assets/css/main.css">
-  <link rel="canonical" href="http://localhost:4000/instantiators/inst-001/">
+  <link rel="canonical" href="https://ioi-framework.github.io/instantiators/inst-001/">
 </head>
 <body>
 
@@ -21,7 +21,7 @@
           </li>
         
           <li>
-            <a href="/quickstart/"
+            <a href="/executerules/"
                >Executing Rules</a>
           </li>
         
@@ -184,8 +184,8 @@
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python3 instantiators/mft_instantiator.py cases/data/AF-NNN/post-manipulation/mft_post.csv cases/data/AF-NNN/graphs/mft_case.jsonld
 
-# For large MFT exports
-python3 instantiators/mft_instantiator.py cases/data/AF-NNN/post-manipulation/mft_post.csv cases/data/AF-NNN/graphs/mft_case.jsonld --chunk-size 5000
+<span class="c"># For large MFT exports</span>
+python3 instantiators/mft_instantiator.py cases/data/AF-NNN/post-manipulation/mft_post.csv cases/data/AF-NNN/graphs/mft_case.jsonld <span class="nt">--chunk-size</span> 5000
 </code></pre></div></div>
 
 <p>For large $MFT exports use <code class="language-plaintext highlighter-rouge">--chunk-size N</code> (e.g. <code class="language-plaintext highlighter-rouge">--chunk-size 5000</code>) to split output into multiple JSON-LD files.</p>
@@ -199,7 +199,7 @@ python3 instantiators/mft_instantiator.py cases/data/AF-NNN/post-manipulation/mf
 
   <footer class="site-footer">
     <div class="footer-inner">
-      <span>© 2026 IoI Research Team · Forensic Science International: Digital Investigation</span>
+      <span>© 2026 IoI Research Team</span>
       <div class="footer-links">
         <a href="/community/">Contribute</a>
         <a href="https://github.com/ioi-framework/ioi-framework" target="_blank" rel="noopener">GitHub ↗</a>

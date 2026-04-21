@@ -302,7 +302,7 @@ pre code { background: none; padding: 0; color: inherit; }
 
 /* ── Responsive ───────────────────────────────────────────── */
 @media (max-width: 640px) {
-  .abstract-inner { width: min(100%, var(--max-w)); }
+  .abstract-inner { grid-template-columns: 1fr; gap: 0.5rem; }
   .hero { padding: 2.5rem 1.25rem 2rem; }
   .card-grid { grid-template-columns: 1fr; }
 }
