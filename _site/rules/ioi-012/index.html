@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Office XML Metadata Timestamp Inconsistent with MFT — IoI Framework</title>
-  <meta name="description" content="Detects timestamp forging of Office documents by joining embedded Office core.xml metadata against the MFT $SI creation timestamp for the same file path. Fires when the embedded creation time predates filesystem creation time.">
+  <meta name="description" content="Detects timestamp forging of Office documents by joining embedded Office core.xml metadata against the MFT $SI creation timestamp for the same file path. Fires when the embedded creation time predates filesystem creation time by at least one minute.">
   <link rel="stylesheet" href="/assets/css/main.css">
   <link rel="canonical" href="https://ioi-framework.github.io/rules/ioi-012/">
 </head>
@@ -83,7 +83,7 @@
     </div>
     <div class="contrib-line">
       Contributed by <strong>@ioi-framework</strong> · 2025-01-01
-       · v1.3
+       · v1.4
       
         · <a href="/cases/af-012/">View scenario →</a>
       
@@ -93,7 +93,7 @@
   
   <div class="invariant-box">
     <div class="invariant-label">Invariant predicate φ</div>
-    <div class="invariant-value">The Office XML embedded creation time must not predate the MFT $SI creation timestamp for the same file path.</div>
+    <div class="invariant-value">The Office XML embedded creation minute must not predate the MFT $SI creation minute for the same file path.</div>
   </div>
   
 
@@ -122,11 +122,11 @@
 
 <p>Matching is on case-insensitive comparison of normalized absolute <code class="language-plaintext highlighter-rouge">observable:filePath</code> values across two named graphs.</p>
 
-<p>A document’s embedded Office XML creation time must not predate the filesystem <code class="language-plaintext highlighter-rouge">$SI</code> creation timestamp for the same file path.</p>
+<p>A document’s embedded Office XML creation minute must not predate the filesystem <code class="language-plaintext highlighter-rouge">$SI</code> creation minute for the same file path.</p>
 
 <h2 id="contradiction-condition">Contradiction condition</h2>
 
-<p>The embedded Office XML creation time is earlier than the MFT <code class="language-plaintext highlighter-rouge">$SI</code> creation timestamp, indicating the filesystem timestamp was pushed forward after the document was created.</p>
+<p>The embedded Office XML creation minute is earlier than the MFT <code class="language-plaintext highlighter-rouge">$SI</code> creation minute, indicating the filesystem timestamp was pushed forward after the document was created. Sub-minute skew, such as <code class="language-plaintext highlighter-rouge">14:26:00Z</code> versus <code class="language-plaintext highlighter-rouge">14:26:37Z</code>, is ignored.</p>
 
 <h2 id="sparql-signature">SPARQL signature</h2>
 
@@ -165,7 +165,9 @@
     </span><span class="k">FILTER</span><span class="p">(</span><span class="nb">LCASE</span><span class="p">(</span><span class="nb">STR</span><span class="p">(</span><span class="nv">?mftFilePath</span><span class="p">))</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">LCASE</span><span class="p">(</span><span class="nb">STR</span><span class="p">(</span><span class="nv">?filePath</span><span class="p">)))</span><span class="w">
   </span><span class="p">}</span><span class="w">
 
-  </span><span class="k">FILTER</span><span class="p">(</span><span class="nn">xsd</span><span class="o">:</span><span class="ss">dateTime</span><span class="p">(</span><span class="nv">?xmlCreated</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nn">xsd</span><span class="o">:</span><span class="ss">dateTime</span><span class="p">(</span><span class="nv">?mftSiCreated</span><span class="p">))</span><span class="w">
+  </span><span class="k">BIND</span><span class="p">(</span><span class="nb">SUBSTR</span><span class="p">(</span><span class="nb">REPLACE</span><span class="p">(</span><span class="nb">STR</span><span class="p">(</span><span class="nv">?xmlCreated</span><span class="p">),</span><span class="w"> </span><span class="s2">"T"</span><span class="p">,</span><span class="w"> </span><span class="s2">" "</span><span class="p">),</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="nv">?xmlCreatedMinute</span><span class="p">)</span><span class="w">
+  </span><span class="k">BIND</span><span class="p">(</span><span class="nb">SUBSTR</span><span class="p">(</span><span class="nb">REPLACE</span><span class="p">(</span><span class="nb">STR</span><span class="p">(</span><span class="nv">?mftSiCreated</span><span class="p">),</span><span class="w"> </span><span class="s2">"T"</span><span class="p">,</span><span class="w"> </span><span class="s2">" "</span><span class="p">),</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="nv">?mftSiCreatedMinute</span><span class="p">)</span><span class="w">
+  </span><span class="k">FILTER</span><span class="p">(</span><span class="nv">?xmlCreatedMinute</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nv">?mftSiCreatedMinute</span><span class="p">)</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span><span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="nv">?officeEntry</span><span class="w"> </span><span class="nv">?fileName</span><span class="w"> </span><span class="nv">?filePath</span><span class="w"> </span><span class="nv">?xmlCreated</span><span class="w">
 </span><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="nv">?filePath</span><span class="w">
@@ -183,7 +185,7 @@
 
 <h2 id="implementation-note">Implementation note</h2>
 
-<p>The Office XML graph is very small compared with the MFT graph. The normalized <code class="language-plaintext highlighter-rouge">filePath</code> join eliminates the earlier filename-only Cartesian-product problem, and the <code class="language-plaintext highlighter-rouge">GROUP BY + MIN()</code> pattern keeps the result stable when residual duplicate MFT matches exist.</p>
+<p>The Office XML graph is very small compared with the MFT graph. The normalized <code class="language-plaintext highlighter-rouge">filePath</code> join eliminates the earlier filename-only Cartesian-product problem, and the <code class="language-plaintext highlighter-rouge">GROUP BY + MIN()</code> pattern keeps the result stable when residual duplicate MFT matches exist. Timestamp comparison is intentionally minute-precision to avoid false positives from normal sub-minute write skew.</p>
 </div>
 </div>
 </main>

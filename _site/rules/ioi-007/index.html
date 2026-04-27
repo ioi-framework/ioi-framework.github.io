@@ -128,7 +128,7 @@
 
 <h2 id="sparql-signature">SPARQL signature</h2>
 
-<div class="language-sparql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span><span class="w"> </span><span class="nv">?event_type</span><span class="w"> </span><span class="nv">?time</span><span class="w"> </span><span class="nv">?file_name</span><span class="w"> </span><span class="nv">?update_reasons</span><span class="w">
+<div class="language-sparql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span><span class="w"> </span><span class="nv">?event_type</span><span class="w"> </span><span class="nv">?time</span><span class="w"> </span><span class="nv">?source_name</span><span class="w"> </span><span class="nv">?update_reasons</span><span class="w">
 </span><span class="k">WHERE</span><span class="w"> </span><span class="p">{</span><span class="w">
   </span><span class="p">{</span><span class="w">
     </span><span class="k">GRAPH</span><span class="w"> </span><span class="nn">&lt;security_case7&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
@@ -141,7 +141,7 @@
       </span><span class="nv">?custom_facet</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">ioi-ext</span><span class="o">:</span><span class="ss">EventLogFacet</span><span class="w"> </span><span class="p">;</span><span class="w">
                     </span><span class="nn">ioi-ext</span><span class="o">:</span><span class="ss">channel</span><span class="w"> </span><span class="s2">"Security"</span><span class="w"> </span><span class="p">.</span><span class="w">
       </span><span class="k">BIND</span><span class="p">(</span><span class="s2">"Event 1102 - Log Cleared"</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="nv">?event_type</span><span class="p">)</span><span class="w">
-      </span><span class="k">BIND</span><span class="p">(</span><span class="nv">?text</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="nv">?file_name</span><span class="p">)</span><span class="w">
+      </span><span class="k">BIND</span><span class="p">(</span><span class="s2">"Security Event Log"</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="nv">?source_name</span><span class="p">)</span><span class="w">
       </span><span class="k">BIND</span><span class="p">(</span><span class="s2">""</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="nv">?update_reasons</span><span class="p">)</span><span class="w">
     </span><span class="p">}</span><span class="w">
   </span><span class="p">}</span><span class="w">
@@ -157,7 +157,7 @@
       </span><span class="k">FILTER</span><span class="p">(</span><span class="nb">CONTAINS</span><span class="p">(</span><span class="nv">?filename</span><span class="p">,</span><span class="w"> </span><span class="s2">"Security"</span><span class="p">))</span><span class="w">
       </span><span class="k">FILTER</span><span class="p">(</span><span class="nb">CONTAINS</span><span class="p">(</span><span class="nv">?reasons</span><span class="p">,</span><span class="w"> </span><span class="s2">"DataTruncation"</span><span class="p">))</span><span class="w">
       </span><span class="k">BIND</span><span class="p">(</span><span class="s2">"USN DataTruncation"</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="nv">?event_type</span><span class="p">)</span><span class="w">
-      </span><span class="k">BIND</span><span class="p">(</span><span class="nv">?filename</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="nv">?file_name</span><span class="p">)</span><span class="w">
+      </span><span class="k">BIND</span><span class="p">(</span><span class="nv">?filename</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="nv">?source_name</span><span class="p">)</span><span class="w">
       </span><span class="k">BIND</span><span class="p">(</span><span class="nv">?reasons</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="nv">?update_reasons</span><span class="p">)</span><span class="w">
     </span><span class="p">}</span><span class="w">
   </span><span class="p">}</span><span class="w">
@@ -171,7 +171,7 @@
 
 <h2 id="expected-output">Expected output</h2>
 
-<p>Both the Event 1102 record and the USN truncation record are returned sorted by <code class="language-plaintext highlighter-rouge">?time</code>. The investigator reads the ordering directly from the result set to determine whether the log was truncated before or after the log-clear event was recorded.</p>
+<p>Both the Event 1102 record and the USN truncation record are returned sorted by <code class="language-plaintext highlighter-rouge">?time</code>. The <code class="language-plaintext highlighter-rouge">?source_name</code> column identifies either the Security event log source or the matching USN filename, so event text is not mislabeled as a file name. The investigator reads the ordering directly from the result set to determine whether the log was truncated before or after the log-clear event was recorded.</p>
 </div>
 </div>
 </main>

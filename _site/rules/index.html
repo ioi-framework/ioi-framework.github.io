@@ -203,7 +203,7 @@
 
       </div>
       <h3>Office XML Metadata Timestamp Inconsistent with MFT</h3>
-      <p>Detects timestamp forging of Office documents by joining embedded Office core.xml metadata against the MFT $SI creation timestamp for the same file path. Fires when the embedded creation time predates filesystem creation time.</p>
+      <p>Detects timestamp forging of Office documents by joining embedded Office core.xml metadata against the MFT $SI creation timestamp for the same file path. Fires when the embedded creation time predates filesystem creation time by at least one minute.</p>
       <div class="card-footer">
         <span class="tag tag-temporal">Temporal</span>
         <span class="tag">Office core.xml</span><span class="tag">$MFT</span>
