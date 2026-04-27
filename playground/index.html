@@ -1277,27 +1277,6 @@ SELECT DISTINCT ?deleted_guid ?usn_evidence WHERE {
         ?ff observable:fileName ?n .
         ?mf ioi-ext:parentPath ?p .
         FILTER(CONTAINS(?p, "System Volume Information"))
-        FILTER(STRSTARTS(STR(?n), "Apps_{"))
-      }
-    }
-    GRAPH <https://ioi-framework.github.io/cases/AF-004/graphs/usn> {
-      ?uf a observable:File ;
-          core:hasFacet ?uff, ?umf .
-      ?uff observable:fileName ?usn_filename .
-      ?umf ioi-ext:updateReasons ?update_reasons .
-      FILTER(STRSTARTS(STR(?usn_filename), "Apps_{"))
-      FILTER(CONTAINS(?update_reasons, "FileDelete"))
-      BIND(?usn_filename AS ?deleted_guid)
-      BIND(?update_reasons AS ?usn_evidence)
-    }
-  } UNION {
-    FILTER NOT EXISTS {
-      GRAPH <https://ioi-framework.github.io/cases/AF-004/graphs/mft> {
-        ?e a observable:File ;
-           core:hasFacet ?ff, ?mf .
-        ?ff observable:fileName ?n .
-        ?mf ioi-ext:parentPath ?p .
-        FILTER(CONTAINS(?p, "System Volume Information"))
         FILTER(STRSTARTS(STR(?n), "{"))
         FILTER(STRENDS(STR(?n), "}"))
         FILTER(STRLEN(STR(?n)) = 38)

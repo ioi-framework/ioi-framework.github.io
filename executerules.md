@@ -115,11 +115,11 @@ DB.DBA.TTLP_MT(file_to_string_output('/usr/share/proj/mft_test.nt'), '', 'https:
 DB.DBA.TTLP_MT(file_to_string_output('/usr/share/proj/usn_test.nt'), '', 'https://ioi-framework.github.io/cases/AF-004/graphs/usn', 512);
 EOF
 
-# Run IOI-004 — expect 2 rows
+# Run IOI-004 — expect 1 row
 docker cp RULES/structural/IOI-004_vss_traces_missing.rq vos:/database/rule.rq
 docker exec vos bash -lc "printf 'SPARQL\n'; sed '/^#/d' /database/rule.rq; printf '\n;'" \
   | docker exec -i vos isql 1111 dba dba</code></pre>
-        <p>A result with <strong>2 rows</strong> confirms Virtuoso is correctly loaded and rules execute as expected. This flow uses <code>/usr/share/proj</code> because Virtuoso's default <code>DirsAllowed</code> configuration reads from that directory, and <code>TTLP_MT</code> loads the triples directly once the files are there. See <code>CASES/AF-004/ground_truth.md</code> for what this result means forensically.</p>
+        <p>A result with <strong>1 row</strong> confirms Virtuoso is correctly loaded and rules execute as expected. The row corresponds to bare <code>{GUID}</code> VSS deletion evidence; <code>Apps_{GUID}</code> names are ignored to avoid Windows Search false positives. This flow uses <code>/usr/share/proj</code> because Virtuoso's default <code>DirsAllowed</code> configuration reads from that directory, and <code>TTLP_MT</code> loads the triples directly once the files are there. See <code>CASES/AF-004/ground_truth.md</code> for what this result means forensically.</p>
       </div>
     </div>
 
