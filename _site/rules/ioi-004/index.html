@@ -122,6 +122,8 @@
 
 <p>If VSS infrastructure files exist under <code class="language-plaintext highlighter-rouge">System Volume Information</code>, the corresponding GUID snapshot directories must also be present.</p>
 
+<p>This rule requires the full infrastructure triad (<code class="language-plaintext highlighter-rouge">tracking.log</code>, <code class="language-plaintext highlighter-rouge">IndexerVolumeGuid</code>, <code class="language-plaintext highlighter-rouge">_OnDiskSnapshotProp</code>) to be present before correlating to GUID deletion evidence, to reduce false positives from generic GUID churn.</p>
+
 <h2 id="contradiction-condition">Contradiction condition</h2>
 
 <p>Fires when infrastructure files are present <strong>and</strong> no bare <code class="language-plaintext highlighter-rouge">{GUID}</code> snapshot directories appear in the MFT <strong>and</strong> USN records confirm GUID-format deletion activity.</p>
@@ -155,6 +157,9 @@
   </span><span class="p">}</span><span class="w">
 
   </span><span class="k">FILTER</span><span class="p">(</span><span class="nb">BOUND</span><span class="p">(</span><span class="nv">?vss_infrastructure</span><span class="p">))</span><span class="w">
+  </span><span class="k">FILTER</span><span class="p">(</span><span class="nb">CONTAINS</span><span class="p">(</span><span class="nb">STR</span><span class="p">(</span><span class="nv">?vss_infrastructure</span><span class="p">),</span><span class="w"> </span><span class="s2">"tracking.log"</span><span class="p">))</span><span class="w">
+  </span><span class="k">FILTER</span><span class="p">(</span><span class="nb">CONTAINS</span><span class="p">(</span><span class="nb">STR</span><span class="p">(</span><span class="nv">?vss_infrastructure</span><span class="p">),</span><span class="w"> </span><span class="s2">"IndexerVolumeGuid"</span><span class="p">))</span><span class="w">
+  </span><span class="k">FILTER</span><span class="p">(</span><span class="nb">CONTAINS</span><span class="p">(</span><span class="nb">STR</span><span class="p">(</span><span class="nv">?vss_infrastructure</span><span class="p">),</span><span class="w"> </span><span class="s2">"_OnDiskSnapshotProp"</span><span class="p">))</span><span class="w">
 
   </span><span class="p">{</span><span class="w">
     </span><span class="k">FILTER</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="p">{</span><span class="w">
