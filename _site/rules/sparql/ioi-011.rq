@@ -32,9 +32,7 @@ WHERE {
               ioi-ext:created0x10 ?mftSiCreated ;
               ioi-ext:created0x30 ?mftFnCreated .
   }
-  BIND(SUBSTR(STR(?lnkShortcutCreated), 1, 19) AS ?lnkShortcutCreatedSec)
-  BIND(SUBSTR(STR(?mftFnCreated), 1, 19) AS ?mftFnCreatedSec)
   FILTER(BOUND(?lnkShortcutCreated) && ?lnkShortcutCreated != ?mftSiCreated)
-  FILTER(?lnkShortcutCreatedSec = ?mftFnCreatedSec)
+  FILTER(STRSTARTS(STR(?mftFnCreated), SUBSTR(STR(?lnkShortcutCreated), 1, 19)))
 }
 ORDER BY ?lnkFile

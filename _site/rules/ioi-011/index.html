@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LNK vs. $MFT $SI Timestamp Divergence — IoI Framework</title>
-  <meta name="description" content="Detects timestamp forging by comparing LNK shortcut targetCreatedTime against the $SI timestamp for the same MFT entry, corroborated by $FN agreement with the LNK value.">
+  <meta name="description" content="Detects timestamp forging by comparing the LNK shortcut creation time against the $SI timestamp for the same MFT entry, corroborated by $FN agreement with the LNK value.">
   <link rel="stylesheet" href="/assets/css/main.css">
   <link rel="canonical" href="https://ioi-framework.github.io/rules/ioi-011/">
 </head>
@@ -83,7 +83,7 @@
     </div>
     <div class="contrib-line">
       Contributed by <strong>@ioi-framework</strong> · 2025-01-01
-       · v1.2
+       · v1.3
       
         · <a href="/cases/af-011/">View scenario →</a>
       
@@ -93,7 +93,7 @@
   
   <div class="invariant-box">
     <div class="invariant-label">Invariant predicate φ</div>
-    <div class="invariant-value">The LNK-recorded target creation time must agree with the MFT $FN (0x30) creation timestamp for the same entry at second-level precision while diverging from the MFT $SI (0x10) timestamp.</div>
+    <div class="invariant-value">The LNK shortcut creation time must agree with the MFT $FN (0x30) creation timestamp for the same entry at second-level precision while diverging from the MFT $SI (0x10) timestamp.</div>
   </div>
   
 
@@ -122,7 +122,7 @@
 
 <p>Matching is on MFT entry number, which is stable across timestamp manipulation.</p>
 
-<p>The LNK-recorded creation time and MFT <code class="language-plaintext highlighter-rouge">$SI</code> creation time for the same entry must diverge. The <code class="language-plaintext highlighter-rouge">$FN</code> timestamp (harder to manipulate via user-mode tools) must still agree with the LNK value at second-level precision, confirming the divergence is isolated to <code class="language-plaintext highlighter-rouge">$SI</code>.</p>
+<p>The LNK shortcut creation time and MFT <code class="language-plaintext highlighter-rouge">$SI</code> creation time for the same entry must diverge. The <code class="language-plaintext highlighter-rouge">$FN</code> timestamp (harder to manipulate via user-mode tools) must still agree with the LNK value at second-level precision, confirming the divergence is isolated to <code class="language-plaintext highlighter-rouge">$SI</code>.</p>
 
 <h2 id="contradiction-condition">Contradiction condition</h2>
 
@@ -165,9 +165,8 @@
   </span><span class="p">}</span><span class="w">
   </span><span class="k">FILTER</span><span class="p">(</span><span class="nb">BOUND</span><span class="p">(</span><span class="nv">?lnkShortcutCreated</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w">
          </span><span class="nv">?lnkShortcutCreated</span><span class="w"> </span><span class="o">!</span><span class="p">=</span><span class="w"> </span><span class="nv">?mftSiCreated</span><span class="p">)</span><span class="w">
-  </span><span class="k">BIND</span><span class="p">(</span><span class="nb">SUBSTR</span><span class="p">(</span><span class="nb">STR</span><span class="p">(</span><span class="nv">?lnkShortcutCreated</span><span class="p">),</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">19</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="nv">?lnkShortcutCreatedSec</span><span class="p">)</span><span class="w">
-  </span><span class="k">BIND</span><span class="p">(</span><span class="nb">SUBSTR</span><span class="p">(</span><span class="nb">STR</span><span class="p">(</span><span class="nv">?mftFnCreated</span><span class="p">),</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">19</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="nv">?mftFnCreatedSec</span><span class="p">)</span><span class="w">
-  </span><span class="k">FILTER</span><span class="p">(</span><span class="nv">?lnkShortcutCreatedSec</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nv">?mftFnCreatedSec</span><span class="p">)</span><span class="w">
+  </span><span class="k">FILTER</span><span class="p">(</span><span class="nb">STRSTARTS</span><span class="p">(</span><span class="nb">STR</span><span class="p">(</span><span class="nv">?mftFnCreated</span><span class="p">),</span><span class="w">
+                   </span><span class="nb">SUBSTR</span><span class="p">(</span><span class="nb">STR</span><span class="p">(</span><span class="nv">?lnkShortcutCreated</span><span class="p">),</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">19</span><span class="p">)))</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="nv">?lnkFile</span><span class="w">
 </span></code></pre></div></div>

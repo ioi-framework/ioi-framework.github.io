@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Office Metadata Timestamp Contradiction — IoI Framework</title>
-  <meta name="description" content="Filesystem timestamps forged via timestomper.exe; embedded Office core.xml metadata predates the forged MFT $SI timestamp in a cross-graph filePath join.">
+  <meta name="description" content="Filesystem timestamps forged via timestomper.exe; embedded Office core.xml metadata disagrees with the forged MFT $SI timestamp in a cross-graph filePath join.">
   <link rel="stylesheet" href="/assets/css/main.css">
   <link rel="canonical" href="https://ioi-framework.github.io/cases/af-012/">
 </head>
@@ -137,13 +137,13 @@
 
 <ul>
   <li>Office XML metadata (<code class="language-plaintext highlighter-rouge">ioi-ext:dctermsCreated</code>) preserves the original document creation time</li>
-  <li>MFT <code class="language-plaintext highlighter-rouge">$STANDARD_INFORMATION</code> (0x10) shows the forged, later creation timestamp</li>
-  <li><code class="language-plaintext highlighter-rouge">xmlCreated &lt; mftSiCreated</code> for the same normalized <code class="language-plaintext highlighter-rouge">filePath</code> indicates timestomping</li>
+  <li>MFT <code class="language-plaintext highlighter-rouge">$STANDARD_INFORMATION</code> (0x10) shows the forged creation timestamp</li>
+  <li><code class="language-plaintext highlighter-rouge">xmlCreated != mftSiCreated</code> at minute precision for the same normalized <code class="language-plaintext highlighter-rouge">filePath</code> indicates timestomping</li>
 </ul>
 
 <h2 id="inconsistency-summary">Inconsistency Summary</h2>
 
-<p>When <code class="language-plaintext highlighter-rouge">timestomper.exe</code> modifies <code class="language-plaintext highlighter-rouge">password.docx</code>, it changes the MFT filesystem timestamps but does not rewrite the Office metadata in <code class="language-plaintext highlighter-rouge">docProps/core.xml</code>. The Office graph therefore retains an earlier <code class="language-plaintext highlighter-rouge">ioi-ext:dctermsCreated</code> value than the MFT graph’s <code class="language-plaintext highlighter-rouge">ioi-ext:created0x10</code> value for the same file path.</p>
+<p>When <code class="language-plaintext highlighter-rouge">timestomper.exe</code> modifies <code class="language-plaintext highlighter-rouge">password.docx</code>, it changes the MFT filesystem timestamps but does not rewrite the Office metadata in <code class="language-plaintext highlighter-rouge">docProps/core.xml</code>. The Office graph therefore retains an <code class="language-plaintext highlighter-rouge">ioi-ext:dctermsCreated</code> value that disagrees with the MFT graph’s <code class="language-plaintext highlighter-rouge">ioi-ext:created0x10</code> value for the same file path.</p>
 
 <h2 id="detection-logic">Detection Logic</h2>
 
@@ -156,7 +156,7 @@
   <span class="k">RETURN</span> <span class="n">created0x10</span> <span class="k">AS</span> <span class="n">mftSiCreated</span><span class="p">,</span> <span class="n">created0x30</span> <span class="k">AS</span> <span class="n">mftFnCreated</span>
 
 <span class="c1">-- Detection Rule</span>
-<span class="n">IF</span> <span class="n">xmlCreated</span> <span class="o">&lt;</span> <span class="n">mftSiCreated</span>
+<span class="n">IF</span> <span class="n">truncate_to_minutes</span><span class="p">(</span><span class="n">xmlCreated</span><span class="p">)</span> <span class="o">!=</span> <span class="n">truncate_to_minutes</span><span class="p">(</span><span class="n">mftSiCreated</span><span class="p">)</span>
 <span class="k">THEN</span> <span class="n">FLAG</span> <span class="s1">'AF-012: Timestomping Detected via Office XML Metadata'</span>
 </code></pre></div></div>
 </div>
