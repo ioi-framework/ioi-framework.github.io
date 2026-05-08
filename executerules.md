@@ -121,7 +121,7 @@ printf "DB.DBA.TTLP_MT(file_to_string_output('/usr/share/proj/mft_test.nt'), '',
 
 # Run IOI-004 — expect 1 row
 docker cp RULES/structural/IOI-004_vss_traces_missing.rq vos:/database/rule.rq
-docker exec vos bash -lc "printf 'SPARQL\n'; sed '/^#/d' /database/rule.rq; printf '\n;'" \
+docker exec vos bash -lc "printf 'SPARQL\n'; sed '/^[[:space:]]*#/d' /database/rule.rq; printf '\n;'" \
   | docker exec -i vos isql 1111 dba dba</code></pre>
         <p>The piped <code>printf</code> form above is preferred over shell heredocs because it avoids common copy-paste failures where indented or malformed <code>EOF</code> lines leave users stuck at a shell <code>&gt;</code> prompt. A result with <strong>1 row</strong> confirms Virtuoso is correctly loaded and rules execute as expected. The row corresponds to bare <code>{GUID}</code> VSS deletion evidence; <code>Apps_{GUID}</code> names are ignored to avoid Windows Search false positives. IOI-004 also requires the full VSS infrastructure triad (<code>tracking.log</code>, <code>IndexerVolumeGuid</code>, <code>_OnDiskSnapshotProp</code>) to be present before correlating to GUID deletions. This flow uses <code>/usr/share/proj</code> because Virtuoso's default <code>DirsAllowed</code> configuration reads from that directory, and <code>TTLP_MT</code> loads the triples directly once the files are there. See <code>CASES/AF-004/ground_truth.md</code> for what this result means forensically.</p>
       </div>
@@ -133,6 +133,10 @@ docker exec vos bash -lc "printf 'SPARQL\n'; sed '/^#/d' /database/rule.rq; prin
         <h3>Load your own graphs and execute IoI rules</h3>
         <p>Copy every N-Triples file required by your selected rule into the container, load each file into the matching named graph IRI, verify nonzero graph counts, then run the rule. Use the artifact list on the rule page to decide which graph files to include; for example, IOI-002 uses <code>mft</code>, <code>usn</code>, and <code>history</code>, while IOI-004 uses <code>mft</code> and <code>usn</code>.</p>
         <pre><code># Load your own graph and execute an IoI rule
+#
+# IMPORTANT:
+# Replace all placeholder values before running the commands.
+# Do not run the commands with &lt;artifact&gt;, &lt;category&gt;, or &lt;rule_file&gt; unchanged.
 #
 # Replace:
 # AF-NNN      with your case ID
@@ -180,7 +184,7 @@ EOF
 docker cp RULES/&lt;category&gt;/&lt;rule_file&gt;.rq vos:/database/rule.rq
 
 # Execute the IoI rule.
-docker exec vos bash -lc "printf 'SPARQL\n'; sed '/^#/d' /database/rule.rq; printf '\n;'" \
+docker exec vos bash -lc "printf 'SPARQL\n'; sed '/^[[:space:]]*#/d' /database/rule.rq; printf '\n;'" \
   | docker exec -i vos isql 1111 dba dba</code></pre>
         <p>A non-empty result set indicates a detected inconsistency. If the graph-count query returns zero for any required graph, fix loading before debugging the rule. Read the corresponding <code>CASES/AF-NNN/ground_truth.md</code> to interpret the result.</p>
       </div>
