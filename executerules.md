@@ -132,36 +132,36 @@ docker exec vos bash -lc "printf 'SPARQL\n'; sed '/^[[:space:]]*#/d' /database/r
       <div class="step-content">
         <h3>Load your own graphs and execute IoI rules</h3>
         <p>Copy every N-Triples file required by your selected rule into the container, load each file into the matching named graph IRI, verify nonzero graph counts, then run the rule. Use the artifact list on the rule page to decide which graph files to include; for example, IOI-002 uses <code>mft</code>, <code>usn</code>, and <code>history</code>, while IOI-004 uses <code>mft</code> and <code>usn</code>.</p>
-        <pre><code># Load your own graph and execute an IoI rule
+        <pre><code class="language-bash"># Load your own graph and execute an IoI rule
 #
 # IMPORTANT:
-# Replace all placeholder values before running the commands.
-# Do not run the commands with &lt;artifact&gt;, &lt;category&gt;, or &lt;rule_file&gt; unchanged.
+# Replace all placeholder values before running.
+# Do not run commands with placeholder values unchanged.
 #
 # Replace:
-# AF-NNN      with your case ID
-# &lt;artifact&gt; with the artifact graph name, such as mft, usn, history, prefetch, registry
-# &lt;category&gt; with the rule folder name
-# &lt;rule_file&gt; with the rule filename
+# CASE_ID   with your case ID
+# ARTIFACT  with the artifact graph name, such as mft, usn, history, prefetch, registry
+# CATEGORY  with the rule folder name
+# RULE_FILE with the rule filename
 #
 # Your local graph file should already exist in:
-# outputs/&lt;artifact&gt;_case.nt
+# outputs/ARTIFACT_case.nt
 
 # Ensure Virtuoso's import and rule directories exist.
 docker exec vos mkdir -p /usr/share/proj /database
 
 # Copy the required N-Triples graph into the Virtuoso container.
-docker cp outputs/&lt;artifact&gt;_case.nt vos:/usr/share/proj/&lt;artifact&gt;_case.nt
+docker cp outputs/ARTIFACT_case.nt vos:/usr/share/proj/ARTIFACT_case.nt
 
 # Start Virtuoso isql inside the vos container.
 # Everything between &lt;&lt;'EOF' and EOF is sent directly to isql.
 docker exec -i vos isql 1111 dba dba &lt;&lt;'EOF'
-SPARQL CLEAR GRAPH &lt;https://ioi-framework.github.io/cases/AF-NNN/graphs/&lt;artifact&gt;&gt;;
+SPARQL CLEAR GRAPH &lt;https://ioi-framework.github.io/cases/CASE_ID/graphs/ARTIFACT&gt;;
 
 DB.DBA.TTLP_MT(
-  file_to_string_output('/usr/share/proj/&lt;artifact&gt;_case.nt'),
+  file_to_string_output('/usr/share/proj/ARTIFACT_case.nt'),
   '',
-  'https://ioi-framework.github.io/cases/AF-NNN/graphs/&lt;artifact&gt;',
+  'https://ioi-framework.github.io/cases/CASE_ID/graphs/ARTIFACT',
   512
 );
 
@@ -169,7 +169,7 @@ SPARQL SELECT ?g (COUNT(*) AS ?count)
 WHERE {
   GRAPH ?g { ?s ?p ?o }
   FILTER(?g IN (
-    &lt;https://ioi-framework.github.io/cases/AF-NNN/graphs/&lt;artifact&gt;&gt;
+    &lt;https://ioi-framework.github.io/cases/CASE_ID/graphs/ARTIFACT&gt;
   ))
 }
 GROUP BY ?g;
@@ -181,12 +181,12 @@ EOF
 # and add one CLEAR GRAPH and one TTLP_MT load block for each required graph.
 
 # Copy the selected IoI rule into the container.
-docker cp RULES/&lt;category&gt;/&lt;rule_file&gt;.rq vos:/database/rule.rq
+docker cp RULES/CATEGORY/RULE_FILE.rq vos:/database/rule.rq
 
 # Execute the IoI rule.
 docker exec vos bash -lc "printf 'SPARQL\n'; sed '/^[[:space:]]*#/d' /database/rule.rq; printf '\n;'" \
   | docker exec -i vos isql 1111 dba dba</code></pre>
-        <p>A non-empty result set indicates a detected inconsistency. If the graph-count query returns zero for any required graph, fix loading before debugging the rule. Read the corresponding <code>CASES/AF-NNN/ground_truth.md</code> to interpret the result.</p>
+        <p>A non-empty result set indicates a detected inconsistency. If the graph-count query returns zero for any required graph, fix loading before debugging the rule. Read the corresponding <code>CASES/CASE_ID/ground_truth.md</code> to interpret the result.</p>
       </div>
     </div>
 
