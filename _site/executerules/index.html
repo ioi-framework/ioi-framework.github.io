@@ -273,6 +273,63 @@ docker cp RULES/CATEGORY/RULE_FILE.rq vos:/database/rule.rq
 # Execute the IoI rule.
 docker exec vos bash -lc "printf 'SPARQL\n'; sed '/^[[:space:]]*#/d' /database/rule.rq; printf '\n;'" \
   | docker exec -i vos isql 1111 dba dba</code></pre>
+            <p><strong>Example (AF-002):</strong></p>
+            <pre><code class="language-bash"># Ensure Virtuoso's import and rule directories exist.
+docker exec vos mkdir -p /usr/share/proj /database
+
+# Copy the generated N-Triples files into the Virtuoso container.
+docker cp outputs/af002_mft_indexeddb.nt vos:/usr/share/proj/mft_case.nt
+docker cp outputs/af002_usn_history_tamper.nt vos:/usr/share/proj/usn_case.nt
+docker cp outputs/af002_history_post.nt vos:/usr/share/proj/history_case.nt
+
+# Start Virtuoso isql inside the vos container.
+# Everything between &lt;&lt;'EOF' and EOF is sent directly to isql.
+docker exec -i vos isql 1111 dba dba &lt;&lt;'EOF'
+SPARQL CLEAR GRAPH &lt;https://ioi-framework.github.io/cases/AF-002/graphs/mft&gt;;
+SPARQL CLEAR GRAPH &lt;https://ioi-framework.github.io/cases/AF-002/graphs/usn&gt;;
+SPARQL CLEAR GRAPH &lt;https://ioi-framework.github.io/cases/AF-002/graphs/history&gt;;
+
+DB.DBA.TTLP_MT(
+  file_to_string_output('/usr/share/proj/mft_case.nt'),
+  '',
+  'https://ioi-framework.github.io/cases/AF-002/graphs/mft',
+  512
+);
+
+DB.DBA.TTLP_MT(
+  file_to_string_output('/usr/share/proj/usn_case.nt'),
+  '',
+  'https://ioi-framework.github.io/cases/AF-002/graphs/usn',
+  512
+);
+
+DB.DBA.TTLP_MT(
+  file_to_string_output('/usr/share/proj/history_case.nt'),
+  '',
+  'https://ioi-framework.github.io/cases/AF-002/graphs/history',
+  512
+);
+
+SPARQL SELECT ?g (COUNT(*) AS ?count)
+WHERE {
+  GRAPH ?g { ?s ?p ?o }
+  FILTER(?g IN (
+    &lt;https://ioi-framework.github.io/cases/AF-002/graphs/mft&gt;,
+    &lt;https://ioi-framework.github.io/cases/AF-002/graphs/usn&gt;,
+    &lt;https://ioi-framework.github.io/cases/AF-002/graphs/history&gt;
+  ))
+}
+GROUP BY ?g;
+
+EXIT;
+EOF
+
+# Copy the IoI rule into the container.
+docker cp RULES/af002.rq vos:/database/rule.rq
+
+# Execute the IoI rule.
+docker exec vos bash -lc "printf 'SPARQL\n'; sed '/^[[:space:]]*#/d' /database/rule.rq; printf '\n;'" \
+  | docker exec -i vos isql 1111 dba dba</code></pre>
             <p>A non-empty result set indicates a detected inconsistency. If the graph-count query returns zero for any
               required graph, fix loading before debugging the rule. Read the corresponding
               <code>CASES/CASE_ID/ground_truth.md</code> to interpret the result.
