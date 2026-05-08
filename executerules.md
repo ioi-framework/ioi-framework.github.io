@@ -115,27 +115,15 @@ docker exec vos mkdir -p /usr/share/proj /database</code></pre>
 docker cp CASES/AF-004/test/mft_test.nt vos:/usr/share/proj/mft_test.nt
 docker cp CASES/AF-004/test/usn_test.nt vos:/usr/share/proj/usn_test.nt
 
-# Load named graphs
-docker exec -i vos isql 1111 dba dba <<'EOF'
-DB.DBA.TTLP_MT(file_to_string_output('/usr/share/proj/mft_test.nt'), '', 'https://ioi-framework.github.io/cases/AF-004/graphs/mft', 512);
-DB.DBA.TTLP_MT(file_to_string_output('/usr/share/proj/usn_test.nt'), '', 'https://ioi-framework.github.io/cases/AF-004/graphs/usn', 512);
-SPARQL SELECT ?g (COUNT(*) AS ?count)
-WHERE {
-  GRAPH ?g { ?s ?p ?o }
-  FILTER(?g IN (
-    <https://ioi-framework.github.io/cases/AF-004/graphs/mft>,
-    <https://ioi-framework.github.io/cases/AF-004/graphs/usn>
-  ))
-}
-GROUP BY ?g;
-EXIT;
-EOF
+# Load named graphs and verify counts.
+printf "DB.DBA.TTLP_MT(file_to_string_output('/usr/share/proj/mft_test.nt'), '', 'https://ioi-framework.github.io/cases/AF-004/graphs/mft', 512);\nDB.DBA.TTLP_MT(file_to_string_output('/usr/share/proj/usn_test.nt'), '', 'https://ioi-framework.github.io/cases/AF-004/graphs/usn', 512);\nSPARQL SELECT ?g (COUNT(*) AS ?count) WHERE { GRAPH ?g { ?s ?p ?o } FILTER(?g IN (<https://ioi-framework.github.io/cases/AF-004/graphs/mft>, <https://ioi-framework.github.io/cases/AF-004/graphs/usn>)) } GROUP BY ?g;\nEXIT;\n" \
+  | docker exec -i vos isql 1111 dba dba
 
 # Run IOI-004 — expect 1 row
 docker cp RULES/structural/IOI-004_vss_traces_missing.rq vos:/database/rule.rq
 docker exec vos bash -lc "printf 'SPARQL\n'; sed '/^#/d' /database/rule.rq; printf '\n;'" \
   | docker exec -i vos isql 1111 dba dba</code></pre>
-        <p>A result with <strong>1 row</strong> confirms Virtuoso is correctly loaded and rules execute as expected. The row corresponds to bare <code>{GUID}</code> VSS deletion evidence; <code>Apps_{GUID}</code> names are ignored to avoid Windows Search false positives. IOI-004 also requires the full VSS infrastructure triad (<code>tracking.log</code>, <code>IndexerVolumeGuid</code>, <code>_OnDiskSnapshotProp</code>) to be present before correlating to GUID deletions. This flow uses <code>/usr/share/proj</code> because Virtuoso's default <code>DirsAllowed</code> configuration reads from that directory, and <code>TTLP_MT</code> loads the triples directly once the files are there. See <code>CASES/AF-004/ground_truth.md</code> for what this result means forensically.</p>
+        <p>The piped <code>printf</code> form above is preferred over shell heredocs because it avoids common copy-paste failures where indented or malformed <code>EOF</code> lines leave users stuck at a shell <code>&gt;</code> prompt. A result with <strong>1 row</strong> confirms Virtuoso is correctly loaded and rules execute as expected. The row corresponds to bare <code>{GUID}</code> VSS deletion evidence; <code>Apps_{GUID}</code> names are ignored to avoid Windows Search false positives. IOI-004 also requires the full VSS infrastructure triad (<code>tracking.log</code>, <code>IndexerVolumeGuid</code>, <code>_OnDiskSnapshotProp</code>) to be present before correlating to GUID deletions. This flow uses <code>/usr/share/proj</code> because Virtuoso's default <code>DirsAllowed</code> configuration reads from that directory, and <code>TTLP_MT</code> loads the triples directly once the files are there. See <code>CASES/AF-004/ground_truth.md</code> for what this result means forensically.</p>
       </div>
     </div>
 
@@ -153,21 +141,8 @@ docker cp outputs/&lt;artifact&gt;_case.nt vos:/usr/share/proj/&lt;artifact&gt;_
 
 # Load each required named graph.
 # Replace AF-NNN and &lt;artifact&gt; with the case ID and graph name.
-docker exec -i vos isql 1111 dba dba <<'EOF'
-SPARQL CLEAR GRAPH &lt;https://ioi-framework.github.io/cases/AF-NNN/graphs/&lt;artifact&gt;&gt;;
-
-DB.DBA.TTLP_MT(file_to_string_output('/usr/share/proj/&lt;artifact&gt;_case.nt'), '', 'https://ioi-framework.github.io/cases/AF-NNN/graphs/&lt;artifact&gt;', 512);
-
-SPARQL SELECT ?g (COUNT(*) AS ?count)
-WHERE {
-  GRAPH ?g { ?s ?p ?o }
-  FILTER(?g IN (
-    &lt;https://ioi-framework.github.io/cases/AF-NNN/graphs/&lt;artifact&gt;&gt;
-  ))
-}
-GROUP BY ?g;
-EXIT;
-EOF
+printf "SPARQL CLEAR GRAPH <https://ioi-framework.github.io/cases/AF-NNN/graphs/<artifact>>;\nDB.DBA.TTLP_MT(file_to_string_output('/usr/share/proj/<artifact>_case.nt'), '', 'https://ioi-framework.github.io/cases/AF-NNN/graphs/<artifact>', 512);\nSPARQL SELECT ?g (COUNT(*) AS ?count) WHERE { GRAPH ?g { ?s ?p ?o } FILTER(?g IN (<https://ioi-framework.github.io/cases/AF-NNN/graphs/<artifact>>)) } GROUP BY ?g;\nEXIT;\n" \
+  | docker exec -i vos isql 1111 dba dba
 
 # Multi-graph rules require one CLEAR and one TTLP_MT line per artifact graph,
 # and every graph IRI must be listed in the verification query above.
