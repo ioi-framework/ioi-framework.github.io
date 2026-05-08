@@ -141,7 +141,7 @@ docker cp outputs/&lt;artifact&gt;_case.nt vos:/usr/share/proj/&lt;artifact&gt;_
 
 # Load each required named graph.
 # Replace AF-NNN and &lt;artifact&gt; with the case ID and graph name.
-printf "SPARQL CLEAR GRAPH <https://ioi-framework.github.io/cases/AF-NNN/graphs/<artifact>>;\nDB.DBA.TTLP_MT(file_to_string_output('/usr/share/proj/<artifact>_case.nt'), '', 'https://ioi-framework.github.io/cases/AF-NNN/graphs/<artifact>', 512);\nSPARQL SELECT ?g (COUNT(*) AS ?count) WHERE { GRAPH ?g { ?s ?p ?o } FILTER(?g IN (<https://ioi-framework.github.io/cases/AF-NNN/graphs/<artifact>>)) } GROUP BY ?g;\nEXIT;\n" \
+printf "SPARQL CLEAR GRAPH &lt;https://ioi-framework.github.io/cases/AF-NNN/graphs/&lt;artifact&gt;&gt;;\nDB.DBA.TTLP_MT(file_to_string_output('/usr/share/proj/&lt;artifact&gt;_case.nt'), '', 'https://ioi-framework.github.io/cases/AF-NNN/graphs/&lt;artifact&gt;', 512);\nSPARQL SELECT ?g (COUNT(*) AS ?count) WHERE { GRAPH ?g { ?s ?p ?o } FILTER(?g IN (&lt;https://ioi-framework.github.io/cases/AF-NNN/graphs/&lt;artifact&gt;&gt;)) } GROUP BY ?g;\nEXIT;\n" \
   | docker exec -i vos isql 1111 dba dba
 
 # Multi-graph rules require one CLEAR and one TTLP_MT line per artifact graph,
