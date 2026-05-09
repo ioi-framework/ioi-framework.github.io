@@ -144,14 +144,15 @@ docker exec vos bash -lc "printf 'SPARQL\n'; sed '/^[[:space:]]*#/d' /database/r
 # CATEGORY  with the rule folder name
 # RULE_FILE with the rule filename
 #
-# Your local graph file should already exist in:
-# outputs/ARTIFACT_case.nt
+# Your local graph file should already exist.
+# It can keep any descriptive local filename; the docker cp command below
+# copies it into a stable container filename that matches the graph name.
 
 # Ensure Virtuoso's import and rule directories exist.
 docker exec vos mkdir -p /usr/share/proj /database
 
 # Copy the required N-Triples graph into the Virtuoso container.
-docker cp outputs/ARTIFACT_case.nt vos:/usr/share/proj/ARTIFACT_case.nt
+docker cp outputs/YOUR_LOCAL_FILE.nt vos:/usr/share/proj/ARTIFACT_case.nt
 
 # Start Virtuoso isql inside the vos container.
 # Everything between &lt;&lt;'EOF' and EOF is sent directly to isql.
@@ -184,13 +185,16 @@ EOF
 docker cp RULES/CATEGORY/RULE_FILE.rq vos:/database/rule.rq
 
 # Execute the IoI rule.
-docker exec vos bash -lc "printf 'SPARQL\n'; sed '/^[[:space:]]*#/d' /database/rule.rq; printf '\n;'" \
+# Flattening the rule body to one line reduces noisy continuation prompts from isql.
+docker exec vos bash -lc "printf 'SPARQL '; sed '/^[[:space:]]*#/d' /database/rule.rq | tr '\n' ' ' | sed 's/  */ /g'; printf '\n;'" \
   | docker exec -i vos isql 1111 dba dba</code></pre>
         <p><strong>Example (AF-002):</strong></p>
         <pre><code class="language-bash"># Ensure Virtuoso's import and rule directories exist.
 docker exec vos mkdir -p /usr/share/proj /database
 
 # Copy the generated N-Triples files into the Virtuoso container.
+# The descriptive local filenames stay on disk, but are copied to stable
+# container filenames that match the graph names used below.
 docker cp outputs/af002_mft_indexeddb.nt vos:/usr/share/proj/mft_case.nt
 docker cp outputs/af002_usn_history_tamper.nt vos:/usr/share/proj/usn_case.nt
 docker cp outputs/af002_history_post.nt vos:/usr/share/proj/history_case.nt
@@ -238,10 +242,10 @@ EXIT;
 EOF
 
 # Copy the IoI rule into the container.
-docker cp RULES/af002.rq vos:/database/rule.rq
+docker cp RULES/semantic/IOI-002_chrome_history_missing.rq vos:/database/rule.rq
 
 # Execute the IoI rule.
-docker exec vos bash -lc "printf 'SPARQL\n'; sed '/^[[:space:]]*#/d' /database/rule.rq; printf '\n;'" \
+docker exec vos bash -lc "printf 'SPARQL '; sed '/^[[:space:]]*#/d' /database/rule.rq | tr '\n' ' ' | sed 's/  */ /g'; printf '\n;'" \
   | docker exec -i vos isql 1111 dba dba</code></pre>
         <p>A non-empty result set indicates a detected inconsistency. If the graph-count query returns zero for any required graph, fix loading before debugging the rule. Read the corresponding <code>CASES/CASE_ID/ground_truth.md</code> to interpret the result.</p>
       </div>
